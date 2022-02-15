@@ -1,0 +1,2985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <!-- header scripts start -->
+    <script defer src="images/iodine.js"></script>
+    <script defer src="images/moment.js"></script>
+    <script defer src="images/alpine.js"></script>
+    <script src="images/tailwind.js"></script>
+    <!-- header scripts end -->
+    <title>WiKONEK Captive Portal v.1</title>
+    <style>
+        @font-face {
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('images/Montserrat-Regular.ttf') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url('images/Montserrat-SemiBold.ttf') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url('images/Montserrat-Bold.ttf') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'Open Sans';
+            font-style: normal;
+            font-weight: 400;
+            font-stretch: normal;
+            font-display: swap;
+            src: url('images/OpenSans-Regular.ttf') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'Open Sans';
+            font-style: normal;
+            font-weight: 700;
+            font-stretch: normal;
+            font-display: swap;
+            src: url('images/OpenSans-Bold.ttf') format('woff2');
+        }
+
+        .splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #fff;
+            z-index: 200;
+            color: white;
+            text-align: center;
+            line-height: 90vh;
+        }
+
+        .splash.display-none {
+            opacity: 0;
+            z-index: -10;
+            transition: all 1s;
+        }
+
+        .splash .wrap {
+            height: 80%;
+            width: 280px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .splash img {
+            max-width: 100%;
+            max-height: 312px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #loader {
+            background: #17A0DC;
+            height: 10px;
+            width: 100%;
+            animation: loadContent 2.5s linear;
+            margin-top: 80px;
+        }
+
+        @keyframes loadContent {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        .fade-in {
+            height: 100%;
+            opacity: 1;
+            animation: fadeIn 0.3s linear;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        a {
+            color: #FF7522 !important;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .site-container {
+            min-width: 360px;
+        }
+
+        .header {
+            margin: 5px 0;
+        }
+
+        .title {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .content {
+            font-family: 'Open Sans', sans-serif;
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        .modal-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 150vh;
+            background-color: #fff;
+            display: block;
+            z-index: 1000;
+        }
+
+        .modal {
+            height: 100vh;
+            max-width: 90%;
+            background-color: #fff;
+        }
+
+        #dashboard-page svg {
+            fill: #17A0DC;
+            margin: 0 auto;
+        }
+
+        #dashboard-page-tindera svg {
+            fill: #FE7D00;
+            margin: 0 auto;
+        }
+
+        .hide-on-small {
+            display: block;
+        }
+
+        .show-on-small {
+            display: none;
+        }
+
+        .form-element {
+            margin-bottom: 8px;
+        }
+
+        .vcenter {
+            height: 100%;
+            margin: 0 auto;
+        }
+
+        .vcenter .wrap {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+        }
+
+        input, textarea {
+            border: 1px solid #d8d8d8;
+            padding: 6px 10px 7px !important;
+            border-radius: 3px;
+            display: block;
+            width: 100%;
+            font-size: 13px !important;
+        }
+
+        input[type="submit"],
+        a.button {
+            background: #17A0DC;
+            color: #fff !important;
+            text-transform: uppercase;
+            font-weight: bold;
+            padding: 15px !important;
+            border-radius: 5px;
+            box-shadow: 0px 3px 0px #FF7522;
+            border: none;
+            font-size: 16px !important;
+            cursor: pointer;
+        }
+
+        a.button:hover {
+            text-decoration: none;
+        }
+
+        input.disabled[type="submit"] {
+            opacity: 0.5;
+        }
+
+        .countdown {
+            font-weight: bold;
+            text-align: center;
+            display: block;
+            margin-bottom: 30px;
+            margin-top: 20px;
+            font-size: 30px;
+            border: 1px solid #d2d2d2;
+            padding: 9px 0 10px;
+            border-radius: 3px;
+        }
+
+        .timer {
+            box-shadow: 0px 3px 0px #FF7522;
+        }
+
+        .timer-element .label {
+            padding-top: 5px !important;
+        }
+
+        .timer .time {
+            background: #f2f2f2;
+            font-family: "Montserrat", sans-serif;
+            font-weight: bold;
+            font-size: 24px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .nav button {
+            background: #eee;
+            padding: 20px;
+            text-align: center;
+            color: #17A0DC;
+            font-size: 14px;
+            border-radius: 3px;
+        }
+
+        .grid {
+            line-height: 1.35;
+        }
+
+        .product-offers {
+            border: 1px solid #d8d8d8;
+            border-radius: 3px;
+            margin: 10px 0;
+            padding: 10px 20px 10px 13px;
+            grid-template-columns: 65% 35% !important;
+        }
+
+        .product-offers span {
+            display: block;
+            font-family: "Montserrat", sans-serif !important;
+            font-size: 15px;
+        }
+
+        .product-offers span:first-child {
+            font-weight: bold;
+            font-size: 19px;
+        }
+
+        .product-offers button {
+            font-size: 14px;
+        }
+
+        .buynow {
+            background: #eee;
+            color: #17A0DC;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        #dashboard-page-tindera .buynow {
+            color: #FE7D00;
+        }
+
+        .close-btn {
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .coinbank {
+            background: rgb(255, 158, 33);
+            background: radial-gradient(circle, rgba(255, 158, 33, 1) 0%, rgba(255, 120, 34, 1) 100%);
+            border: 8px solid #fff;
+            border-radius: 50%;
+            width: 250px;
+            height: 250px;
+            -webkit-animation: glow 2s linear infinite; /* Safari */
+            animation: glow 2s linear infinite;
+            box-shadow: 0px 0px 13px #ccc;
+            transition: all 1s;
+            margin: 0 auto;
+        }
+
+        @keyframes glow {
+            0% {
+                background: rgb(255, 100, 34);
+                background: radial-gradient(circle, rgba(255, 100, 34, 1) 0%, rgba(255, 182, 33, 1) 100%);
+            }
+            100% {
+                background: rgb(255, 158, 33);
+                background: radial-gradient(circle, rgba(255, 158, 33, 1) 0%, rgba(255, 120, 34, 1) 100%);
+            }
+        }
+
+        .insertcoin {
+            background: #fff;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #ffb621;
+            color: #17A0DC;
+            font-size: 14px;
+        }
+
+        .insertcoin span {
+            position: relative;
+            top: 23px;
+        }
+
+        .coinbank img {
+            position: absolute;
+            z-index: 10000;
+            top: 38px;
+            left: 62px;
+        }
+
+        .station-id {
+            max-width: 600px;
+            margin: 15px auto;
+            font-size: 14px;
+            font-weight: bold;
+            color: #999;
+            padding-left: 2px;
+            border-top: 1px dotted #d8d8d8;
+            padding-top: 5px;
+        }
+
+        .form-element span {
+            font-size: 13px;
+        }
+
+        label {
+            margin-bottom: 3px !important;
+            display: block;
+        }
+
+        .wklogo {
+            width: 185px;
+        }
+
+        .wklogotindera {
+            height: 44px;
+            width: auto !important;
+        }
+
+        .start-browsing {
+            text-align: center;
+            max-width: 80%;
+            margin: 0 auto 50px;
+        }
+
+        @media only screen and (max-width: 500px) {
+
+            .wklogo {
+                width: 60%;
+                margin: 0 auto 15px;
+            }
+
+            .wallet-details.float-right {
+                width: 100%;
+            }
+
+            .wallet-balance.float-left.text-right.pr-2 {
+                text-align: left;
+            }
+
+            .hide-on-small {
+                display: none;
+            }
+
+            .show-on-small {
+                display: block;
+            }
+
+        }
+    </style>
+    <style>
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div x-data x-show="$store.wikonek.connection.status.network">
+    <!-- SPLASH PAGE -->
+    <div class="splash p-4" id="splash-page" x-data="ingress">
+        <div class="wrap">
+            <!-- div added to horizontally and vertically center the splash image to better fit different screen sizes -->
+            <img :src="image" alt="splash" class="fade-in"/>
+        </div>
+        <div class="rounded-lg" id="loader"></div>
+    </div><!-- splash modal dialog -->
+    <!-- NOTIFICATION PAGE -->
+    <div
+            @notify.window="add($event)"
+            aria-live="polite"
+            class="fixed bottom-0 right-0 pr-4 pb-4 max-w-xs w-full flex flex-col space-y-4 sm:justify-start"
+            role="status"
+            x-data="{
+        notifications: [],
+        add(e) {
+            this.notifications.push({
+                id: e.timeStamp,
+                type: e.detail.type,
+                content: e.detail.content,
+            })
+        },
+        remove(notification) {
+            this.notifications = this.notifications.filter(i => i.id !== notification.id)
+        },
+    }"
+    >
+        <!-- Notification -->
+        <template :key="notification.id" x-for="notification in notifications">
+            <div
+                    class="relative max-w-sm w-full bg-white pl-6 pr-4 py-4 border border-black pointer-events-auto"
+                    x-data="{
+                show: false,
+                init() {
+                    this.$nextTick(() => this.show = true)
+
+                    setTimeout(() => this.transitionOut(), 2000)
+                },
+                transitionOut() {
+                    this.show = false
+
+                    setTimeout(() => this.remove(this.notification), 500)
+                },
+            }"
+                    x-show="show"
+                    x-transition.duration.500ms
+            >
+                <div class="flex items-start">
+                    <!-- Icons -->
+                    <div class="flex-shrink-0" x-show="notification.type === 'info'">
+                    <span aria-hidden="true"
+                          class="w-6 h-6 inline-flex items-center justify-center text-xl font-bold text-gray-400 border-2 border-gray-400 rounded-full">!</span>
+                        <span class="sr-only">Information:</span>
+                    </div>
+
+                    <div class="flex-shrink-0" x-show="notification.type === 'success'">
+                    <span aria-hidden="true"
+                          class="w-6 h-6 inline-flex items-center justify-center text-lg font-bold text-green-600 border-2 border-green-600 rounded-full">&check;</span>
+                        <span class="sr-only">Success:</span>
+                    </div>
+
+                    <div class="flex-shrink-0" x-show="notification.type === 'error'">
+                    <span aria-hidden="true"
+                          class="w-6 h-6 inline-flex items-center justify-center text-lg font-bold text-red-600 border-2 border-red-600 rounded-full">&times;</span>
+                        <span class="sr-only">Error:</span>
+                    </div>
+
+                    <!-- Text -->
+                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                        <p class="text-sm leading-5 font-medium text-gray-900" x-text="notification.content"></p>
+                    </div>
+
+                    <!-- Remove button -->
+                    <div class="ml-4 flex-shrink-0 flex">
+                        <button @click="transitionOut()" class="inline-flex text-gray-400" type="button">
+                            <svg aria-hidden class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path clip-rule="evenodd"
+                                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                      fill-rule="evenodd"></path>
+                            </svg>
+                            <span class="sr-only">Close notification</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+    <!-- REGISTRATION PAGE -->
+    <div class="site-container wrap p-4" x-data="registration" x-show="unregistered">
+        <div class="header">
+            <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+        </div><!-- header -->
+        <div class="content">
+            <div class="wrap">
+                <div class="title text-center font-bold text-[21px] mb-[30px]"
+                     x-text="wantToRegister ? 'Sign Up' : 'Login'"></div>
+                <div class="form">
+                    <form class="signup" x-on:submit.prevent="submit">
+                        <div class="mnumber form-element">
+                            <label class="text-[13px]">Mobile Number</label>
+                            <div class="relative">
+                                <span class="absolute top-[7px] left-[8px]">0 <span class="text-[#d8d8d8]">|</span></span>
+                                <input
+                                        :maxlength="fields.mobile.maxLength"
+                                        @blur="fields.mobile.validate(validationCallback)"
+                                        oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                        :placeholder="$store.wikonek.macAddress"
+                                        required
+                                        style="padding-left: 45px !important;"
+                                        type="number"
+                                        x-model="fields.mobile.value"
+                                >
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                        x-text="fields.mobile.errorMsg"></span></p>
+                            </div>
+                        </div>
+                        <template x-if="wantToRegister">
+                            <div class="fname form-element">
+                                <label class="text-[13px]">Full Name</label>
+                                <input
+                                        :maxlength="fields.name.maxLength"
+                                        @blur="fields.name.validate(validationCallback)"
+                                        aria-label="Full Name" placeholder="[First Name] [Last Name] e.g. Juan Luna"
+                                        required
+                                        type="text"
+                                        x-model="fields.name.value"
+                                >
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                        x-text="fields.name.errorMsg"></span></p>
+                            </div>
+                        </template>
+                        <template x-if="wantToRegister">
+                            <div class="bday form-element">
+                                <label class="text-[13px]">Birthday</label>
+                                <input
+                                        :value="date.toLocaleDateString('sv-en')"
+                                        @blur="fields.birthdate.validate(validationCallback)"
+                                        required
+                                        type="date"
+                                        x-data="{date: new Date($el.dataset.value)}"
+                                        x-model="fields.birthdate.value"
+                                >
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                        x-text="fields.birthdate.errorMsg"></span></p>
+                            </div>
+                        </template>
+                        <template x-if="wantToRegister">
+                            <div class="address form-element">
+                                <label class="text-[13px]">Address</label>
+                                <textarea
+                                        :maxlength="fields.address.maxLength"
+                                        @blur="fields.address.validate(validationCallback)"
+                                        placeholder="88 Malakas St., Barangay Pinyahan, Quezon City 1100"
+                                        required
+                                        x-model="fields.address.value"
+                                >
+                        </textarea>
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                        x-text="fields.address.errorMsg"></span></p>
+                            </div>
+                        </template>
+                        <div class="pinnum form-element">
+                            <label class="text-[13px]">Security PIN</label>
+                            <div class="relative" x-data="{ show: true }">
+                                <input
+                                        :maxlength="fields.pin.maxLength"
+                                        :type="show ? 'password' : 'number'"
+                                        @blur="fields.pin.validate(validationCallback)"
+                                        oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                        placeholder="e.g. 1234"
+                                        required
+                                        x-model="fields.pin.value"
+                                >
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                                    <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
+                                         class="h-6 text-gray-700"
+                                         fill="none"
+                                         viewbox="0 0 576 512"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
+                                              fill="currentColor">
+                                        </path>
+                                    </svg>
+
+                                    <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
+                                         class="h-6 text-gray-700"
+                                         fill="none"
+                                         viewbox="0 0 640 512"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
+                                              fill="currentColor">
+                                        </path>
+                                    </svg>
+
+                                </div>
+                            </div>
+                            <p class="text-red-500 text-xs italic py-2" x-cloak><span x-text="fields.pin.errorMsg"></span>
+                            </p>
+                        </div>
+                        <template x-if="wantToRegister">
+                            <div class="confpinnum form-element" style="margin-bottom: 30px;">
+                                <label class="text-[13px]">Confirm Security PIN</label>
+                                <div class="relative" x-data="{ show: true }">
+                                    <input
+                                            :maxlength="fields.pin_confirmation.maxLength"
+                                            :type="show ? 'password' : 'number'"
+                                            @blur="fields.pin_confirmation.validate(validationCallback)"
+                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                            placeholder="e.g. 1234"
+                                            required
+                                            x-model="fields.pin_confirmation.value"
+                                    >
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                                        <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
+                                             class="h-6 text-gray-700"
+                                             fill="none"
+                                             viewbox="0 0 576 512"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
+                                                  fill="currentColor">
+                                            </path>
+                                        </svg>
+
+                                        <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
+                                             class="h-6 text-gray-700"
+                                             fill="none"
+                                             viewbox="0 0 640 512"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
+                                                  fill="currentColor">
+                                            </path>
+                                        </svg>
+
+                                    </div>
+                                </div>
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                        x-text="fields.pin_confirmation.errorMsg"></span></p>
+                            </div>
+                        </template>
+                        <template x-if="wantToRegister">
+                            <div class="flex items-start mb-6">
+                                <div class="flex items-center h-5">
+                                    <input
+                                            aria-describedby="agree"
+                                            class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                                            id="agree"
+                                            required
+                                            type="checkbox"
+                                            x-model="agreed"
+                                    >
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label class="font-medium text-gray-900 dark:text-gray-300" for="agree">
+                                        Check here to indicate that you have read and agree to the terms of the LyfLyn.Net
+                                        Customer Agreement.
+                                    </label>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="flex items-start mb-6">
+                            <div class="flex items-center h-5">
+                                <input
+                                        aria-describedby="already"
+                                        class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                                        id="already"
+                                        type="checkbox"
+                                        x-model="wantToLogin"
+                                >
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label class="font-medium text-gray-900 dark:text-gray-300" for="already">
+                                    Already have an account.
+                                </label>
+                            </div>
+                        </div>
+                        <template x-if="wantToRegister">
+                            <div class="submit form-element">
+                                <input :class="canRegister && agreed ? 'enabled' : 'disabled'" type="submit"
+                                       value="Register">
+                            </div>
+                        </template>
+                        <template x-if="wantToLogin">
+                            <div class="submit form-element" x-show="wantToLogin">
+                                <input type="submit" value="Login">
+                            </div>
+                        </template>
+                    </form>
+                </div>
+                <!-- if successful -->
+                <div class="success-message text-center text-[#26580F] m-[15px]" x-show="submitted">
+                    <p>You have successfully registered.</p>
+                </div>
+                <!-- if failed -->
+                <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="isError">
+                    <p>All fields are required. Please check the fields and try again.</p>
+                </div>
+            </div>
+        </div><!-- content -->
+    </div><!-- site-container -->
+    <!-- DASHBOARD MODALS -->
+    <div
+            class="modal-wrapper"
+            x-data="{ open: false }"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-profile-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-data="profile"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent="submit"
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="wrap">
+                    <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="title"></div>
+                    <div class="form">
+                        <form class="signup">
+                            <div class="fname form-element">
+                                <label class="text-[13px]">Full Name</label>
+                                <input disabled type="text" x-model="name">
+                            </div>
+                            <div class="mnumber form-element">
+                                <label class="text-[13px]">Mobile Number</label>
+                                <div class="relative">
+                                <span class="absolute top-[7px] left-[8px]">0
+                                    <span class="text-[#d8d8d8]">|</span>
+                                </span>
+                                    <input disabled style="padding-left: 24px !important;"
+                                           type="text" x-model="number">
+                                </div>
+                            </div>
+                            <div class="pinnum form-element">
+                                <label class="text-[13px]">Old Security PIN</label>
+                                <div class="relative" x-data="{ show: true }">
+                                    <input
+                                            :maxlength="fields.old_pin.maxLength"
+                                            :type="show ? 'password' : 'number'"
+                                            @blur="fields.old_pin.validate(validationCallback)"
+                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                            placeholder="e.g. 1234"
+                                            required
+                                            x-model="fields.old_pin.value"
+                                    >
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                                        <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
+                                             class="h-6 text-gray-700"
+                                             fill="none"
+                                             viewbox="0 0 576 512"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
+                                                  fill="currentColor">
+                                            </path>
+                                        </svg>
+
+                                        <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
+                                             class="h-6 text-gray-700"
+                                             fill="none"
+                                             viewbox="0 0 640 512"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
+                                                  fill="currentColor">
+                                            </path>
+                                        </svg>
+
+                                    </div>
+                                </div>
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span x-text="fields.old_pin.errorMsg"></span>
+                                </p>
+                            </div>
+                            <div class="pinnum form-element">
+                                <label class="text-[13px]">Security PIN</label>
+                                <div class="relative" x-data="{ show: true }">
+                                    <input
+                                            :maxlength="fields.pin.maxLength"
+                                            :type="show ? 'password' : 'number'"
+                                            @blur="fields.pin.validate(validationCallback)"
+                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                            placeholder="e.g. 1234"
+                                            required
+                                            x-model="fields.pin.value"
+                                    >
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                                        <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
+                                             class="h-6 text-gray-700"
+                                             fill="none"
+                                             viewbox="0 0 576 512"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
+                                                  fill="currentColor">
+                                            </path>
+                                        </svg>
+
+                                        <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
+                                             class="h-6 text-gray-700"
+                                             fill="none"
+                                             viewbox="0 0 640 512"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
+                                                  fill="currentColor">
+                                            </path>
+                                        </svg>
+
+                                    </div>
+                                </div>
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span x-text="fields.pin.errorMsg"></span>
+                                </p>
+                            </div>
+                            <div class="confpinnum form-element" style="margin-bottom: 30px;">
+                                <label class="text-[13px]">Confirm Security PIN</label>
+                                <div class="relative" x-data="{ show: true }">
+                                    <input
+                                            :maxlength="fields.pin_confirmation.maxLength"
+                                            :type="show ? 'password' : 'number'"
+                                            @blur="fields.pin_confirmation.validate(validationCallback)"
+                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                            placeholder="e.g. 1234"
+                                            required
+                                            x-model="fields.pin_confirmation.value"
+                                    >
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                                        <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
+                                             class="h-6 text-gray-700"
+                                             fill="none"
+                                             viewbox="0 0 576 512"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
+                                                  fill="currentColor">
+                                            </path>
+                                        </svg>
+
+                                        <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
+                                             class="h-6 text-gray-700"
+                                             fill="none"
+                                             viewbox="0 0 640 512"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
+                                                  fill="currentColor">
+                                            </path>
+                                        </svg>
+
+                                    </div>
+                                </div>
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                        x-text="fields.pin_confirmation.errorMsg"></span></p>
+                            </div>
+                            <div class="submit form-element mt-[30px]">
+                                <input class="enabled" type="submit" :value="caption">
+                            </div>
+                        </form>
+                    </div>
+                    <!-- if successful -->
+                    <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updateProfileSucceeded">
+                        <p>Profile updated.</p>
+                    </div>
+                    <!-- if failed -->
+                    <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="updateProfileFailed">
+                        <p>Update profile failed! Please try again.</p>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- PROFILE modal dialog -->
+    <div
+            class="modal-wrapper"
+            x-data="{ open: false, prod: null }"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-confirm-purchase-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-data="purchase"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="wrap">
+                    <div style="text-align: center;"
+                         x-show="open" x-transition
+                         x-on:click="open = false"
+                    >
+                        <div
+                                x-on:click.stop
+                                x-trap.noscroll.inert="open"
+                        >
+                            <!-- Title -->
+                            <div class="title text-center font-bold text-[21px] mb-[30px]">Confirm Purchase</div>
+                            <!-- Content -->
+                            <p class="mt-2 text-gray-600" x-text="product.name"></p>
+                            <!-- Buttons -->
+                            <div>
+                                <a class="button block mt-[30px]" x-data x-on:click="submit; open = false">Confirm</a>
+                                <a class="button block mt-[30px]" x-data x-on:click="open = false">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- PURCHASE modal dialog -->
+    <div
+            class="modal-wrapper"
+            x-data="{ open: false }"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-redeem-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-data="redeem"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent="submit"
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="wrap">
+                    <div class="title text-center font-bold text-[21px] mb-[30px]">Redeem Voucher</div>
+                    <div class="form">
+                        <form class="signup">
+                            <div class="fname form-element">
+                                <label class="text-[13px]">Voucher Code</label>
+                                <input
+                                        :maxlength="fields.voucher.maxLength"
+                                        @blur="fields.voucher.validate(validationCallback)"
+                                        aria-label="Voucher Code"
+                                        placeholder="include the dash e.g. 91LB-H537"
+                                        required
+                                        type="text"
+                                        x-model="fields.voucher.value">
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                        x-text="fields.voucher.errorMsg"></span></p>
+                            </div>
+                            <div class="submit form-element mt-[30px]">
+                                <input :value="caption" class="enabled" type="submit">
+                            </div>
+                        </form>
+                    </div>
+                    <!-- if successful -->
+                    <div class="success-message text-center text-[#26580F] m-[15px]" x-show="redemptionSucceeded">
+                        <p x-text="message"></p>
+                    </div>
+                    <!-- if failed -->
+                    <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="redemptionFailed">
+                        <p>Voucher redemption failed! Please input a valid code..</p>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- REDEEM modal dialog -->
+    <div x-data="transfer">
+        <div
+                class="modal-wrapper"
+                x-data="{ open: false }"
+                x-on:keyup.escape.window="open = false"
+                x-on:open-transfer-modal.window="open = true; const tf = $event.detail.transferee; fields.mobile.value = tf.mobile ? ((tf.mobile + '').substr(2))*1 : ''; fields.amount.value = tf.amount; tf.mobile && validate()"
+                x-show="open"
+        >
+            <div
+                    class="modal"
+                    style="margin: 30px auto;"
+
+                    x-on:click.outside="open = false"
+                    x-on:submit.prevent="submit"
+            >
+                <div class="header">
+                    <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                </div><!-- header -->
+                <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path clip-rule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              fill-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="content">
+                    <div class="wrap">
+                        <div class="title text-center font-bold text-[21px] mb-[30px]">Transfer Load</div>
+                        <div class="form">
+                            <form class="signup">
+                                <div class="mnumber form-element">
+                                    <label class="text-[13px]">Mobile Number</label>
+                                    <div class="relative">
+                                <span class="absolute top-[7px] left-[8px]">0 <span
+                                        class="text-[#d8d8d8]">|</span></span>
+                                        <input
+                                                :maxlength="fields.mobile.maxLength"
+                                                @blur="fields.mobile.validate(validationCallback)"
+                                                oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                placeholder="9xxxxxxxxx e.g. 9123456789" required
+                                                style="padding-left: 24px !important;"
+                                                type="number"
+                                                x-model="fields.mobile.value"
+                                        >
+                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                x-text="fields.mobile.errorMsg"></span></p>
+                                    </div>
+                                </div>
+                                <div class="bday form-element">
+                                    <label class="text-[13px]">Amount Credits</label>
+                                    <input
+                                            :maxlength="fields.amount.maxLength"
+                                            @blur="fields.amount.validate(validationCallback)"
+                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                            placeholder="minimum 5 pesos e.g. 100"
+                                            required
+                                            type="number"
+                                            x-model="fields.amount.value"
+                                    >
+                                    <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                            x-text="fields.amount.errorMsg"></span></p>
+                                    <!--                            <input placeholder="minimum 5 pesos e.g. 100" required type="number" x-model="enteredAmount">-->
+                                </div>
+                                <div class="submit form-element mt-[30px]">
+                                    <input :value="caption" class="enabled" type="submit" x-show="!transferSucceeded">>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- if successful -->
+                        <div class="success-message text-center text-[#26580F] m-[15px]" x-show="transferSucceeded">
+                            <p x-text="message"></p>
+                        </div>
+                        <!-- if failed -->
+                        <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="transferFailed">
+                            <p>Transfer failed! Please try again.</p>
+                        </div>
+                    </div>
+                </div><!-- content -->
+            </div><!-- site-container -->
+            <div class="clear-both"></div>
+        </div>
+    </div><!-- TRANSFER modal dialog -->
+    <div
+            class="modal-wrapper"
+            x-data="{ open: false }"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-count-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-data="count"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="wrap">
+                    <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="amount"></div>
+                    <div class="time-insert-coin">
+                        <span class="block text-center" x-show="disarmed" x-text="`Click on the '${caption}' button below. You have ${ticks} seconds to insert coins.`"></span>
+                        <span class="countdown" x-text="timeRemaining"></span>
+                    </div>
+                    <div class="form relative">
+                        <div class="coinbank">
+                            <div class="vcenter" style="width:160px;">
+                                <button class="wrap insertcoin" x-on:click="toggle">
+                                    <img class="absolute top-[10px] left-[10px]" src="images/pointer.png"/>
+                                    <span x-text="caption"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- COUNT modal dialog -->
+    <div
+            class="modal-wrapper"
+            x-data="egress('checkin')"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-landing-free-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-on:click.outside="open = false"
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="text-center" style="width: 300px">
+                    <div style="width: 300px;">
+                        <div class="mb-[30px] text-[15px]"><span x-text="payload"> </span> <span class="font-bold block" x-text="message"></span>
+                        </div>
+                        <img :src="image" alt="lgu"/>
+                        <div class="notice">
+                            <div class="text-[15px] mt-[30px]">For inquiries or concerns, please visit:</div>
+                            <div class="text-[15px] font-bold"><a href="https://wikonek.ph">wikonek.ph</a></div>
+                        </div>
+                        <div class="clear-both"></div>
+                        <a class="button block mt-[30px]" :href="landing" x-text="caption"></a>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- CHECKIN modal landing page -->
+    <div
+            class="modal-wrapper"
+            x-data="egress('purchase')"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-landing-purchase-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="text-center" style="width: 300px;">
+                    <div style="width: 300px;">
+                        <div class="mb-[30px] text-[15px]">You are now connected with<span class="font-bold block">₱<span
+                                class="amt" x-text="message"></span> Credits</span></div>
+                        <img :src="image" alt="splash"/>
+                        <div class="notice">
+                            <div class="text-[15px] mt-[30px]">For inquiries or concerns, please visit:</div>
+                            <div class="text-[15px] font-bold"><a href="https://wikonek.ph">https://wikonek.ph</a></div>
+                        </div>
+                        <div class="clear-both"></div>
+                        <a class="button block mt-[30px]" :href="landing" x-text="caption"></a>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- PURCHASE modal landing page -->
+    <div
+            class="modal-wrapper"
+            x-data="egress('count')"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-landing-count-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="text-center" style="width: 300px;">
+                    <div style="width: 300px;">
+                        <div class="mb-[30px] text-[15px]"><span x-text="payload"> </span> <span class="font-bold block" x-text="message"></span>
+                        </div>
+                        <img :src="image" alt="splash"/>
+                        <div class="notice">
+                            <div class="text-[15px] mt-[30px]">For inquiries or concerns, please visit:</div>
+                            <div class="text-[15px] font-bold"><a href="https://wikonek.ph">https://wikonek.ph</a></div>
+                        </div>
+                        <div class="clear-both"></div>
+                        <a class="button block mt-[30px]" :href="landing" x-text="caption"></a>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- COUNT modal landing page -->
+    <!-- DASHBOARD -->
+    <div x-data x-show="$store.wikonek.registered">
+        <!--  USER -->
+        <template x-data="dashboard('user')" x-if="$store.wikonek.modes & SHOW_USER">
+            <div class="site-container wrap p-4" id="dashboard-page" x-show="$store.wikonek.mode & SHOW_USER">
+                <div class="header" style="max-width: 600px; margin: 5px auto;">
+                    <div class="logo float-left"><img class="wklogo" src="images/wklogo_full.png"/></div>
+                    <div class="wallet-details float-right">
+                        <div class="wallet-balance float-left text-right pr-2">
+                            <div class="text-[17px] font-bold">₱<span x-text="loadRemaining"></span></div>
+                            <div class="text-[12px]" x-text="captions.balance"></div>
+                        </div>
+                        <div class="header-buttons float-right">
+                            <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-topup-modal')">
+                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd"
+                                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                          fill-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-profile-modal')">
+                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                          fill-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div><!-- header -->
+                <div class="clear-both"></div>
+                <div class="station-id" x-text="'Station ID: ' + stationID"></div>
+                <div class="content relative top-[20px]" style="width: 100%; max-width: 600px;">
+                    <!-- timer component start -->
+                    <div class="timer mb-[35px] bg-[#17A0DC] rounded grid grid-cols-4 gap-4 text-center p-4" x-data="airtime">
+                        <div class="timer-element">
+                            <div class="time" x-text="days"></div>
+                            <div class="label text-white font-semibold text-sm">Days</div>
+                        </div>
+                        <div class="timer-element">
+                            <div class="time" x-text="hours"></div>
+                            <div class="label text-white font-semibold text-sm">Hours</div>
+                        </div>
+                        <div class="timer-element">
+                            <div class="time" x-text="minutes"></div>
+                            <div class="label text-white font-semibold text-sm">Minutes</div>
+                        </div>
+                        <div class="timer-element">
+                            <div class="time" x-text="seconds"></div>
+                            <div class="label text-white font-semibold text-sm">Seconds</div>
+                        </div>
+                    </div>
+                    <!-- timer component end-->
+                    <!-- checkin component start -->
+                    <div x-data="checkin">
+                        <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
+                        <div class="text-[#26580F] text-center mb-[35px]" x-show="unclaimed">
+                            <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="captions.claim"></a>
+                        </div>
+                    </div>
+                    <!-- checkin component end -->
+                    <!-- count-redeem-transfer components start -->
+                    <div class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]">
+                        <button x-data x-on:click="$dispatch('open-count-modal')">
+                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
+                                <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
+                            </svg>
+                            <span>Insert Coin</span>
+                        </button>
+                        <button x-data x-on:click="redeem">
+                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
+                            </svg>
+                            <span>Redeem Voucher</span>
+                        </button>
+                        <button x-data x-on:click="transfer">
+                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd"
+                                      d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
+                                      fill-rule="evenodd"/>
+                            </svg>
+                            <span>Transfer Load</span>
+                        </button>
+                    </div>
+                    <!-- count-redeem-transfer components end -->
+                    <!-- purchase components start -->
+                    <div x-data="purchase" x-show="canBuy">
+                        <div class="font-bold text-[18px] title mb-[15px]" x-text="title"></div>
+                        <div class="offers mb-[35px]">
+                            <template x-for="product in products" :key=product.code>
+                                <template x-if="price(product.code) <= $store.wikonek.wallet.load.amount">
+                                    <div class="product-offers grid grid-cols-2 gap-2">
+                                        <div class="item"><span x-text="product.rate"></span><span x-text="product.name"></span></div>
+                                        <button class="buynow" x-data x-on:click="confirm(product.code)" x-text="caption"></button>
+                                    </div>
+                                </template>
+                            </template>
+                        </div>
+                    </div>
+                    <!-- purchase components end -->
+                    <!--            <div class="start-browsing">-->
+                    <!--                <a class="button block mt-[30px]" x-data x-on:click="$dispatch('open-landing-free-modal')">Start-->
+                    <!--                    Browsing-->
+                    <!--                    for FREE</a>-->
+                    <!--                <a class="button block mt-[30px]" x-data x-on:click="$dispatch('open-landing-credits-modal')">Start-->
+                    <!--                    Browsing-->
+                    <!--                    with Credits</a>-->
+                    <!--            </div>-->
+                </div><!-- content -->
+            </div><!-- site-container -->
+        </template>
+        <!-- TINDERA -->
+        <template x-data="dashboard('tindera')" x-if="$store.wikonek.modes & SHOW_MANAGER">
+            <div class="site-container wrap p-4" id="dashboard-page-tindera" x-show="$store.wikonek.mode & SHOW_MANAGER">
+                <div class="header" style="max-width: 600px; margin: 5px auto;">
+                    <div class="logo float-left"><img class="wklogotindera" src="images/wklogo_full_tindera3.png"/></div>
+                    <div class="wallet-details float-right">
+                        <div class="wallet-balance float-left text-right pr-2" x-data="airtime">
+                            <div class="text-[17px] font-bold"><span x-text="timeRemaining"></span></div>
+                            <div class="text-[12px]">Remaining Time</div>
+                        </div>
+                        <div class="header-buttons float-right">
+                            <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-topup-modal')">
+                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd"
+                                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                          fill-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <button class="bg-[#eeeeee] p-2 rounded-full" x-data
+                                    x-on:click="$dispatch('open-profile-modal')">
+                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                          fill-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div><!-- header -->
+                <div class="clear-both"></div>
+                <div class="station-id" x-text="'Station ID: '+stationID"></div>
+                <div class="content relative top-[20px]" style="width: 100%; max-width: 600px;">
+                    <div class="timer mb-[35px] bg-[#FE7D00] rounded grid grid-cols-1 gap-4 text-center p-4">
+                        <div class="timer-element">
+                            <div class="time">₱<span x-text="loadRemaining"></span></div>
+                            <div class="label text-white font-semibold text-sm" x-text="captions.balance"></div>
+                        </div>
+                    </div>
+                    <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.replenish" x-show="replenish">
+                    </div>
+                    <div x-data="checkin">
+                        <div class="text-[#26580F] text-center mb-[35px]">
+                            <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
+                            <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-show="unclaimed" x-text="captions.claim"></a>
+                        </div>
+                    </div>
+                    <div class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]">
+                        <button x-data x-on:click="$dispatch('open-count-modal')">
+                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
+                                <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
+                            </svg>
+                            <span>Insert Coin</span>
+                        </button>
+                        <button x-data x-on:click="$dispatch('open-redeem-modal')">
+                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
+                            </svg>
+                            <span>Redeem Voucher</span>
+                        </button>
+                        <button x-data x-on:click="$dispatch('open-transfer-modal', {transferee: {name: '', mobile: '', amount: ''}})">
+                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd"
+                                      d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
+                                      fill-rule="evenodd"/>
+                            </svg>
+                            <span>Transfer Load</span>
+                        </button>
+                    </div>
+                    <div x-data="transfer" x-show="$store.wikonek.data.ui.recipients && $store.wikonek.data.ui.recipients.length>0">
+                        <div class="font-bold text-[18px] title mb-[15px]">Recent Transactions</div>
+                        <div class="offers mb-[35px]" >
+                            <template x-for="transferee in $store.wikonek.data.ui.recipients" :key=transferee.mobile>
+                                <div class="product-offers grid grid-cols-2 gap-2">
+                                    <div class="item"><span x-text="'₱' + (+transferee.amount).toLocaleString()"></span><span x-text="transferee.mobile"></span>
+                                        <span x-text="transferee.name"></span></div>
+                                    <button class="buynow" x-data x-on:click="$dispatch('open-transfer-modal', {transferee})">Transfer Again
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <!--            <div class="start-browsing">-->
+                    <!--                <a class="button block mt-[30px]" style="background: #FE7D00;box-shadow: 0px 3px 0px #17A0DC;" x-data-->
+                    <!--                   x-on:click="$dispatch('open-tindera-landing-free-modal')">Start Browsing for FREE</a>-->
+                    <!--                <a class="button block mt-[30px]" style="background: #FE7D00;box-shadow: 0px 3px 0px #17A0DC;" x-data-->
+                    <!--                   x-on:click="$dispatch('open-tindera-landing-credits-modal')">Start Browsing with Credits</a>-->
+                    <!--            </div>-->
+                </div><!-- content -->
+            </div><!-- site-container -->
+        </template>
+    </div>
+</div>
+<!-- No Internet -->
+<div class="site-container wrap p-4" id="no-internet-page" x-data x-show="!$store.wikonek.connection.status.network">
+    <!-- no internet image start -->
+    <div>
+        <img src="images/nointernet.png"/>
+    </div>
+    <!-- try again -->
+    <div class="start-browsing">
+        <a class="button block mt-[30px]">Try Again</a>
+    </div>
+</div><!-- site-container -->
+<!-- footer scripts start -->
+<script>
+    const backendIPAddress = `206.189.90.222`;
+    const apiEndPoint = `http://${backendIPAddress}/api`;
+    const gatewayURL = `http://$gwaddress:$gwport/`;
+    const splashURL = `http://${backendIPAddress}/splash`; // image of franchisee
+    const lguURL = `http://${backendIPAddress}/lgu`; // image of government sponsor
+    const landingURL = `http://${backendIPAddress}/landing`;
+    const dummyClientMACAddress = '31:88:05:53:76:63'; //non-existenet macAddress in production
+    const demoClientMACAddress = '37:60:06:07:73:40'; //non-existenet macAddress in testing
+    const dummyStationID = 'virtual';
+    const stationID = `$gatewaymac`;
+    const SHOW_USER = 0x1;
+    const SHOW_MANAGER = 0x2;
+    const SHOW_ADMIN = 0x3;
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('ingress', () => ({
+            image: splashURL,
+            delay: 2 * 1000, // in milliseconds
+            init() {
+                console.log(`# data->ingress->init()`);
+                setTimeout(() => this.$el.classList.add('display-none'), this.delay);
+                console.log(`# - setting splash delay to ${this.delay} ms`);
+            }
+        }))
+        Alpine.data('registration', () => ({
+            loading: null,
+            isError: null,
+            submitted: null,
+            agreed: false,
+            wantToLogin: false,
+            fields: {
+                mobile: {
+                    value: null,
+                    maxLength: 10,
+                    rules: ['required', 'regexMobile'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                name: {
+                    value: null,
+                    maxLength: 50,
+                    rules: ['required', 'regexFullName'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                birthdate: {
+                    value: null,
+                    rules: ["required", "stringDate", "plausibleDate"],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                address: {
+                    value: null,
+                    maxLength: 200,
+                    rules: ["required"],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                pin: {
+                    value: null,
+                    maxLength: Alpine.store('wikonek').config.pinSize,
+                    rules: ["required", "regexPIN"],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                pin_confirmation: {
+                    value: null,
+                    maxLength: Alpine.store('wikonek').config.pinSize,
+                    rules: ['required', 'regexPIN', 'matchingPIN'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+            },
+            token: null,
+            get registered() {
+                return Alpine.store('wikonek').registered
+            },
+            get unregistered() {
+                return !this.registered;
+            },
+            get canRegister() {
+                return (
+                    this.fields.mobile.isValid &&
+                    this.fields.name.isValid &&
+                    this.fields.birthdate.isValid &&
+                    this.fields.address.isValid &&
+                    this.fields.pin.isValid &&
+                    this.fields.pin_confirmation.isValid
+                );
+            },
+            get canLogin() {
+                return (
+                    this.fields.mobile.isValid &&
+                    this.fields.pin.isValid
+                );
+            },
+            get wantToRegister() {
+                return !this.wantToLogin;
+            },
+            init() {
+                console.log(`# data->registration->init()`);
+                Iodine.addRule(
+                    "matchingPIN",
+                    (value) => value === this.fields.pin.value
+                );
+                Iodine.messages.matchingPIN = "Value must match Security PIN";
+                console.log('# - matchingPIN loaded');
+                this.$watch('agreed', value => {
+                    if (value) {
+                        this.$dispatch('notify', {
+                            content: 'You have agreed to the terms of the LyfLyn.Net Customer Service Agreement.',
+                            type: 'info'}
+                        );
+                    }
+                });
+            },
+            async api_register() {
+                console.log(`# data->registration->api_register()`);
+                this.loading = true;
+                const url = apiEndPoint+`/profile/${this.fields.mobile.value}/${this.fields.name.value}/${this.fields.birthdate.value}/${this.fields.address.value}/${this.fields.pin.value}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(`# - successful`);
+                            Alpine.store('wikonek').user = obj.body.data.user;
+                            console.log(`# - hydrating user`);
+                            console.log(Alpine.store('wikonek').user, 'user');
+                            Alpine.store('wikonek').connection.status.backend = true;
+                            this.$dispatch('notify', { content: `Registration successful!`, type: 'success'});
+                        }
+                        else if (obj.status === 422) {
+                            this.registered = false;
+                            this.fields.mobile.isValid = false;
+                            this.fields.mobile.errorMsg = 'Mobile number is already used.';
+                            console.log(`# - displaying error message`);
+                            this.$dispatch('notify', { content: `Registration failed!`, type: 'error'});
+                        }
+                        else if (obj.status === 503) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                    })
+                    .catch((error) => {
+                        this.isError = true;
+                    })
+                    .finally(() => {
+                        this.loading = false;
+                    })
+                ;
+            },
+            async api_login() {
+                console.log(`# data->registration->api_login()`);
+                const url = apiEndPoint+`/login`;
+                console.log(`# - fetching ${url}`);
+                const credentials = JSON.stringify({
+                    email: `63${this.fields.mobile.value}@libreng.email`,
+                    password: this.fields.pin.value,
+                    device_name: 'mobile'
+                });
+                console.log(credentials, 'credentials');
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'Accept': 'text/plain'},
+                    body: `${credentials}`
+                })
+                    .then(response =>  response.text().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(`# - successful`);
+                            this.token = obj.body;
+                            console.log(this.token, 'token');
+                            Alpine.store('wikonek').connection.status.backend = true;
+                            this.$dispatch('notify', { content: `Login successful!`, type: 'success'});
+                        }
+                        else if (obj.status === 503) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else {
+                            console.log(`# - failure`);
+                            this.$dispatch('notify', { content: `Login failed!`, type: 'error'});
+                        }
+                    })
+                ;
+            },
+            async api_associate() {
+                console.log(`# data->registration->api_associate()`);
+                const device = Alpine.store('wikonek').macAddress;
+                const url = apiEndPoint+`/associate/${device}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ this.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(`# - associate successful`);
+                            console.log(obj.body, 'json response');
+                            Alpine.store('wikonek').user = obj.body.data.user;
+                            Alpine.store('wikonek').connection.status.backend = true;
+                        }
+                        else if (obj.status === 503) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else {
+                            console.log(`# - displaying error message`);
+                        }
+                    })
+            },
+            submit() {
+                console.log('# data->registration->submit()');
+                this.loading = true;
+                if (this.wantToRegister) {
+                    console.log(`# - executing api_register then Alpine.store('wikonek').api_ui()`);
+                    this.api_register()
+                        .then(() => Alpine.store('wikonek').api_ui());
+                }
+                else if (this.wantToLogin) {
+                    console.log('# - executing api_login');
+                    this.api_login()
+                        .then(() => {
+                            if (isEmpty(Alpine.store('wikonek').user.mobile)) {
+                                console.log('# - executing api_associate');
+                                this.api_associate()
+                                    .then(() => {
+                                        console.log('# - executing api_touch() then api_ui()');
+                                        Alpine.store('wikonek').api_touch()
+                                            .then(() => Alpine.store('wikonek').api_ui());
+                                    })
+                            }
+                        })
+                }
+                this.loading = false;
+            },
+        }))
+        Alpine.data('profile', () => ({
+            title: 'Update PIN',
+            caption: 'Go!!!',
+            fields: {
+                old_pin: {
+                    value: null,
+                    maxLength: Alpine.store('wikonek').config.pinSize,
+                    rules: ["required", "regexPIN"],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                pin: {
+                    value: null,
+                    maxLength: Alpine.store('wikonek').config.pinSize,
+                    rules: ["required", "regexPIN"],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                pin_confirmation: {
+                    value: null,
+                    maxLength: Alpine.store('wikonek').config.pinSize,
+                    rules: ['required', 'regexPIN', 'matchPIN'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+            },
+            updateProfileSucceeded: false,
+            updateProfileFailed: false,
+            init() {
+                console.log(`# data->profile->init()`);
+                Iodine.addRule(
+                    "matchPIN",
+                    (value) => value === this.fields.pin.value
+                );
+                Iodine.messages.matchPIN = "PIN confirmation needs to match PIN";
+            },
+            get name() {
+                return Alpine.store('wikonek').user.name;
+            },
+            get number() {
+                const mobile = Alpine.store('wikonek').user.mobile;
+                if (mobile && mobile.length>3) {
+                    return mobile.substr(3);
+                }
+                return '';
+            },
+            canUpdate() {
+                return this.fields.old_pin.isValid && this.fields.pin.isValid && this.fields.pin_confirmation.isValid;
+            },
+            clear() {
+                console.log('clearing profile');
+                this.fields.old_pin.value = '';
+                this.fields.old_pin.errorMsg = '';
+                this.fields.pin.value = '';
+                this.fields.pin.errorMsg = '';
+                this.fields.pin_confirmation.value = '';
+                this.fields.pin_confirmation.errorMsg = '';
+                this.updateProfileSucceeded = null;
+                this.updateProfileFailed = null;
+            },
+            async api_password() {
+                console.log(`# data->profile->api_password()`);
+                const url = apiEndPoint+`/password/${this.fields.old_pin.value}/${this.fields.pin.value}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(`# - successful`);
+                            console.log(`# - hydrating user`);
+                            this.updateProfileSucceeded = true;
+                            Alpine.store('wikonek').connection.status.backend = true;
+                        }
+                        else if (obj.status === 401) {
+                            console.log(`# - displaying error message`);
+                            this.fields.old_pin.isValid = false;
+                            this.fields.old_pin.errorMsg = 'Wrong PIN';
+                            this.updateProfileFailed = true;
+                        }
+                        else if (obj.status === 503) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('# - error');
+                    })
+                    .finally(() => {
+                        console.log('# - finally');
+                        setTimeout(() => this.clear(), Alpine.store('wikonek').config.flash.timeout);
+                    })
+                ;
+            },
+            submit() {
+                if (this.canUpdate) {
+                    this.api_password();
+                }
+            },
+        }))
+        Alpine.data('redeem', () => ({
+            fields: {
+                voucher: {
+                    value: null,
+                    maxLength: 9,
+                    rules: ['required', 'regexVoucher'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+            },
+            redemptionSucceeded: null,
+            redemptionFailed: null,
+            airtime: 0,
+            clear() {
+                console.log('clearing redemption');
+                this.fields.voucher.value = '';
+                this.fields.voucher.errorMsg = '';
+                this.redemptionSucceeded = null;
+                this.redemptionFailed = null;
+            },
+            get caption() {
+                return 'Go!!!';
+            },
+            get message() {
+                return `You have successfully redeemed a voucher with ${this.airtime} minutes of airtime!`
+            },
+            get canRedeem() {
+                return this.fields.voucher.isValid
+            },
+            async api_redeem() {
+                console.log(`# data->redeem->api_redeem()`);
+                const voucher = this.fields.voucher.value;
+                const authorization = Alpine.store('wikonek').authorization;
+                const url = apiEndPoint+`/redeem/${voucher}`;;
+                console.log(`# - using voucher code ${voucher}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        let redemption_data = {airtime: 0};
+                        if (obj.isOk === true) {
+                            console.log(`# - voucher redemption successful`);
+                            redemption_data = obj.body.data;
+                            console.log(redemption_data, 'redemption');
+                            Alpine.store('wikonek').connection.status.backend = true;
+                        }
+                        else if (obj.status === 404) {
+                            console.log(`# - voucher code is invalid`);
+                            this.fields.voucher.isValid = false;
+                            console.log(obj.body.message, `# - displaying error message`);
+                            this.fields.voucher.errorMsg = 'Voucher Code is not valid.';
+                        }
+                        else if (obj.status === 406) {
+                            console.log(`# - voucher code is used`);
+                            this.fields.voucher.isValid = false;
+                            console.log(obj.body.message, `# - displaying error message`);
+                            this.fields.voucher.errorMsg = 'Voucher Code is already used.';
+                        }
+                        else if (obj.status === 503) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else {
+                            console.log(`# - general exception`);
+                            this.fields.voucher.isValid = false;
+                            console.log(`# - displaying error message`);
+                            this.fields.voucher.errorMsg = 'Unknown error.';
+                        }
+                        this.redemptionSucceeded = obj.isOk;
+                        this.redemptionFailed = !obj.isOk;
+
+                        return redemption_data;
+                    })
+                    .then(redemption_data => {
+                        this.airtime = redemption_data.airtime;
+                        if (this.airtime > 0) {
+                            console.log('consuming redemption airtime');
+                            Alpine.store('wikonek').api_consume(this.airtime)
+                                .then(() => Alpine.store('wikonek').api_ui());
+                        }
+                    })
+                    .finally(() => {
+                        console.log('# - clearing flash messages');
+                        setTimeout(() => this.clear(), Alpine.store('wikonek').config.flash.timeout);
+                    })
+                ;
+            },
+            submit() {
+                if (this.canRedeem) {
+                    this.api_redeem();
+                }
+            }
+        }))
+        Alpine.data('transfer', () => ({
+            fields: {
+                mobile: {
+                    value: null,
+                    maxLength: 10,
+                    rules: ['required', 'regexMobile'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                amount: {
+                    value: null,
+                    maxLength: 8,
+                    rules: ['required', 'numeric', 'min:5'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+            },
+            transferSucceeded: null,
+            transferFailed: null,
+            // recipients: Alpine.store('wikonek').data.transfer.recipients,
+            // recipients: Alpine.store('wikonek').user.recipients,
+            recipients: Alpine.store('wikonek').data.ui.recipients,
+            get caption() {
+                return'Go!!!'
+            },
+            get message() {
+                return `${this.fields.amount.value} successfully transferred to ${this.fields.mobile.value}.`
+            },
+            get minimumRemittance() {
+                return 5.00;
+            },
+            get canTransfer() {
+                return this.fields.mobile.isValid && this.fields.amount.isValid && this.fields.amount.value >= this.minimumRemittance;
+            },
+            clear() {
+                console.log('clearing transfer');
+                if (this.transferSucceeded || !this.fields.mobile.isValid) {
+                    this.fields.mobile.value = '';
+                    this.fields.mobile.isValid = null;
+                    this.fields.mobile.errorMsg = null;
+                }
+                if (this.transferSucceeded || !this.fields.amount.isValid) {
+                    this.fields.amount.value = null;
+                    this.fields.amount.isValid = null;
+                    this.fields.amount.errorMsg = null;
+                }
+                this.transferSucceeded = null;
+                this.transferFailed = null;
+            },
+            validate() {
+                this.fields.mobile.validate(validationCallback);
+                this.fields.amount.validate(validationCallback);
+            },
+            async api_transfer() {
+                console.log(`# data->transfer->api_transfer()`);
+                const url = apiEndPoint+`/transfer/${this.fields.mobile.value}/${this.fields.amount.value}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(`# - successful`);
+                            console.log(`# - setting UI`);
+                            Alpine.store('wikonek').connection.status.backend = true;
+                            Alpine.store('wikonek').api_ui();
+                        }
+                        else if (obj.status === 404) {
+                            console.log(`# - mobile number does not exist`);
+                            this.fields.mobile.isValid = false;
+                            console.log(`# - displaying error message`);
+                            this.fields.mobile.errorMsg = 'Mobile number does not exist.';
+                        }
+                        else if (obj.status === 406) {
+                            console.log(`# - insufficient funds`);
+                            this.fields.amount.isValid = false;
+                            console.log(`# - displaying error message`);
+                            this.fields.amount.errorMsg = 'Insufficient funds.';
+                        }
+                        else if (obj.status === 503) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else {
+                            console.log(`# - displaying error message`);
+                        }
+                        this.transferSucceeded = obj.isOk;
+                        this.transferFailed = !obj.isOk;
+                    })
+                    .catch((error) => {
+                        console.log('# - error');
+                    })
+                    .finally(() => {
+                        console.log('# - finally');
+                        setTimeout(() => this.clear(), Alpine.store('wikonek').config.flash.timeout);
+                    })
+                ;
+            },
+            submit() {
+                if (this.canTransfer) {
+                    this.api_transfer().then(() => {Alpine.store('wikonek').api_ui()});
+                    window.scrollTo(0,0);
+                }
+            }
+        }))
+        Alpine.data('purchase', () => ({
+            image: splashURL,
+            purchaseSucceeded: null,
+            purchaseFailed: null,
+            get title() {
+                return 'Product Bundles';
+            },
+            get caption() {
+                return'Go!!!'
+            },
+            get minimumSpend() {
+                return 5.00;
+            },
+            get canBuy() {
+                return +Alpine.store('wikonek').wallet.load.amount >= this.minimumSpend;
+            },
+            get products() {
+                return Alpine.store('wikonek').data.ui.products
+            },
+            get product() {
+                return Alpine.store('wikonek').selectedProduct;
+            },
+            price(code) {
+                const product = this.products.find(n => n.code == code);
+
+                return parseProductRate(product.rate)
+            },
+            async api_purchase(code) {
+                console.log(`# data->transfer->api_purchase()`);
+                const product = this.products.find(n => n.code == code)
+                console.log(product, 'product to purchase');
+                const url = apiEndPoint+`/purchase/${product.code}`;
+                this.purchaseSucceeded = null;
+                this.purchaseFailed = null;
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        const purchase_data = obj.body.data;
+                        if (obj.isOk === true) {
+                            console.log(`# - purchase successful`);
+                            Alpine.store('wikonek').data.purchase = purchase_data;
+                            Alpine.store('wikonek').connection.status.backend = true;
+                        }
+                        else if (obj.status === 503) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else {
+                            console.error(`# - failed to purchase`);
+                        }
+                        this.purchaseSucceeded = obj.isOk;
+                        this.purchaseFailed = !obj.isOk;
+
+                        return purchase_data;
+                    })
+                    .then(purchase_data => {
+                        if (purchase_data.airtime > 0) {
+                            Alpine.store('wikonek').api_consume(purchase_data.airtime)
+                                .then(() => {Alpine.store('wikonek').api_ui(); window.scrollTo(0,0)});
+                        }
+                    })
+            },
+            confirm(code) {
+                Alpine.store('wikonek').selectedProduct = this.products.find(n => n.code == code);
+                this.$dispatch('open-confirm-purchase-modal');
+            },
+            submit() {
+                console.log(`# data->transfer->submit()`);
+                this.api_purchase(this.product.code);
+                this.$dispatch('open-landing-purchase-modal');
+            },
+        }))
+        Alpine.data('checkin', () => ({
+            get claimed() {
+                return Alpine.store('wikonek').dayPassClaimed
+            },
+            get unclaimed() {
+                return ! this.claimed;
+            },
+            get freeMinutes() {
+                return Alpine.store('wikonek').dayPass;
+            },
+            async api_checkin() {
+                console.log(`# data->checkin->api_checkin()`);
+                const device = Alpine.store('wikonek').data.touch.device.identifier;
+                const station = Alpine.store('wikonek').station.identifier;
+                const url = apiEndPoint+`/checkin/${device}/${station}`;
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        let checkin_data = {airtime: 0};
+                        if (obj.isOk === true) {
+                            console.log(`# - checkin successful`);
+                            checkin_data = obj.body.data;
+                            Alpine.store('wikonek').connection.status.backend = true;
+                        }
+                        else if (obj.status === 503) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else {
+                            console.error(`# - failed to checkin`);
+                        }
+
+                        return checkin_data;
+                    })
+                    .then(checkin_data => {
+                        console.log('storing checkin data');
+                        Alpine.store('wikonek').data.checkin = checkin_data;
+                        if (checkin_data.airtime > 0) {
+                            console.log('consuming checkin airtime');
+                            Alpine.store('wikonek').api_touch();
+                            Alpine.store('wikonek').api_consume(checkin_data.airtime)
+                                .then(() => Alpine.store('wikonek').api_ui());
+                        }
+                    })
+
+                // .then(response => response.json())
+                // .then(data => {
+                //     Alpine.store('wikonek').data.setCheckin(data.data)
+                // })
+                // .then(() => {
+                //     Alpine.store('wikonek').consumption = Alpine.store('wikonek').dayPass
+                // })
+            },
+            submit() {
+                console.log(`# data->checkin->submit()`);
+                this.api_checkin();
+                this.$dispatch('open-landing-free-modal');
+            }
+        }))
+        Alpine.data('egress', (operation) => ({
+            open: false,
+            get image() {
+                switch (operation) {
+                    default:
+                        return lguURL;
+                }
+            },
+            get payload() {
+                switch (operation) {
+                    case 'checkin' :
+                        return Alpine.store('wikonek').dayPass + ' minutes';
+                    case 'purchase':
+                        return parseProductRate(Alpine.store('wikonek').data.purchase.product.rate);
+                    case 'count' :
+                        return '₱ ' + Alpine.store('wikonek').data.count.cumulative + ' is equivalent to ';
+                }
+            },
+            get message() {
+                switch (operation) {
+                    case 'checkin':
+                        return Alpine.store('wikonek').data.checkin.splash;
+                    case 'purchase':
+                        return parseProductRate(Alpine.store('wikonek').data.purchase.product.rate);
+                    case 'count':
+                        let airtime = null;
+                        switch (Alpine.store('wikonek').data.count.cumulative) {
+                            // switch (Alpine.store('wikonek').counted) {
+                            case '1': airtime = 10; break;
+                            case '2': airtime = 20; break;
+                            case '3': airtime = 30; break;
+                            case '4': airtime = 40; break;
+                            case '5': airtime = 60; break;
+                            case '6': airtime = 70; break;
+                            case '7': airtime = 80; break;
+                            case '8': airtime = 90; break;
+                            case '9': airtime = 100; break;
+                            case '10': airtime = 240; break;
+                            case '11': airtime = 250; break;
+                            case '12': airtime = 260; break;
+                            case '13': airtime = 270; break;
+                            case '14': airtime = 280; break;
+                            case '15': airtime = 300; break;
+                            case '16': airtime = 310; break;
+                            case '17': airtime = 320; break;
+                            case '18': airtime = 330; break;
+                            case '19': airtime = 340; break;
+                            case '20': airtime = 24 * 60; break;
+                            default: airtime = 0;
+                        }
+                        return airtime + ' minutes';
+                    default:
+                        return 'The world is your oyster!';
+                }
+            },
+            get landing() {
+                switch (operation) {
+                    default:
+                        return Alpine.store('wikonek').url_landing
+                }
+            },
+            get caption() {
+                switch (operation) {
+                    default:
+                        return 'Go!!!';
+                }
+            }
+        }))
+        Alpine.data('airtime', () => ({
+            code: '',
+            caption: 'Airtime',
+            handle: null,
+            get days() {
+                return Math.floor(this.code / 86400)
+            },
+            get hours() {
+                return Math.floor((this.code % 86400) / 3600)
+            },
+            get minutes() {
+                return Math.floor(((this.code % 86400) % 3600) / 60)
+            },
+            get seconds() {
+                return ((this.code % 86400) % 3600) % 60;
+            },
+            get timeRemaining() {
+                return `${this.days}:${pad(this.hours, 2)}:${pad(this.minutes, 2)}.${pad(this.seconds, 2)}`
+            },
+            init() {
+                console.log(`# data->airtime->init()`);
+                if (Alpine.store('wikonek').connection.status.gateway === true) {
+                    this.api_ctime();
+                }
+                else {
+                    console.log('# - no airtime');
+                }
+            },
+            api_ctime() {
+                console.log(`# data->airtime->api_ctime()`);
+                const url = '/pesofi_ctime/';
+                const interval = 1000;
+                this.handle = setInterval(() => {
+                    fetch(url, {method: 'GET'})
+                        .then(response =>  response.text().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                        .then(obj => {
+                            if (obj.isOk === true) {
+                                this.code = parseRemainingTime(obj.body);
+                            }
+                            else if (obj.status === 404) {
+                                console.log(`# - not connected to a WiKONEK access point. stopping....`);
+                                clearTimeout(this.handle);
+                            }
+                            else {
+                                console.log(`# - something else is wrong`);
+                            }
+                        })
+                }, interval);
+            },
+            reset() {
+                console.log(`# data->airtime->reset()`);
+                clearTimeout(this.handle);
+                this.api_ctime();
+            }
+        }))
+        Alpine.data('count', () => ({
+            ticks: null,
+            armHandle: null,
+            statusHandle: null,
+            armed: false,
+            get disarmed() {
+                return ! this.armed;
+            },
+            coins: [],
+            get count() {
+                return this.cumulative.length;
+            },
+            previous: 0,
+            cumulative: 0,
+            get amount() {
+                return '₱ ' + this.cumulative + '.00';
+            },
+            get caption() {
+                let retval = 'Insert Coin';
+                if (this.armed) {
+                    if (this.cumulative > 0) {
+                        retval = 'Go!!!';
+                    }
+                    else {
+                        retval = 'Stop!'
+                    }
+                }
+
+                return retval;
+            },
+            get minutes() {
+                return Math.floor(((this.ticks % 86400) % 3600) / 60)
+            },
+            get seconds() {
+                return ((this.ticks % 86400) % 3600) % 60;
+            },
+            get timeRemaining() {
+                return `${pad(this.minutes, 2)}:${pad(this.seconds, 2)}`
+            },
+            set coinsInserted(value) {
+                if (value > 0) {
+                    if (value != this.cumulative) {
+                        let coin = value - this.cumulative
+                        this.coins.push(coin)
+                        this.previous = coin
+                        this.cumulative = value
+                        console.log(`cumulative ${this.cumulative}`)
+                        console.log(`coins ${this.coins}`)
+                    }
+                }
+            },
+            get coinsInserted() {
+                return this.coins;
+            },
+            init() {
+                console.log('# data->count->init()');
+                this.reset();
+            },
+            arm() {
+                console.log('# data->count->arm()');
+                const interval = 1000;
+                this.armed = true;
+                this.reset();
+                this.armHandle = setInterval(() => {
+                    this.ticks--;
+                    this.check();
+                }, interval);
+                this.api_arm();
+            },
+            check() {
+                console.log('# data->count->check()');
+                if (this.ticks <= 0) {
+                    this.disarm();
+                }
+            },
+            disarm() {
+                console.log('# data->count->disarm()');
+                this.armed = false;
+                clearTimeout(this.armHandle);
+                clearTimeout(this.statusHandle)
+                this.api_done();
+            },
+            reset() {
+                console.log('# data->count->reset()');
+                this.coinsInserted = 0;
+                this.ticks = Alpine.store('wikonek').config.coins.expiry;
+            },
+            toggle() {
+                console.log('# data->count->toggle()');
+                this.armed ? this.disarm() : this.arm();
+            },
+            api_arm() {
+                console.log('# data->count->api_arm()');
+                const url = '/pesofi_armcoinslot/';
+                console.log(`# fetch-> ${url}`);
+                fetch(url, {method: 'GET'}).then(() => {
+                    this.api_status()}
+                )
+            },
+            api_status() {
+                console.log('# data->count->api_status()');
+                const url = `/pesofi_statuscoinslot/`;
+                console.log(`# data.coin.api_status() fetch-> ${url}`);
+                this.statusHandle = setInterval(() => {
+                    fetch(url, {method: 'GET'})
+                        .then(response => response.text())
+                        .then(str => {
+                            this.coinsInserted = parseCoinsInserted(str);
+                        })
+                }, 500);
+            },
+            report_coins() {
+                console.log('# data->count->report_coins()');
+                if (this.coins.length > 0) {
+                    this.api_count()
+                }
+            },
+            async api_count() {
+                console.log('# data->count->api_count()');
+                const device = Alpine.store('wikonek').data.touch.device.identifier;
+                const station = Alpine.store('wikonek').station.identifier;
+                const comma_delimited_coins = this.coins.toString();
+                const url = apiEndPoint+`/count/${device}/${station}/${comma_delimited_coins}`;
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(`# - count successful`);
+                            Alpine.store('wikonek').connection.status.backend = true;
+                        }
+                        else if (obj.status === 503) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            Alpine.store('wikonek').connection.status.backend = false;
+                        }
+                        else {
+                            console.error(`# - failed to count`);
+                        }
+                    })
+            },
+            api_done() {
+                const url = '/pesofi_donecoinslot/';
+                console.log(`# data.coin.api_done() fetch-> ${url}`);
+                fetch(url, {method: 'GET'})
+                    .then(() => {
+                        this.report_coins()
+                    })
+                    .then(() => {
+                        if (this.cumulative > 0) {
+                            // Alpine.store('wikonek').done();
+                            // Alpine.store('wikonek').counted = this.cumulative;
+                            Alpine.store('wikonek').data.count.cumulative = this.cumulative;
+                            this.cumulative = 0;
+                            this.ticks = 0;
+                            this.$dispatch('open-landing-count-modal');
+                        }
+                    })
+            }
+        }))
+        Alpine.data('dashboard', (mode) => ({
+            captions: {
+                balance: 'Wallet Balance',
+                claim: 'Claim your free internet.',
+                claimed: 'You already claimed your FREE internet for the day',
+                replenish: 'Please add funds to your wallet balance soon.',
+            },
+            get replenishThreshold() {
+                return Alpine.store('wikonek').config.replenishThreshold;
+            },
+            get replenish() {
+                return (Alpine.store('wikonek').data.ui.balance.load.amount * 1) < this.replenishThreshold;
+            },
+            get loadRemaining() {
+                // return (Alpine.store('wikonek').load * 1).toLocaleString();
+                return (Alpine.store('wikonek').data.ui.balance.load.amount * 1).toLocaleString();
+            },
+            get stationID() {
+                return Alpine.store('wikonek').station.name;
+            },
+            redeem() {
+                this.$dispatch('open-redeem-modal');
+            },
+            transfer() {
+                this.$dispatch('open-transfer-modal');
+            },
+        }))
+        Alpine.store('wikonek', {
+            registered: false,
+            dayPassClaimed: true,
+            connection: {
+                status: {
+                    get network() {
+                        return navigator.onLine === true;
+                    },
+                    get gateway() {
+                        return (dummyClientMACAddress !== Alpine.store('wikonek').macAddress);
+                    },
+                    backend: false,
+                },
+            },
+            config: {
+                environment: 'testing',
+                pinSize: 4,
+                deviceName: 'mobile', // TODO: make this dynamically assigned
+                flash: {
+                    timeout: 10 * 1000,
+                },
+                coins: {
+                    expiry: 30
+                },
+                replenishThreshold: 5000,
+                ui: {
+                    refreshRate: 60000
+                },
+            },
+            data: {
+                touch: {
+                    day_pass_today: {
+                        availed: 0
+                    },
+                    device: {
+                        user: {
+                            mobile: '',
+                            get prefix() {
+                                return '+63'
+                            },
+                            set number(value) {
+                                this.mobile = this.prefix + value;
+                            },
+                            get number() {
+                                return this.mobile.substr(3)
+                            },
+                            name: '',
+                            birthdate: '1971-03-05',
+                            address: '',
+                            get displayName() {
+                                return this.name + ' (' + this.mobile + ')'
+                            },
+                            email: ''
+                        },
+                    }
+                },
+                station: {
+                    user: {
+                        mobile: ''
+                    }
+                },
+                ui: {
+                    balance: {
+                        load: {
+                            amount: 5370.00,
+                            units: 'pesos'
+                        },
+                        airtime: {
+                            amount: 0,
+                            units: 'minutes'
+                        }
+                    },
+                    main: [
+
+                    ],
+                    navigation: {},
+                    products: [
+                        {
+                            code: '1HIA',
+                            name: 'UNLI Data 1 Hour',
+                            rate: '₱ 5.00'
+                        }
+                    ],
+                    profile: {
+                        name: null,
+                        mobile: null,
+                        address: null,
+                        birthdate: null,
+                    },
+                    transactions: [
+
+                    ],
+                    recipients: [
+                        // {name: 'John Doe', mobile: '09181234567', amount: 100},
+                        // {name: 'Jane Doe', mobile: '09187654321', amount: 500},
+                    ],
+                },
+                checkin: {
+                    splash: '',
+                    airtime: 0,
+                },
+                purchase: {
+                    product: {
+                        rate: 'P 0.00',
+                    }
+                },
+                count: {
+                    cumulative: 0,
+                },
+                transfer: {
+
+                },
+            },
+            session: {
+                loading: false, //use this for loading
+            },
+            selectedProduct: {
+                code: '1HIA',
+                name: 'UNLI Data 1 Hour',
+                rate: '₱ 5.00'
+            },
+            mode: SHOW_USER,
+            get modes() {
+                let values = SHOW_USER;
+                if (this.canManage) {
+                    values = values | SHOW_MANAGER;
+                }
+
+                return values;
+            },
+            get environment() {
+                return this.config.environment;
+            },
+            get stationID() {
+                const gatewaymac = `$gatewaymac`;
+
+                return (gatewaymac.indexOf('gatewaymac') > 0)
+                    ? dummyStationID
+                    :`$gatewaymac`;
+            },
+            get macAddress() {
+                let mac = `$clientmac`;
+
+                return (mac !== "\$clientmac")
+                    ? mac
+                    : (this.environment == 'production')
+                        ? dummyClientMACAddress
+                        : demoClientMACAddress;
+            },
+            get token() {
+                return this.data.touch.token;
+            },
+            get device() {
+                return this.data.touch.device;
+            },
+            get user() {
+                return this.device.user;
+            },
+            set user(value) {
+                this.device.user = value;
+            },
+            get station() {
+                return this.data.station;
+            },
+            get manager() {
+                return this.station.user;
+            },
+            get canManage() {
+                let retval = false;
+                if (typeof this.manager === 'object' && this.manager !== null) {
+                    if (typeof this.user === 'object' && this.user !== null) {
+                        if (this.manager.id == this.user.id) {
+                            retval = true;
+                        }
+                    }
+                }
+
+                return retval;
+            },
+            get wallet() {
+                return this.data.ui.balance
+            },
+            get dayPass() {
+                return this.data.checkin.airtime
+            },
+            get url_landing() {
+                return landingURL;
+            },
+            configure() {
+                console.log('* store->wikonek->configure()');
+                if (typeof $queueTime !== 'undefined') {
+                    this.config.coins.expiry = $queueTime;
+                    console.log(`** setting queue time to ${this.config.coins.expiry} seconds`);
+                }
+                else {
+                    console.log(`** using ${this.config.coins.expiry} seconds as default value for queue time`);
+                }
+            },
+            report() {
+                console.log('* store->wikonek->report()');
+                console.log(`** this.connection.status.internet = ${this.connection.status.network}`);
+                console.log(`** this.connection.status.gateway = ${this.connection.status.gateway}`);
+                console.log(`** this.connection.status.backend = ${this.connection.status.backend}`);
+                console.log(`** this.stationID = ${this.stationID}`);
+                console.log(`** this.macAddress = ${this.macAddress}`);
+            },
+            init() {
+                console.log('* store->wikonek->init()');
+                this.registered = false;
+                this.loadCustomValidations();
+                this.configure();
+                this.api_touch()
+                    .then(() => this.api_station())
+                    .then(() => this.api_ui())
+                    .finally(() => {this.report()});
+
+                setInterval( () => this.api_ui(), this.config.ui.refreshRate)
+            },
+            loadCustomValidations() {
+                console.log('** store->wikonek->loadCustomValidations()');
+                Iodine.addRule(
+                    "regexFullName",
+                    (value) => Iodine.isRegexMatch(value, "(\\b[A-Za-z]+)( )([A-Za-z]+\\b)")
+                );
+                Iodine.messages.regexFullName = "Value must match [First Name] [Last Name]";
+                console.log('** - regexFullName loaded');
+                Iodine.addRule(
+                    "regexMobile",
+                    (value) => Iodine.isRegexMatch(value, "9\\d{9}$")
+                );
+                Iodine.messages.regexMobile = "Value must match 9#########";
+                console.log('** - regexMobile loaded');
+                Iodine.addRule(
+                    "stringDate",
+                    (value) => Iodine.isDate(new Date(value))
+                );
+                Iodine.messages.stringDate = "Value must be a date";
+                console.log('** - stringDate loaded');
+                Iodine.addRule(
+                    "plausibleDate",
+                    (value) => moment(value).isBetween(moment().subtract(100,'years'), moment().subtract(10,'years'))
+                )
+                Iodine.messages.plausibleDate = "Value must be betweeen -100 years and -10 years from today";
+                console.log('** - plausibleDate loaded');
+                Iodine.addRule(
+                    "regexPIN",
+                    (value) => Iodine.isRegexMatch(value, `\\d{${this.config.pinSize}}$`)
+                );
+                Iodine.messages.regexPIN = "Value must match ####";
+                console.log('** - regexPIN loaded');
+                Iodine.addRule(
+                    "regexVoucher",
+                    (value) => Iodine.isRegexMatch(value, "^\\w{4}\\-?\\w{4}$")
+                );
+                Iodine.messages.regexVoucher = "Value must match ****-****";
+                console.log('** - regexVoucher loaded');
+            },
+            async api_touch() {
+                console.log('* store->wikonek->api_touch()');
+                const device = this.macAddress;
+                const device_name = this.config.deviceName;
+                const url = apiEndPoint+`/touch/${device}/${device_name}`;
+                await fetch(url, {method: 'POST'})
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(`* - touch base successful`);
+                            this.data.touch = obj.body.data;
+                            this.dayPassClaimed =
+                                this.data.touch.day_pass_today && (+this.data.touch.day_pass_today.availed > 0)
+                            console.log(this.data.touch, 'touch');
+                            this.connection.status.backend = true;
+                        }
+                        else if (obj.status === 503) {
+                            this.connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            this.connection.status.backend = false;
+                        }
+                        else {
+                            console.error('* - failed to touch base');
+                        }
+                    })
+            },
+            async api_station() {
+                console.log('* store->wikonek->api_station()');
+                const station = this.stationID;
+                const url = apiEndPoint+`/stations/${station}`;
+                await fetch(url, {
+                    method: 'GET',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log('# - station information retrieval successful');
+                            this.data.station = obj.body.data;
+                            console.log(this.data.station, 'this.data.station');
+                            this.connection.status.backend = true;
+                        }
+                        else if (obj.status === 503) {
+                            this.connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            this.connection.status.backend = false;
+                        }
+                        else {
+                            console.error('# - failed to retrieve station information');
+                        }
+                    })
+            },
+            async api_ui() {
+                console.log('* store->wikonek->api_ui()');
+                const url = apiEndPoint+`/ui`
+                await fetch(url, {
+                    method: 'GET',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log('# - ui retrieval successful');
+                            this.data.ui = obj.body.data;
+                            this.registered = !isEmpty(this.data.ui.profile.mobile) || !isEmpty(this.user.mobile);
+                            console.log(this.data.ui, 'ui');
+                            this.connection.status.backend = true;
+                        }
+                        else if (obj.status === 503) {
+                            this.connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            this.connection.status.backend = false;
+                        }
+                        else {
+                            console.error('# - failed to retrieve ui');
+                        }
+                    })
+            },
+            async api_consume(minutes = -1, all = false) {
+                console.log('* store->wikonek->api_consume()');
+                const url = apiEndPoint+`/consume/${minutes}/${all}`;
+                console.log(`** api_consume(${minutes})`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        let consumption_data = {minutes: 0};
+                        if (obj.isOk === true) {
+                            console.log('# - consumption successful');
+                            consumption_data = obj.body.data;
+                            this.connection.status.backend = false;
+                        }
+                        else if (obj.status === 503) {
+                            this.connection.status.backend = false;
+                        }
+                        else if (obj.status === 504) {
+                            this.connection.status.backend = false;
+                        }
+                        else {
+                            console.error(`# - failed to consume`);
+                        }
+
+                        return consumption_data;
+                    })
+                    .then((consumption_data) => {
+                        if (consumption_data.minutes > 0) {
+                            this.api_extend_airtime(consumption_data.minutes);
+                        }
+                    })
+            },
+            async api_extend_airtime(minutes) {
+                console.log('* store->wikonek->api_extend_airtime()');
+                const seconds = minutes * 60;
+                const url = gatewayURL+`control.html?timereete=${seconds}`;
+                console.log(`** api_extend_airtime(${minutes})`)
+                await fetch(url, {method: 'GET'})
+                    .then(response =>  response.text().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(obj.body);
+                        }
+                        else {
+                            console.error('failed to extend');
+                        }
+                    })
+            },
+        })
+    })
+
+    function validationCallback(field) {
+        let {value, rules} = field;
+        let isValid = Iodine.isValid(value, rules);
+        let errorMsg = isValid
+            ? null
+            : Iodine.getErrorMessage(Iodine.is(value, rules));
+
+        return {isValid, errorMsg};
+    }
+    function isEmpty(str) {
+        return str === undefined || str === null
+            || typeof str !== 'string'
+            || str.match(/^ *$/) !== null;
+    }
+    function parseProductRate(str) {
+        return +str.substring(str.lastIndexOf('₱')+1)
+    }
+    function parseRemainingTime(str) {
+        return str.substring(str.lastIndexOf('t') + 1, str.lastIndexOf('p'));
+    }
+    function parseCoinsInserted(str) {
+        return str.substring(str.indexOf('parent.coin=') + 12, str.indexOf(';'));
+    }
+    function pad(num, size) {
+        num = num.toString();
+        while (num.length < size) num = "0" + num;
+        return num;
+    }
+    function checkServer(url, timeout) {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        const options = { mode: 'no-cors', signal };
+        return fetch(url, options)
+            .then(setTimeout(() => { controller.abort() }, timeout))
+            .then(response => console.log('Check server response:', response.statusText))
+            .catch(error => console.error('Check server error:', error.message));
+    }
+</script>
+<!-- footer scripts end -->
+</body>
+</html>
