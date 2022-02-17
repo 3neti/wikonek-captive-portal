@@ -812,9 +812,6 @@
                     recipients: [],
                     transactions: [],
                 },
-                associate: {
-                    user: null,
-                }
             },
             session: {
                 get hasDeviceMACAddress() {
@@ -1120,6 +1117,9 @@
             get email() {
                 return `63${this.fields.mobile.value}@libreng.email`;
             },
+            get route() {
+                return `/profile/${this.fields.mobile.value}/${this.fields.name.value}/${this.fields.birthdate.value}/${this.fields.address.value}/${this.fields.pin.value}`;
+            },
             clear() {
                 Object.values(this.fields).forEach(field => {
                     field.value = '';
@@ -1133,6 +1133,25 @@
                 this.fields.pin.errorMsg = 'Wrong credentials';
                 setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
                 this.$dispatch('notify', { content: `Login failed! Please try again.`, type: 'error'});
+            },
+            flagDuplicateMobile() {
+                this.fields.mobile.isValid = false;
+                this.fields.mobile.errorMsg = 'Mobile number is already used.';
+                this.$dispatch('notify', { content: `Registration failed!`, type: 'error'});
+                setTimeout(() => window.scrollTo(0,0), Alpine.store('wikonek').config.notification.delay)
+            },
+            notify(args) {
+                if (args.isOk === true) {
+                    const user = args.body.data.user;
+                    this.$dispatch('notify', {
+                        content: `This device is successfully registered to ${user.name} [${user.mobile}]`,
+                        type: 'success'});
+                }
+                else if (args.status === 422) {
+                    this.flagDuplicateMobile()
+                }
+
+                return args.isOk;
             },
             login(args) {
                 let token = null;
@@ -1150,18 +1169,17 @@
                 console.log(user, 'associate user');
                 let retval = false;
                 if (user) {
-                    Alpine.store('wikonek').data.associate.user = user;
-                    console.log(Alpine.store('wikonek').data.associate.user, "Alpine.store('wikonek').data.associate.user");
+                    this.$dispatch('notify', {
+                        content: `This device is successfully registered to ${user.name} [${user.mobile}]`,
+                        type: 'success'});
                     retval = true;
                 }
 
                 return retval;
             },
-            refresh(proceed) {
-                if (proceed) {
-                    Alpine.store('wikonek').api_touch()
-                        .then(() => Alpine.store('wikonek').api_ui());
-                }
+            refresh() {
+                Alpine.store('wikonek').api_touch()
+                    .then(() => Alpine.store('wikonek').api_ui());
             },
             init() {
                 console.log(`# data->registration->init()`);
@@ -1180,48 +1198,21 @@
                     }
                 });
             },
-            async api_register() {
-                console.log(`# data->registration->api_register()`);
-                const url = apiEndPoint+`/profile/${this.fields.mobile.value}/${this.fields.name.value}/${this.fields.birthdate.value}/${this.fields.address.value}/${this.fields.pin.value}`;
-                console.log(`# - fetching ${url}`);
-                await fetch(url, {
-                    method: 'POST',
-                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').token}
-                })
+            async api_register(token) {
+                console.log('# data->registration->api_register()');
+                return await fetch(apiEndPoint + this.route, {method: 'POST', headers: {"Authorization": "Bearer " + token}})
                     .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
-                    .then(obj => {
-                        if (obj.isOk === true) {
-                            console.log(`# - successful`);
-                            Alpine.store('wikonek').user = obj.body.data.user;
-                            console.log(`# - hydrating user`);
-                            console.log(Alpine.store('wikonek').user, 'user');
-                            Alpine.store('wikonek').connection.status.backend = true;
-                            this.$dispatch('notify', { content: `Registration successful!`, type: 'success'});
-                        }
-                        else if (obj.status === 422) {
-                            this.registered = false;
-                            this.fields.mobile.isValid = false;
-                            this.fields.mobile.errorMsg = 'Mobile number is already used.';
-                            console.log(`# - displaying error message`);
-                            this.$dispatch('notify', { content: `Registration failed!`, type: 'error'});
-                        }
-                        else if (obj.status === 503) {
-                            Alpine.store('wikonek').connection.status.backend = false;
-                        }
-                        else if (obj.status === 504) {
-                            Alpine.store('wikonek').connection.status.backend = false;
-                        }
-                    })
+                    .then(args => this.notify(args))
                 ;
             },
             async api_login() {
-                console.log(`## data->registration->api_login()`);
+                console.log('# data->registration->api_login()');
                 const credentials = JSON.stringify({
                     email: this.email, //TODO: improve this!!!
                     password: this.fields.pin.value,
                     device_name: Alpine.store('wikonek').config.device.defaultName
                 });
-                return await fetch(apiEndPoint+`/login`, {
+                return await fetch(apiEndPoint + `/login`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json', 'Accept': 'text/plain'},
                     body: `${credentials}`
@@ -1234,22 +1225,23 @@
                     .then(args => this.login(args))
             },
             async api_associate(token) {
-                console.log(`## data->registration->api_associate()`);
+                console.log('# data->registration->api_associate()');
                 const device = Alpine.store('wikonek').session.deviceMACAddress;
-                return await fetch(apiEndPoint+`/associate/${device}`, {method: 'POST', headers: {"Authorization": "Bearer "+ token}})
+                return await fetch(apiEndPoint + `/associate/${device}`, {method: 'POST', headers: {"Authorization": "Bearer "+ token}})
                     .then(response =>  response.json().then(data => data.data))
                     .then(data => this.associate(data.user))
             },
             submit() {
                 console.log('# data->registration->submit()');
                 if (this.wantToRegister) {
-                    this.api_register()
-                        .then(() => Alpine.store('wikonek').api_ui());
+                    const token = Alpine.store('wikonek').session.token;
+                    this.api_register(token)
+                        .then(success => success && this.refresh());
                 }
                 else if (this.wantToLogin) {
                     this.api_login()
                         .then(token => this.api_associate(token))
-                        .then(success => this.refresh(success))
+                        .then(success => success && this.refresh())
                 }
             },
         }))
