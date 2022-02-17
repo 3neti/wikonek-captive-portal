@@ -722,9 +722,122 @@
                 </div>
             </div><!-- content -->
         </div><!-- Registration Page [end] -->
-        <!-- [start] [start] Dashboard Page -->
-        <div x-data="dashboard" x-show="true">
-
+        <!-- [start] Dashboard Page -->
+        <div x-show="registered">
+            <template x-data="dashboard('user')" x-if="$store.wikonek.modes & SHOW_USER"
+            >
+                <!-- [start] User Page -->
+                <div
+                        class="site-container wrap p-4"
+                        id="dashboard-page"
+                        x-show="$store.wikonek.mode & SHOW_USER"
+                >
+                    <!-- [start] Header -->
+                    <div
+                            class="header"
+                            style="max-width: 600px; margin: 5px auto;">
+                        <div class="logo float-left"><img class="wklogo" src="images/wklogo_full.png"/></div>
+                        <div class="wallet-details float-right">
+                            <div class="wallet-balance float-left text-right pr-2">
+                                <div class="text-[17px] font-bold">₱<span x-text="loadRemaining"></span></div>
+                                <div class="text-[12px]" x-text="captions.balance"></div>
+                            </div>
+                            <div class="header-buttons float-right">
+                                <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-topup-modal')">
+                                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                              fill-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                                <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-profile-modal')">
+                                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                              fill-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div><!-- Header [end] -->
+                    <div class="clear-both"></div><!-- divider -->
+                    <div class="station-id" x-text="'Station ID: ' + stationID"></div><!-- station id -->
+                    <div class="content relative top-[20px]" style="width: 100%; max-width: 600px;">
+                        <!-- [start] Airtime -->
+                        <div
+                                class="timer mb-[35px] bg-[#17A0DC] rounded grid grid-cols-4 gap-4 text-center p-4"
+                                x-data="airtime"
+                        >
+                            <div class="timer-element">
+                                <div class="time" x-text="days"></div>
+                                <div class="label text-white font-semibold text-sm">Days</div>
+                            </div><!-- days -->
+                            <div class="timer-element">
+                                <div class="time" x-text="hours"></div>
+                                <div class="label text-white font-semibold text-sm">Hours</div>
+                            </div><!-- hours -->
+                            <div class="timer-element">
+                                <div class="time" x-text="minutes"></div>
+                                <div class="label text-white font-semibold text-sm">Minutes</div>
+                            </div><!-- minutes -->
+                            <div class="timer-element">
+                                <div class="time" x-text="seconds"></div>
+                                <div class="label text-white font-semibold text-sm">Seconds</div>
+                            </div><!-- seconds -->
+                        </div><!-- Airtime [end] -->
+                        <!-- [start] Checkin -->
+                        <div
+                                x-data="checkin">
+                            <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
+                            <div class="text-[#26580F] text-center mb-[35px]" x-show="unclaimed">
+                                <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="captions.claim"></a>
+                            </div>
+                        </div><!-- Checkin [end] -->
+                        <!-- [start] Count Redeem Transfer -->
+                        <div
+                                class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]"
+                        >
+                            <button x-data x-on:click="$dispatch('open-count-modal')">
+                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
+                                    <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
+                                </svg>
+                                <span>Insert Coin</span>
+                            </button>
+                            <button x-data x-on:click="redeem">
+                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
+                                </svg>
+                                <span>Redeem Voucher</span>
+                            </button>
+                            <button x-data x-on:click="transfer">
+                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd"
+                                          d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
+                                          fill-rule="evenodd"/>
+                                </svg>
+                                <span>Transfer Load</span>
+                            </button>
+                        </div><!-- Count Redeem Transfer [end] -->
+                        <!-- [start] Purchase -->
+                        <div
+                                x-data="purchase"
+                                x-show="canBuy"
+                        >
+                            <div class="font-bold text-[18px] title mb-[15px]" x-text="title"></div>
+                            <div class="offers mb-[35px]">
+                                <template x-for="product in products" :key=product.code>
+                                    <template x-if="price(product.code) <= $store.wikonek.wallet.load.amount">
+                                        <div class="product-offers grid grid-cols-2 gap-2">
+                                            <div class="item"><span x-text="product.rate"></span><span x-text="product.name"></span></div>
+                                            <button class="buynow" x-data x-on:click="confirm(product.code)" x-text="caption"></button>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </div><!-- Purchase [end] -->
+                    </div><!-- content -->
+                </div><!-- User Page [end] -->
+            </template>
         </div><!-- Dashboard Page [end] -->
         <div x-text="device.macAddress"></div>
     </div><!-- Main Canvass [end] -->
@@ -735,7 +848,6 @@
         <span x-text="text.errors.deviceMACAddress"></span>
     </div><!-- Error Canvass [end]-->
 </div>
-
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.store('wikonek', {
@@ -764,7 +876,7 @@
                         return navigator.onLine === true;
                     },
                     get gateway() {
-                        return (dummyClientMACAddress !== Alpine.store('wikonek').deviceMACAddress);
+                        return (testClientMACAddress !== Alpine.store('wikonek').deviceMACAddress);
                     },
                     backend: false,
                 },
@@ -811,6 +923,9 @@
                     },
                     recipients: [],
                     transactions: [],
+                },
+                checkin: {
+                    airtime: 0, //deprecate
                 },
             },
             session: {
@@ -928,11 +1043,7 @@
             },
             async api_ui() {
                 console.log('** store->wikonek->api_ui()');
-                const url = apiEndPoint+`/ui`
-                await fetch(url, {
-                    method: 'GET',
-                    headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
-                })
+                await fetch(apiEndPoint+`/ui`, {method: 'GET', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
                     .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
                     .then(obj => {
                         if (obj.isOk === true) {
@@ -948,6 +1059,19 @@
                     })
                     .catch(() => clearInterval(this.session.ui_interval_handle))
             },
+            async api_consume(minutes = -1, all = false) {
+                console.log('** store->wikonek->api_consume()');
+                return await fetch(apiEndPoint+`/consume/${minutes}/${all}`, {method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
+                    .then(response =>  response.json().then(data => (data.data)))
+                    .then(consumption => this.api_extend(consumption.minutes))
+            },
+            async api_extend(minutes) {
+                console.log('*** store->wikonek->api_extend_airtime()');
+                const seconds = minutes * 60;
+                return await fetch(gatewayURL+`control.html?timereete=${seconds}`, {method: 'GET'})
+                    .then(response =>  response.text().then(text => ({success: response.ok, action: console.log(text)})))
+                    .then(extension => extension.success ? minutes : 0);
+            },
             init() {
                 console.log('* store->wikonek->init()');
                 this.loadValidations();
@@ -957,6 +1081,18 @@
                         this.api_ui()
                             // .then(() => {this.session.ui_interval_handle = setInterval(() => {this.api_ui()}, this.config.refreshInterval)})
                     });
+            },
+            mode: SHOW_USER,
+            get modes() {
+                let values = SHOW_USER;
+                if (this.canManage) {
+                    values = values | SHOW_MANAGER;
+                }
+
+                return values;
+            },
+            get canManage() {
+                return false;
             },
         })
         Alpine.data('ui', () => ({
@@ -973,6 +1109,9 @@
             },
             get connected() {
                 return Alpine.store('wikonek').connected.status.backend;
+            },
+            get registered() {
+                return Alpine.store('wikonek').session.registered;
             },
             text: {
                 errors: {
@@ -991,10 +1130,6 @@
                 }
             },
         }))
-        Alpine.data('dashboard', () => ({
-
-        }))
-        Alpine.data('canvas', () => ({}))
         Alpine.data('ingress', () => ({
             image: Alpine.store('wikonek').config.splash.image,
             delay: Alpine.store('wikonek').config.splash.delay, // in milliseconds
@@ -1203,7 +1338,7 @@
                 return await fetch(apiEndPoint + this.route, {method: 'POST', headers: {"Authorization": "Bearer " + token}})
                     .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
                     .then(args => this.notify(args))
-                ;
+                    ;
             },
             async api_login() {
                 console.log('# data->registration->api_login()');
@@ -1245,12 +1380,149 @@
                 }
             },
         }))
+        Alpine.data('dashboard', (mode) => ({
+            registered: true,
+            captions: {
+                balance: 'Wallet Balance',
+                claim: 'Claim your free internet.',
+                claimed: 'You already claimed your FREE internet for the day',
+                replenish: 'Please add funds to your wallet balance soon.',
+            },
+            get replenishThreshold() {
+                return Alpine.store('wikonek').config.replenishThreshold;
+            },
+            get replenish() {
+                return (Alpine.store('wikonek').data.ui.balance.load.amount * 1) < this.replenishThreshold;
+            },
+            get loadRemaining() {
+                // return (Alpine.store('wikonek').load * 1).toLocaleString();
+                return (Alpine.store('wikonek').data.ui.balance.load.amount * 1).toLocaleString();
+            },
+            get stationID() {
+                return Alpine.store('wikonek').data.station.name;
+            },
+            redeem() {
+                this.$dispatch('open-redeem-modal');
+            },
+            transfer() {
+                this.$dispatch('open-transfer-modal');
+            },
+        }))
+        Alpine.data('airtime', () => ({
+            code: '',
+            caption: 'Airtime',
+            handle: null,
+            get days() {
+                return Math.floor(this.code / 86400)
+            },
+            get hours() {
+                return Math.floor((this.code % 86400) / 3600)
+            },
+            get minutes() {
+                return Math.floor(((this.code % 86400) % 3600) / 60)
+            },
+            get seconds() {
+                return ((this.code % 86400) % 3600) % 60;
+            },
+            get timeRemaining() {
+                return `${this.days}:${pad(this.hours, 2)}:${pad(this.minutes, 2)}.${pad(this.seconds, 2)}`
+            },
+            init() {
+                console.log(`# data->airtime->init()`);
+                if (Alpine.store('wikonek').connection.status.gateway === true) {
+                    this.api_ctime();
+                }
+                else {
+                    console.log('# - no airtime');
+                }
+            },
+            api_ctime() {
+                console.log(`# data->airtime->api_ctime()`);
+                const url = '/pesofi_ctime/';
+                const interval = 1000;
+                this.handle = setInterval(() => {
+                    fetch(url, {method: 'GET'})
+                        .then(response =>  response.text().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                        .then(obj => {
+                            if (obj.isOk === true) {
+                                this.code = parseRemainingTime(obj.body);
+                            }
+                            else if (obj.status === 404) {
+                                console.log(`# - not connected to a WiKONEK access point. stopping....`);
+                                clearTimeout(this.handle);
+                            }
+                            else {
+                                console.log(`# - something else is wrong`);
+                            }
+                        })
+                }, interval);
+            },
+            reset() {
+                console.log(`# data->airtime->reset()`);
+                clearTimeout(this.handle);
+                this.api_ctime();
+            }
+        }))
+        Alpine.data('checkin', () => ({
+            get claimed() {
+                return Alpine.store('wikonek').session.dayPassClaimed
+            },
+            get unclaimed() {
+                return ! this.claimed;
+            },
+            get freeMinutes() {
+                return Alpine.store('wikonek').dayPass;
+            },
+            notify(minutes) {
+                this.$dispatch('notify', { content: `${minutes} minutes airtime extension`, type: 'info'});
+            },
+            async api_checkin() {
+                console.log(`# data->checkin->api_checkin()`);
+                const device = Alpine.store('wikonek').session.deviceMACAddress;
+                const station = Alpine.store('wikonek').session.stationMACAddress;
+                const url = apiEndPoint+`/checkin/${device}/${station}`;
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        let checkin_data = {airtime: 0};
+                        if (obj.isOk === true) {
+                            console.log(`# - checkin successful`);
+                            checkin_data = obj.body.data;
+                        }
+
+                        return checkin_data;
+                    })
+                    .then(checkin_data => {
+                        console.log('storing checkin data');
+                        Alpine.store('wikonek').data.checkin = checkin_data;//deprecate
+                        if (checkin_data.airtime > 0) {
+                            console.log('consuming checkin airtime');
+                            Alpine.store('wikonek').api_touch();
+                            Alpine.store('wikonek').api_consume(checkin_data.airtime)
+                                .then((minutes) => this.notify(minutes))
+                                .then(() => Alpine.store('wikonek').api_ui());
+                        }
+                    })
+            },
+            submit() {
+                console.log(`# data->checkin->submit()`);
+                this.api_checkin();
+                this.$dispatch('open-landing-free-modal');
+            }
+        }))
     })
+    const gatewayURL = `http://$gwaddress:$gwport/`;
     const backendIPAddress = `206.189.90.222`;
     const splashURL = `http://${backendIPAddress}/splash`;
     const apiEndPoint = `http://${backendIPAddress}/api`;
     const testClientMACAddress = '31:88:05:53:76:63';
     const virtualStationID = 'virtual';
+    const SHOW_USER = 0x1;
+    const SHOW_MANAGER = 0x2;
+    const SHOW_ADMIN = 0x3;
     function validationCallback(field) {
         let {value, rules} = field;
         let isValid = Iodine.isValid(value, rules);
@@ -1265,6 +1537,15 @@
             || typeof str !== 'string'
             || str.match(/^ *$/) !== null;
     }
+    function parseRemainingTime(str) {
+        return str.substring(str.lastIndexOf('t') + 1, str.lastIndexOf('p'));
+    }
+    function parseCoinsInserted(str) {
+        return str.substring(str.indexOf('parent.coin=') + 12, str.indexOf(';'));
+    }//refactor this, place it upstairs
+    function parseProductRate(str) {
+        return +str.substring(str.lastIndexOf('₱')+1)
+    }//refactor this, place it upstairs
 </script>
 </body>
 </html>
