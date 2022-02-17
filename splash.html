@@ -508,7 +508,6 @@
             </div>
             <div class="rounded-lg" id="loader"></div>
         </div><!-- Splash Page [end] -->
-
         <!-- [start] Registration Page -->
         <div
                 class="site-container
@@ -723,6 +722,10 @@
                 </div>
             </div><!-- content -->
         </div><!-- Registration Page [end] -->
+        <!-- [start] [start] Dashboard Page -->
+        <div x-data="dashboard" x-show="true">
+
+        </div><!-- Dashboard Page [end] -->
         <div x-text="device.macAddress"></div>
     </div><!-- Main Canvass [end] -->
 
@@ -753,6 +756,7 @@
                 },
                 environment: 'testing',
                 refreshInterval: 5 * 1000,
+                flashTimeout: 3 * 1000,
             },
             connection: {
                 status: {
@@ -808,6 +812,9 @@
                     recipients: [],
                     transactions: [],
                 },
+                associate: {
+                    user: null,
+                }
             },
             session: {
                 get hasDeviceMACAddress() {
@@ -847,6 +854,7 @@
                 get registered() {
                     return Iodine.isRequired(Alpine.store('wikonek').data.ui.profile.mobile);
                 },
+                ui_interval_handle: null,
             },
             loadValidations() {
                 console.log('** store->wikonek->loadValidations()');
@@ -936,15 +944,22 @@
                             // this.registered = !isEmpty(this.data.ui.profile.mobile) || !isEmpty(this.user.mobile);
                             console.log(this.data.ui, 'this.data.ui');
                         }
+                        else {
+                            clearInterval(this.session.ui_interval_handle);
+                        }
                         this.connection.status.backend = obj.isOk;
                     })
+                    .catch(() => clearInterval(this.session.ui_interval_handle))
             },
             init() {
                 console.log('* store->wikonek->init()');
                 this.loadValidations();
                 this.api_touch()
                     .then(() => this.api_station())
-                    .then(() => {this.api_ui().then(() => setInterval(() => {this.api_ui()}, this.config.refreshInterval))});
+                    .then(() => {
+                        this.api_ui()
+                            // .then(() => {this.session.ui_interval_handle = setInterval(() => {this.api_ui()}, this.config.refreshInterval)})
+                    });
             },
         })
         Alpine.data('ui', () => ({
@@ -978,6 +993,9 @@
                     });
                 }
             },
+        }))
+        Alpine.data('dashboard', () => ({
+
         }))
         Alpine.data('canvas', () => ({}))
         Alpine.data('ingress', () => ({
@@ -1089,14 +1107,57 @@
                     this.fields.pin_confirmation.isValid
                 );
             },
+            get mayLogin() {
+                return isEmpty(Alpine.store('wikonek').data.ui.profile.mobile);
+            },
             get canLogin() {
-                return (
-                    this.fields.mobile.isValid &&
-                    this.fields.pin.isValid
-                );
+                return this.mayLogin
+                    && !isEmpty(this.fields.mobile.value)
+                    && !isEmpty(this.fields.pin.value);
             },
             get wantToRegister() {
                 return !this.wantToLogin;
+            },
+            clear() {
+                Object.values(this.fields).forEach(field => {
+                    field.value = '';
+                    field.errorMsg = null;
+                });
+            },
+            flagUnauthorized() {
+                this.fields.mobile.isValid = false;
+                this.fields.mobile.errorMsg = 'Wrong credentials';
+                this.fields.pin.isValid = false;
+                this.fields.pin.errorMsg = 'Wrong credentials';
+                setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+                this.$dispatch('notify', { content: `Login failed! Please try again.`, type: 'error'});
+            },
+            login(obj) {
+                if (obj.isOk === true) {
+                    this.token = obj.body;
+                    console.log(this.token, 'this.token');
+                    this.$dispatch('notify', { content: `Login successful!`, type: 'success'});
+                }
+                else if (obj.status === 401) {
+                    this.flagUnauthorized();
+                }
+
+                return obj.isOk;
+            },
+            associate(obj) {
+                console.log(obj, 'associate obj');
+                if (obj.isOk === true) {
+                    Alpine.store('wikonek').data.associate.user = obj.body.data.user;
+                    console.log(Alpine.store('wikonek').data.associate.user, "Alpine.store('wikonek').data.associate.user");
+                }
+
+                return obj.isOk;
+            },
+            refresh(isAssociated) {
+                if (isAssociated) {
+                    Alpine.store('wikonek').api_touch()
+                        .then(() => Alpine.store('wikonek').api_ui());
+                }
             },
             init() {
                 console.log(`# data->registration->init()`);
@@ -1150,89 +1211,58 @@
                 ;
             },
             async api_login() {
-                console.log(`# data->registration->api_login()`);
+                console.log(`## data->registration->api_login()`);
                 const url = apiEndPoint+`/login`;
-                console.log(`# - fetching ${url}`);
+                console.log('# - fetch api_login');
                 const credentials = JSON.stringify({
                     email: `63${this.fields.mobile.value}@libreng.email`,
                     password: this.fields.pin.value,
                     device_name: 'mobile'
                 });
                 console.log(credentials, 'credentials');
-                await fetch(url, {
+                return await fetch(url, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json', 'Accept': 'text/plain'},
                     body: `${credentials}`
                 })
-                    .then(response =>  response.text().then(data => ({status: response.status, body: data, isOk: response.ok})))
-                    .then(obj => {
-                        if (obj.isOk === true) {
-                            console.log(`# - successful`);
-                            this.token = obj.body;
-                            console.log(this.token, 'token');
-                            Alpine.store('wikonek').connection.status.backend = true;
-                            this.$dispatch('notify', { content: `Login successful!`, type: 'success'});
-                        }
-                        else if (obj.status === 503) {
-                            Alpine.store('wikonek').connection.status.backend = false;
-                        }
-                        else if (obj.status === 504) {
-                            Alpine.store('wikonek').connection.status.backend = false;
-                        }
-                        else {
-                            console.log(`# - failure`);
-                            this.$dispatch('notify', { content: `Login failed!`, type: 'error'});
-                        }
-                    })
-                ;
+                    .then(response =>  response.text().then(data => ({
+                        status: response.status,
+                        body: data,
+                        isOk: response.ok
+                    })))
+                    .then(obj => this.login(obj))
             },
             async api_associate() {
-                console.log(`# data->registration->api_associate()`);
-                const device = Alpine.store('wikonek').macAddress;
+                console.log(`## data->registration->api_associate()`);
+                const device = Alpine.store('wikonek').session.deviceMACAddress;
                 const url = apiEndPoint+`/associate/${device}`;
-                console.log(`# - fetching ${url}`);
-                await fetch(url, {
+                console.log('## - fetch associate');
+                return await fetch(url, {
                     method: 'POST',
                     headers: {"Authorization": "Bearer "+ this.token}
                 })
-                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
-                    .then(obj => {
-                        if (obj.isOk === true) {
-                            console.log(`# - associate successful`);
-                            console.log(obj.body, 'json response');
-                            Alpine.store('wikonek').user = obj.body.data.user;
-                            Alpine.store('wikonek').connection.status.backend = true;
-                        }
-                        else if (obj.status === 503) {
-                            Alpine.store('wikonek').connection.status.backend = false;
-                        }
-                        else if (obj.status === 504) {
-                            Alpine.store('wikonek').connection.status.backend = false;
-                        }
-                        else {
-                            console.log(`# - displaying error message`);
-                        }
-                    })
+                    .then(response =>  response.json().then(data => ({
+                        status: response.status,
+                        body: data,
+                        isOk: response.ok
+                    })))
+                    .then(obj => this.associate(obj))
             },
             submit() {
                 console.log('# data->registration->submit()');
                 if (this.wantToRegister) {
-                    console.log(`# - executing api_register then Alpine.store('wikonek').api_ui()`);
                     this.api_register()
                         .then(() => Alpine.store('wikonek').api_ui());
                 }
                 else if (this.wantToLogin) {
                     console.log('# - executing api_login');
+
                     this.api_login()
-                        .then(() => {
-                            if (isEmpty(Alpine.store('wikonek').user.mobile)) {
-                                console.log('# - executing api_associate');
+                        .then(isLoggedIn => {
+                            console.log(isLoggedIn, 'isLoggedIn');
+                            if (isLoggedIn && isEmpty(Alpine.store('wikonek').data.ui.profile.mobile)) {
                                 this.api_associate()
-                                    .then(() => {
-                                        console.log('# - executing api_touch() then api_ui()');
-                                        Alpine.store('wikonek').api_touch()
-                                            .then(() => Alpine.store('wikonek').api_ui());
-                                    })
+                                    .then(isAssociated => this.refresh(isAssociated))
                             }
                         })
                 }
@@ -1252,6 +1282,11 @@
             : Iodine.getErrorMessage(Iodine.is(value, rules));
 
         return {isValid, errorMsg};
+    }
+    function isEmpty(str) {
+        return str === undefined || str === null
+            || typeof str !== 'string'
+            || str.match(/^ *$/) !== null;
     }
 </script>
 </body>
