@@ -1083,7 +1083,6 @@
                     errorMsg: null
                 },
             },
-            token: null,
             captions: {
                 get title() {
                     return this.wantToLogin ? 'Authenticate' : 'Sign Up';
@@ -1118,6 +1117,9 @@
             get wantToRegister() {
                 return !this.wantToLogin;
             },
+            get email() {
+                return `63${this.fields.mobile.value}@libreng.email`;
+            },
             clear() {
                 Object.values(this.fields).forEach(field => {
                     field.value = '';
@@ -1132,29 +1134,31 @@
                 setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
                 this.$dispatch('notify', { content: `Login failed! Please try again.`, type: 'error'});
             },
-            login(obj) {
-                if (obj.isOk === true) {
-                    this.token = obj.body;
-                    console.log(this.token, 'this.token');
+            login(args) {
+                let token = null;
+                if (args.isOk === true) {
+                    token = args.body;
                     this.$dispatch('notify', { content: `Login successful!`, type: 'success'});
                 }
-                else if (obj.status === 401) {
+                else if (args.status === 401) {
                     this.flagUnauthorized();
                 }
 
-                return obj.isOk;
+                return token;
             },
-            associate(obj) {
-                console.log(obj, 'associate obj');
-                if (obj.isOk === true) {
-                    Alpine.store('wikonek').data.associate.user = obj.body.data.user;
+            associate(user) {
+                console.log(user, 'associate user');
+                let retval = false;
+                if (user) {
+                    Alpine.store('wikonek').data.associate.user = user;
                     console.log(Alpine.store('wikonek').data.associate.user, "Alpine.store('wikonek').data.associate.user");
+                    retval = true;
                 }
 
-                return obj.isOk;
+                return retval;
             },
-            refresh(isAssociated) {
-                if (isAssociated) {
+            refresh(proceed) {
+                if (proceed) {
                     Alpine.store('wikonek').api_touch()
                         .then(() => Alpine.store('wikonek').api_ui());
                 }
@@ -1212,15 +1216,12 @@
             },
             async api_login() {
                 console.log(`## data->registration->api_login()`);
-                const url = apiEndPoint+`/login`;
-                console.log('# - fetch api_login');
                 const credentials = JSON.stringify({
-                    email: `63${this.fields.mobile.value}@libreng.email`,
+                    email: this.email, //TODO: improve this!!!
                     password: this.fields.pin.value,
-                    device_name: 'mobile'
+                    device_name: Alpine.store('wikonek').config.device.defaultName
                 });
-                console.log(credentials, 'credentials');
-                return await fetch(url, {
+                return await fetch(apiEndPoint+`/login`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json', 'Accept': 'text/plain'},
                     body: `${credentials}`
@@ -1230,23 +1231,14 @@
                         body: data,
                         isOk: response.ok
                     })))
-                    .then(obj => this.login(obj))
+                    .then(args => this.login(args))
             },
-            async api_associate() {
+            async api_associate(token) {
                 console.log(`## data->registration->api_associate()`);
                 const device = Alpine.store('wikonek').session.deviceMACAddress;
-                const url = apiEndPoint+`/associate/${device}`;
-                console.log('## - fetch associate');
-                return await fetch(url, {
-                    method: 'POST',
-                    headers: {"Authorization": "Bearer "+ this.token}
-                })
-                    .then(response =>  response.json().then(data => ({
-                        status: response.status,
-                        body: data,
-                        isOk: response.ok
-                    })))
-                    .then(obj => this.associate(obj))
+                return await fetch(apiEndPoint+`/associate/${device}`, {method: 'POST', headers: {"Authorization": "Bearer "+ token}})
+                    .then(response =>  response.json().then(data => data.data))
+                    .then(data => this.associate(data.user))
             },
             submit() {
                 console.log('# data->registration->submit()');
@@ -1255,16 +1247,9 @@
                         .then(() => Alpine.store('wikonek').api_ui());
                 }
                 else if (this.wantToLogin) {
-                    console.log('# - executing api_login');
-
                     this.api_login()
-                        .then(isLoggedIn => {
-                            console.log(isLoggedIn, 'isLoggedIn');
-                            if (isLoggedIn && isEmpty(Alpine.store('wikonek').data.ui.profile.mobile)) {
-                                this.api_associate()
-                                    .then(isAssociated => this.refresh(isAssociated))
-                            }
-                        })
+                        .then(token => this.api_associate(token))
+                        .then(success => this.refresh(success))
                 }
             },
         }))
