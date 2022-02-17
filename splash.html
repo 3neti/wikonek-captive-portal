@@ -631,6 +631,248 @@
         <div class="clear-both"></div>
     </div><!-- Count Landing Modal [end] -->
 
+    <!-- [start] Redeem Modal -->
+    <div
+            class="modal-wrapper"
+            x-data="{ open: false }"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-redeem-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-data="redeem"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent="submit"
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false; done();">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="wrap">
+                    <div class="title text-center font-bold text-[21px] mb-[30px]">Redeem Voucher</div>
+                    <div class="form">
+                        <form class="signup">
+                            <div class="fname form-element">
+                                <label class="text-[13px]">Voucher Code</label>
+                                <input
+                                        :maxlength="fields.voucher.maxLength"
+                                        @blur="fields.voucher.validate(validationCallback)"
+                                        aria-label="Voucher Code"
+                                        placeholder="include the dash e.g. 91LB-H537"
+                                        required
+                                        type="text"
+                                        x-model="fields.voucher.value">
+                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                        x-text="fields.voucher.errorMsg"></span></p>
+                            </div>
+                            <div class="submit form-element mt-[30px]">
+                                <input :value="caption" class="enabled" type="submit">
+                            </div>
+                        </form>
+                    </div>
+                    <!-- if successful -->
+                    <div class="success-message text-center text-[#26580F] m-[15px]" x-show="redemptionSucceeded">
+                        <p x-text="message"></p>
+                    </div>
+                    <!-- if failed -->
+                    <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="redemptionFailed">
+                        <p>Voucher redemption failed! Please input a valid code..</p>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- Redeem Modal [end] -->
+
+    <!-- [start] Transfer Modal -->
+    <div
+            x-data="transfer">
+        <div
+                class="modal-wrapper"
+                x-data="{ open: false }"
+                x-on:keyup.escape.window="open = false"
+                x-on:open-transfer-modal.window="open = true; const tf = $event.detail.transferee; fields.mobile.value = tf.mobile ? ((tf.mobile + '').substr(2))*1 : ''; fields.amount.value = tf.amount; tf.mobile && validate()"
+                x-show="open"
+        >
+            <div
+                    class="modal"
+                    style="margin: 30px auto;"
+
+                    x-on:click.outside="open = false"
+                    x-on:submit.prevent="submit"
+            >
+                <div class="header">
+                    <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                </div><!-- header -->
+                <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path clip-rule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              fill-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="content">
+                    <div class="wrap">
+                        <div class="title text-center font-bold text-[21px] mb-[30px]">Transfer Load</div>
+                        <div class="form">
+                            <form class="signup">
+                                <div class="mnumber form-element">
+                                    <label class="text-[13px]">Mobile Number</label>
+                                    <div class="relative">
+                                <span class="absolute top-[7px] left-[8px]">0 <span
+                                        class="text-[#d8d8d8]">|</span></span>
+                                        <input
+                                                :maxlength="fields.mobile.maxLength"
+                                                @blur="fields.mobile.validate(validationCallback)"
+                                                oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                placeholder="9xxxxxxxxx e.g. 9123456789" required
+                                                style="padding-left: 24px !important;"
+                                                type="number"
+                                                x-model="fields.mobile.value"
+                                        >
+                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                x-text="fields.mobile.errorMsg"></span></p>
+                                    </div>
+                                </div>
+                                <div class="bday form-element">
+                                    <label class="text-[13px]">Amount Credits</label>
+                                    <input
+                                            :maxlength="fields.amount.maxLength"
+                                            @blur="fields.amount.validate(validationCallback)"
+                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                            placeholder="minimum 5 pesos e.g. 100"
+                                            required
+                                            type="number"
+                                            x-model="fields.amount.value"
+                                    >
+                                    <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                            x-text="fields.amount.errorMsg"></span></p>
+                                    <!--                            <input placeholder="minimum 5 pesos e.g. 100" required type="number" x-model="enteredAmount">-->
+                                </div>
+                                <div class="submit form-element mt-[30px]">
+                                    <input :value="caption" class="enabled" type="submit" x-show="!transferSucceeded">
+                                </div>
+                            </form>
+                        </div>
+                        <!-- if successful -->
+                        <div class="success-message text-center text-[#26580F] m-[15px]" x-show="transferSucceeded">
+                            <p x-text="message"></p>
+                        </div>
+                        <!-- if failed -->
+                        <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="transferFailed">
+                            <p>Transfer failed! Please try again.</p>
+                        </div>
+                    </div>
+                </div><!-- content -->
+            </div><!-- site-container -->
+            <div class="clear-both"></div>
+        </div>
+    </div><!-- Transfer Modal [end] -->
+
+    <!-- [start] Purchase Modal -->
+    <div
+            class="modal-wrapper"
+            x-data="{ open: false, prod: null }"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-confirm-purchase-modal.window="open = true; window.scroll(0,0)"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-data="purchase"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="wrap">
+                    <div style="text-align: center;"
+                         x-show="open" x-transition
+                         x-on:click="open = false"
+                    >
+                        <div
+                                x-on:click.stop
+                                x-trap.noscroll.inert="open"
+                        >
+                            <!-- Title -->
+                            <div class="title text-center font-bold text-[21px] mb-[30px]">Confirm Purchase</div>
+                            <!-- Content -->
+                            <p class="mt-2 text-gray-600" x-text="product.name"></p>
+                            <!-- Buttons -->
+                            <div>
+                                <a class="button block mt-[30px]" x-data x-on:click="submit; open = false">Confirm</a>
+                                <a class="button block mt-[30px]" x-data x-on:click="open = false">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- Purchase Modal [end] -->
+
+    <!-- [start] Purchase Landing Modal -->
+    <div
+            class="modal-wrapper"
+            x-data="egress('purchase')"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-landing-purchase-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="text-center" style="width: 300px;">
+                    <div style="width: 300px;">
+                        <div class="mb-[30px] text-[15px]">You are now connected with<span class="font-bold block">₱<span
+                                class="amt" x-text="message"></span> Credits</span></div>
+                        <img :src="image" alt="splash"/>
+                        <div class="notice">
+                            <div class="text-[15px] mt-[30px]">For inquiries or concerns, please visit:</div>
+                            <div class="text-[15px] font-bold"><a href="https://wikonek.ph">https://wikonek.ph</a></div>
+                        </div>
+                        <div class="clear-both"></div>
+                        <a class="button block mt-[30px]" :href="landing" x-text="caption"></a>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- Purchase Landing Modal [end] -->
+
     <!-- [start] Main Canvass -->
     <div
             x-show="hasDeviceMACAddress">
@@ -962,7 +1204,7 @@
                             <div class="font-bold text-[18px] title mb-[15px]" x-text="title"></div>
                             <div class="offers mb-[35px]">
                                 <template x-for="product in products" :key=product.code>
-                                    <template x-if="price(product.code) <= $store.wikonek.wallet.load.amount">
+                                    <template x-if="price(product.code) <= $store.wikonek.data.ui.balance.load.amount">
                                         <div class="product-offers grid grid-cols-2 gap-2">
                                             <div class="item"><span x-text="product.rate"></span><span x-text="product.name"></span></div>
                                             <button class="buynow" x-data x-on:click="confirm(product.code)" x-text="caption"></button>
@@ -1063,9 +1305,11 @@
                     recipients: [],
                     transactions: [],
                 },
-                // count: {
-                //     cumulative: 0,
-                // },
+                purchase: {
+                    product: {
+                        rate: 'P 0.00',
+                    }
+                },
             },
             session: {
                 get hasDeviceMACAddress() {
@@ -1106,6 +1350,11 @@
                     return Iodine.isRequired(Alpine.store('wikonek').data.ui.profile.mobile);
                 },
                 ui_interval_handle: null,
+            },
+            selectedProduct: {
+                code: '1HIA',
+                name: 'UNLI Data 1 Hour',
+                rate: '₱ 5.00'
             },
             loadValidations() {
                 console.log('** store->wikonek->loadValidations()');
@@ -1208,8 +1457,7 @@
                 console.log('*** store->wikonek->api_extend_airtime()');
                 const seconds = minutes * 60;
                 return await fetch(gatewayURL+`control.html?timereete=${seconds}`, {method: 'GET'})
-                    .then(response =>  response.text().then(text => ({success: response.ok})))
-                    // .then(response =>  response.text().then(text => ({success: response.ok, action: console.log(text)})))
+                    .then(response =>  response.text().then(text => ({success: response.ok, action: console.log(text)})))
                     .then(extension => extension.success ? minutes : 0);
             },
             init() {
@@ -1545,7 +1793,7 @@
                 this.$dispatch('open-redeem-modal');
             },
             transfer() {
-                this.$dispatch('open-transfer-modal');
+                this.$dispatch('open-transfer-modal', {transferee: {name: '', mobile: '', amount: ''}});
             },
         }))
         Alpine.data('airtime', () => ({
@@ -1797,10 +2045,288 @@
                     })
             }
         }))
+        Alpine.data('redeem', () => ({
+            fields: {
+                voucher: {
+                    value: null,
+                    maxLength: 9,
+                    rules: ['required', 'regexVoucher'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+            },
+            redemptionSucceeded: null,
+            redemptionFailed: null,
+            airtime: 0,
+            clear() {
+                console.log('clearing redemption');
+                this.fields.voucher.value = '';
+                this.fields.voucher.errorMsg = '';
+                this.redemptionSucceeded = null;
+                this.redemptionFailed = null;
+            },
+            get caption() {
+                return 'Go!!!';
+            },
+            get message() {
+                return `You have successfully redeemed a voucher with ${this.airtime} minutes of airtime!`
+            },
+            get canRedeem() {
+                return this.fields.voucher.isValid
+            },
+            async api_redeem() {
+                console.log(`# data->redeem->api_redeem()`);
+                const voucher = this.fields.voucher.value;
+                const authorization = Alpine.store('wikonek').authorization;
+                const url = apiEndPoint+`/redeem/${voucher}`;;
+                console.log(`# - using voucher code ${voucher}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        let redemption_data = {airtime: 0};
+                        if (obj.isOk === true) {
+                            console.log(`# - voucher redemption successful`);
+                            redemption_data = obj.body.data;
+                            console.log(redemption_data, 'redemption');
+                        }
+                        else if (obj.status === 404) {
+                            console.log(`# - voucher code is invalid`);
+                            this.fields.voucher.isValid = false;
+                            console.log(obj.body.message, `# - displaying error message`);
+                            this.fields.voucher.errorMsg = 'Voucher Code is not valid.';
+                        }
+                        else if (obj.status === 406) {
+                            console.log(`# - voucher code is used`);
+                            this.fields.voucher.isValid = false;
+                            console.log(obj.body.message, `# - displaying error message`);
+                            this.fields.voucher.errorMsg = 'Voucher Code is already used.';
+                        }
+                        else {
+                            console.log(`# - general exception`);
+                            this.fields.voucher.isValid = false;
+                            console.log(`# - displaying error message`);
+                            this.fields.voucher.errorMsg = 'Unknown error.';
+                        }
+                        this.redemptionSucceeded = obj.isOk;
+                        this.redemptionFailed = !obj.isOk;
+
+                        return redemption_data;
+                    })
+                    .then(redemption_data => {
+                        this.airtime = redemption_data.airtime;
+                        if (this.airtime > 0) {
+                            console.log('consuming redemption airtime');
+                            Alpine.store('wikonek').api_consume(this.airtime)
+                                .then((consumption) => Alpine.store('wikonek').api_extend(consumption.minutes))
+                                .then(() => Alpine.store('wikonek').api_ui());
+                        }
+                    })
+                    .finally(() => {
+                        console.log('# - clearing flash messages');
+                        setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+                    })
+                ;
+            },
+            submit() {
+                if (this.canRedeem) {
+                    this.api_redeem();
+                }
+            },
+            done() {
+                location.replace(landingURL);
+            }
+        }))
+        Alpine.data('transfer', () => ({
+            fields: {
+                mobile: {
+                    value: null,
+                    maxLength: 10,
+                    rules: ['required', 'regexMobile'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                amount: {
+                    value: null,
+                    maxLength: 8,
+                    rules: ['required', 'numeric', 'min:5'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+            },
+            transferSucceeded: null,
+            transferFailed: null,
+            // recipients: Alpine.store('wikonek').data.transfer.recipients,
+            // recipients: Alpine.store('wikonek').user.recipients,
+            recipients: Alpine.store('wikonek').data.ui.recipients,
+            get caption() {
+                return'Go!!!'
+            },
+            get message() {
+                return `${this.fields.amount.value} successfully transferred to ${this.fields.mobile.value}.`
+            },
+            get minimumRemittance() {
+                return 5.00;
+            },
+            get canTransfer() {
+                return this.fields.mobile.isValid && this.fields.amount.isValid && this.fields.amount.value >= this.minimumRemittance;
+            },
+            clear() {
+                console.log('clearing transfer');
+                if (this.transferSucceeded || !this.fields.mobile.isValid) {
+                    this.fields.mobile.value = '';
+                    this.fields.mobile.isValid = null;
+                    this.fields.mobile.errorMsg = null;
+                }
+                if (this.transferSucceeded || !this.fields.amount.isValid) {
+                    this.fields.amount.value = null;
+                    this.fields.amount.isValid = null;
+                    this.fields.amount.errorMsg = null;
+                }
+                this.transferSucceeded = null;
+                this.transferFailed = null;
+            },
+            validate() {
+                this.fields.mobile.validate(validationCallback);
+                this.fields.amount.validate(validationCallback);
+            },
+            async api_transfer() {
+                console.log(`# data->transfer->api_transfer()`);
+                const url = apiEndPoint+`/transfer/${this.fields.mobile.value}/${this.fields.amount.value}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(`# - successful`);
+                            console.log(`# - setting UI`);
+                            Alpine.store('wikonek').api_ui();
+                        }
+                        else if (obj.status === 404) {
+                            console.log(`# - mobile number does not exist`);
+                            this.fields.mobile.isValid = false;
+                            console.log(`# - displaying error message`);
+                            this.fields.mobile.errorMsg = 'Mobile number does not exist.';
+                        }
+                        else if (obj.status === 406) {
+                            console.log(`# - insufficient funds`);
+                            this.fields.amount.isValid = false;
+                            console.log(`# - displaying error message`);
+                            this.fields.amount.errorMsg = 'Insufficient funds.';
+                        }
+                        this.transferSucceeded = obj.isOk;
+                        this.transferFailed = !obj.isOk;
+                    })
+                    .finally(() => {
+                        console.log('# - finally');
+                        setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+                    })
+                ;
+            },
+            submit() {
+                if (this.canTransfer) {
+                    this.api_transfer().then(() => {Alpine.store('wikonek').api_ui()});
+                    window.scrollTo(0,0);
+                }
+            }
+        }))
+        Alpine.data('purchase', () => ({
+            image: splashURL,
+            purchaseSucceeded: null,
+            purchaseFailed: null,
+            get title() {
+                return 'Product Bundles';
+            },
+            get caption() {
+                return'Go!!!'
+            },
+            get minimumSpend() {
+                return 5.00;
+            },
+            get canBuy() {
+                return +Alpine.store('wikonek').data.ui.balance.load.amount >= this.minimumSpend;
+                // return +Alpine.store('wikonek').wallet.load.amount >= this.minimumSpend;
+            },
+            get products() {
+                return Alpine.store('wikonek').data.ui.products
+            },
+            get product() {
+                return Alpine.store('wikonek').selectedProduct;
+            },
+            price(code) {
+                const product = this.products.find(n => n.code == code);
+
+                return parseProductRate(product.rate)
+            },
+            async api_purchase(code) {
+                console.log(`# data->transfer->api_purchase()`);
+                const product = this.products.find(n => n.code == code)
+                console.log(product, 'product to purchase');
+                const url = apiEndPoint+`/purchase/${product.code}`;
+                this.purchaseSucceeded = null;
+                this.purchaseFailed = null;
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        const purchase_data = obj.body.data;
+                        if (obj.isOk === true) {
+                            console.log(`# - purchase successful`);
+                            Alpine.store('wikonek').data.purchase = purchase_data;
+                        }
+                        this.purchaseSucceeded = obj.isOk;
+                        this.purchaseFailed = !obj.isOk;
+
+                        return purchase_data;
+                    })
+                    .then(purchase_data => {
+                        if (purchase_data.airtime > 0) {
+                            Alpine.store('wikonek').api_consume(purchase_data.airtime)
+                                .then((consumption) => Alpine.store('wikonek').api_extend(consumption.minutes))
+                                .then(() => {Alpine.store('wikonek').api_ui(); window.scrollTo(0,0)});
+                        }
+                    })
+            },
+            confirm(code) {
+                Alpine.store('wikonek').selectedProduct = this.products.find(n => n.code == code);
+                this.$dispatch('open-confirm-purchase-modal');
+            },
+            submit() {
+                console.log(`# data->transfer->submit()`);
+                this.api_purchase(this.product.code);
+                this.$dispatch('open-landing-purchase-modal');
+            },
+        }))
         Alpine.data('egress', (operation) => ({
             open: false,
-            checkin: null,
-            count: null,
+            checkin: {
+                airtime: 0,
+            },
+            count: {
+                cumulative: 0
+            },
             get image() {
                 switch (operation) {
                     default:
