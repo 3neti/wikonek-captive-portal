@@ -495,7 +495,7 @@
         </template>
     </div><!-- Notification Page [end] -->
 
-    <!-- [start] Checkin Modal -->
+    <!-- [start] Checkin Landing Modal -->
     <div
             class="modal-wrapper"
             x-data="egress('checkin')"
@@ -538,7 +538,98 @@
             </div><!-- content -->
         </div><!-- site-container -->
         <div class="clear-both"></div>
-    </div><!-- Checkin Modal [end] -->
+    </div><!-- Checkin Landing Modal [end] -->
+
+    <!-- [start] Count Modal -->
+    <div
+            class="modal-wrapper"
+            x-data="{ open: false }"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-count-modal.window="open = true"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-data="count"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="wrap">
+                    <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="amount"></div>
+                    <div class="time-insert-coin">
+                        <span class="block text-center" x-show="disarmed" x-text="`Click on the '${caption}' button below. You have ${ticks} seconds to insert coins.`"></span>
+                        <span class="countdown" x-text="timeRemaining"></span>
+                    </div>
+                    <div class="form relative">
+                        <div class="coinbank">
+                            <div class="vcenter" style="width:160px;">
+                                <button class="wrap insertcoin" x-on:click="toggle">
+                                    <img class="absolute top-[10px] left-[10px]" src="images/pointer.png"/>
+                                    <span x-text="caption"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- Count Modal [end] -->
+
+    <!-- [start] Count Landing Modal -->
+    <div
+            class="modal-wrapper"
+            x-data="egress('count')"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-landing-count-modal.window="open = true; count = $event.detail;"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-on:click.outside="open = false"
+                x-on:submit.prevent
+        >
+            <div class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="content">
+                <div class="text-center" style="width: 300px;">
+                    <div style="width: 300px;">
+                        <div class="mb-[30px] text-[15px]"><span x-text="'₱ ' + count.cumulative"> </span> <span class="font-bold block" x-text="message"></span>
+                        </div>
+                        <img :src="image" alt="splash"/>
+                        <div class="notice">
+                            <div class="text-[15px] mt-[30px]">For inquiries or concerns, please visit:</div>
+                            <div class="text-[15px] font-bold"><a href="https://wikonek.ph">https://wikonek.ph</a></div>
+                        </div>
+                        <div class="clear-both"></div>
+                        <a class="button block mt-[30px]" :href="landing" x-text="caption"></a>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- Count Landing Modal [end] -->
 
     <!-- [start] Main Canvass -->
     <div
@@ -914,6 +1005,9 @@
                 environment: 'testing',
                 refreshInterval: 5 * 1000,
                 flashTimeout: 3 * 1000,
+                coins: {
+                    expiry: $queueTime // TODO: watch out for this, might go out of scope
+                },
             },
             connection: {
                 status: {
@@ -969,6 +1063,9 @@
                     recipients: [],
                     transactions: [],
                 },
+                // count: {
+                //     cumulative: 0,
+                // },
             },
             session: {
                 get hasDeviceMACAddress() {
@@ -1105,13 +1202,14 @@
                 console.log('** store->wikonek->api_consume()');
                 return await fetch(apiEndPoint+`/consume/${minutes}/${all}`, {method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
                     .then(response =>  response.json().then(data => (data.data)))
-                    .then(consumption => this.api_extend(consumption.minutes))
+                    // .then(consumption => this.api_extend(consumption.minutes))
             },
             async api_extend(minutes) {
                 console.log('*** store->wikonek->api_extend_airtime()');
                 const seconds = minutes * 60;
                 return await fetch(gatewayURL+`control.html?timereete=${seconds}`, {method: 'GET'})
-                    .then(response =>  response.text().then(text => ({success: response.ok, action: console.log(text)})))
+                    .then(response =>  response.text().then(text => ({success: response.ok})))
+                    // .then(response =>  response.text().then(text => ({success: response.ok, action: console.log(text)})))
                     .then(extension => extension.success ? minutes : 0);
             },
             init() {
@@ -1516,10 +1614,13 @@
             hydrate(data) {
                 this.checkin = data;
             },
-            consume(minutes) {
-                this.consumed = minutes;
+            consume(airtime) {
+                return Alpine.store('wikonek').api_consume(airtime);
+            },
+            extend(consumption) {
+                setTimeout(() => {Alpine.store('wikonek').api_extend(consumption.minutes)}, 500);
 
-                return Alpine.store('wikonek').api_consume(minutes);
+                return consumption.minutes;
             },
             notify(minutes) {
                 this.$dispatch('notify', { content: `${minutes} minutes airtime extension`, type: 'info'});
@@ -1532,12 +1633,13 @@
                 console.log(`## data->checkin->api_checkin()`);
                 const device = Alpine.store('wikonek').session.deviceMACAddress;
                 const station = Alpine.store('wikonek').session.stationMACAddress;
-                await fetch(apiEndPoint+`/checkin/${device}/${station}`, { method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
-                    .then(response =>  response.json().then(data => ({airtime: data.data, success: response.ok, action: this.hydrate(data.data)})))
-                    .then(checkin => checkin.success ? checkin.airtime: {airtime: 0})
-                    .then(data => this.consume(data.airtime))
-                    .then(minutes => this.notify(minutes))
-                    .then(() => this.refresh())
+                    await fetch(apiEndPoint+`/checkin/${device}/${station}`, { method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
+                        .then(response =>  response.json().then(data => ({airtime: data.data, success: response.ok, action: this.hydrate(data.data)})))
+                        .then(checkin => checkin.success ? checkin.airtime: {airtime: 0})
+                        .then(data => this.consume(data.airtime))
+                        .then(extension => this.extend(extension))
+                        .then(minutes => this.notify(minutes))
+                        .then(() => this.refresh())
             },
             submit() {
                 console.log(`# data->checkin->submit()`);
@@ -1545,10 +1647,160 @@
                     .then(() => this.$dispatch('open-landing-free-modal', {checkin: this.checkin}));
             }
         }))
+        Alpine.data('count', () => ({
+            ticks: null,
+            armHandle: null,
+            statusHandle: null,
+            armed: false,
+            get disarmed() {
+                return ! this.armed;
+            },
+            coins: [],
+            get count() {
+                return this.cumulative.length;
+            },
+            previous: 0,
+            cumulative: 0,
+            get amount() {
+                return '₱ ' + this.cumulative + '.00';
+            },
+            get caption() {
+                let retval = 'Insert Coin';
+                if (this.armed) {
+                    if (this.cumulative > 0) {
+                        retval = 'Go!!!';
+                    }
+                    else {
+                        retval = 'Stop!'
+                    }
+                }
 
+                return retval;
+            },
+            get minutes() {
+                return Math.floor(((this.ticks % 86400) % 3600) / 60)
+            },
+            get seconds() {
+                return ((this.ticks % 86400) % 3600) % 60;
+            },
+            get timeRemaining() {
+                return `${pad(this.minutes, 2)}:${pad(this.seconds, 2)}`
+            },
+            set coinsInserted(value) {
+                if (value > 0) {
+                    if (value != this.cumulative) {
+                        let coin = value - this.cumulative
+                        this.coins.push(coin)
+                        this.previous = coin
+                        this.cumulative = value
+                        console.log(`cumulative ${this.cumulative}`)
+                        console.log(`coins ${this.coins}`)
+                    }
+                }
+            },
+            get coinsInserted() {
+                return this.coins;
+            },
+            init() {
+                console.log('# data->count->init()');
+                this.reset();
+            },
+            arm() {
+                console.log('# data->count->arm()');
+                const interval = 1000;
+                this.armed = true;
+                this.reset();
+                this.armHandle = setInterval(() => {
+                    this.ticks--;
+                    this.check();
+                }, interval);
+                this.api_arm();
+            },
+            check() {
+                console.log('# data->count->check()');
+                if (this.ticks <= 0) {
+                    this.disarm();
+                }
+            },
+            disarm() {
+                console.log('# data->count->disarm()');
+                this.armed = false;
+                clearTimeout(this.armHandle);
+                clearTimeout(this.statusHandle)
+                this.api_done();
+            },
+            reset() {
+                console.log('# data->count->reset()');
+                this.coinsInserted = 0;
+                this.ticks = Alpine.store('wikonek').config.coins.expiry;
+            },
+            toggle() {
+                console.log('# data->count->toggle()');
+                this.armed ? this.disarm() : this.arm();
+            },
+            api_arm() {
+                console.log('# data->count->api_arm()');
+                const url = '/pesofi_armcoinslot/';
+                console.log(`# fetch-> ${url}`);
+                fetch(url, {method: 'GET'}).then(() => {
+                    this.api_status()}
+                )
+            },
+            api_status() {
+                console.log('# data->count->api_status()');
+                const url = `/pesofi_statuscoinslot/`;
+                console.log(`# data.coin.api_status() fetch-> ${url}`);
+                this.statusHandle = setInterval(() => {
+                    fetch(url, {method: 'GET'})
+                        .then(response => response.text())
+                        .then(str => {
+                            this.coinsInserted = parseCoinsInserted(str);
+                        })
+                }, 500);
+            },
+            report_coins() {
+                console.log('# data->count->report_coins()');
+                if (this.coins.length > 0) {
+                    this.api_count()
+                }
+            },
+            async api_count() {
+                console.log('# data->count->api_count()');
+                const device = Alpine.store('wikonek').session.deviceMACAddress;
+                const station = Alpine.store('wikonek').session.stationMACAddress;
+                const comma_delimited_coins = this.coins.toString();
+                const url = apiEndPoint+`/count/${device}/${station}/${comma_delimited_coins}`;
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            console.log(`# - count successful`);
+                        }
+                    })
+            },
+            api_done() {
+                const url = '/pesofi_donecoinslot/';
+                console.log(`# data.coin.api_done() fetch-> ${url}`);
+                fetch(url, {method: 'GET'})
+                    .then(() => {
+                        this.report_coins()
+                    })
+                    .then(() => {
+                        if (this.cumulative > 0) {
+                            this.$dispatch('open-landing-count-modal', {cumulative: this.cumulative});
+                            this.cumulative = 0;
+                            this.ticks = 0;
+                        }
+                    })
+            }
+        }))
         Alpine.data('egress', (operation) => ({
             open: false,
             checkin: null,
+            count: null,
             get image() {
                 switch (operation) {
                     default:
@@ -1559,8 +1811,6 @@
                 switch (operation) {
                     case 'purchase':
                         return parseProductRate(Alpine.store('wikonek').data.purchase.product.rate);
-                    case 'count' :
-                        return '₱ ' + Alpine.store('wikonek').data.count.cumulative + ' is equivalent to ';
                 }
             },
             get message() {
@@ -1569,8 +1819,7 @@
                         return parseProductRate(Alpine.store('wikonek').data.purchase.product.rate);
                     case 'count':
                         let airtime = null;
-                        switch (Alpine.store('wikonek').data.count.cumulative) {
-                            // switch (Alpine.store('wikonek').counted) {
+                        switch (this.count.cumulative) {
                             case '1': airtime = 10; break;
                             case '2': airtime = 20; break;
                             case '3': airtime = 30; break;
@@ -1646,6 +1895,11 @@
     function parseProductRate(str) {
         return +str.substring(str.lastIndexOf('₱')+1)
     }//refactor this, place it upstairs
+    function pad(num, size) {
+        num = num.toString();
+        while (num.length < size) num = "0" + num;
+        return num;
+    }
 </script>
 </body>
 </html>
