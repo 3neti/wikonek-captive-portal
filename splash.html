@@ -495,6 +495,51 @@
         </template>
     </div><!-- Notification Page [end] -->
 
+    <!-- [start] Checkin Modal -->
+    <div
+            class="modal-wrapper"
+            x-data="egress('checkin')"
+            x-on:keyup.escape.window="open = false"
+            x-on:open-landing-free-modal.window="open = true; checkin = $event.detail.checkin"
+            x-show="open"
+    >
+        <div
+                class="modal"
+                style="margin: 30px auto;"
+                x-on:click.outside="open = false"
+        >
+            <div
+                    class="header">
+                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+            </div><!-- header -->
+            <div
+                    class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]"
+                    x-on:click="open = false"
+            >
+                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          fill-rule="evenodd"/>
+                </svg>
+            </div><!-- close button -->
+            <div class="content">
+                <div class="text-center" style="width: 300px">
+                    <div style="width: 300px;">
+                        <div class="mb-[30px] text-[15px]"><span x-text="checkin.airtime.toLocaleString() + ' minutes'"> </span> <span class="font-bold block" x-text="checkin.splash"></span></div>
+                        <img :src="image" alt="lgu"/>
+                        <div class="notice">
+                            <div class="text-[15px] mt-[30px]">For inquiries or concerns, please visit:</div>
+                            <div class="text-[15px] font-bold"><a href="https://wikonek.ph">wikonek.ph</a></div>
+                        </div>
+                        <div class="clear-both"></div>
+                        <a class="button block mt-[30px]" :href="checkin.url_landing" x-text="caption"></a>
+                    </div>
+                </div>
+            </div><!-- content -->
+        </div><!-- site-container -->
+        <div class="clear-both"></div>
+    </div><!-- Checkin Modal [end] -->
+
     <!-- [start] Main Canvass -->
     <div
             x-show="hasDeviceMACAddress">
@@ -923,9 +968,6 @@
                     },
                     recipients: [],
                     transactions: [],
-                },
-                checkin: {
-                    airtime: 0, //deprecate
                 },
             },
             session: {
@@ -1464,59 +1506,117 @@
             }
         }))
         Alpine.data('checkin', () => ({
+            checkin: null,
             get claimed() {
                 return Alpine.store('wikonek').session.dayPassClaimed
             },
             get unclaimed() {
                 return ! this.claimed;
             },
-            get freeMinutes() {
-                return Alpine.store('wikonek').dayPass;
+            hydrate(data) {
+                this.checkin = data;
+            },
+            consume(minutes) {
+                this.consumed = minutes;
+
+                return Alpine.store('wikonek').api_consume(minutes);
             },
             notify(minutes) {
                 this.$dispatch('notify', { content: `${minutes} minutes airtime extension`, type: 'info'});
             },
+            refresh() {
+                Alpine.store('wikonek').api_touch();// TODO: deprecate, put day_pass_today in api_ui
+                Alpine.store('wikonek').api_ui();
+            },
             async api_checkin() {
-                console.log(`# data->checkin->api_checkin()`);
+                console.log(`## data->checkin->api_checkin()`);
                 const device = Alpine.store('wikonek').session.deviceMACAddress;
                 const station = Alpine.store('wikonek').session.stationMACAddress;
-                const url = apiEndPoint+`/checkin/${device}/${station}`;
-                await fetch(url, {
-                    method: 'POST',
-                    headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
-                })
-                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
-                    .then(obj => {
-                        let checkin_data = {airtime: 0};
-                        if (obj.isOk === true) {
-                            console.log(`# - checkin successful`);
-                            checkin_data = obj.body.data;
-                        }
-
-                        return checkin_data;
-                    })
-                    .then(checkin_data => {
-                        console.log('storing checkin data');
-                        Alpine.store('wikonek').data.checkin = checkin_data;//deprecate
-                        if (checkin_data.airtime > 0) {
-                            console.log('consuming checkin airtime');
-                            Alpine.store('wikonek').api_touch();
-                            Alpine.store('wikonek').api_consume(checkin_data.airtime)
-                                .then((minutes) => this.notify(minutes))
-                                .then(() => Alpine.store('wikonek').api_ui());
-                        }
-                    })
+                await fetch(apiEndPoint+`/checkin/${device}/${station}`, { method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
+                    .then(response =>  response.json().then(data => ({airtime: data.data, success: response.ok, action: this.hydrate(data.data)})))
+                    .then(checkin => checkin.success ? checkin.airtime: {airtime: 0})
+                    .then(data => this.consume(data.airtime))
+                    .then(minutes => this.notify(minutes))
+                    .then(() => this.refresh())
             },
             submit() {
                 console.log(`# data->checkin->submit()`);
-                this.api_checkin();
-                this.$dispatch('open-landing-free-modal');
+                this.api_checkin()
+                    .then(() => this.$dispatch('open-landing-free-modal', {checkin: this.checkin}));
+            }
+        }))
+
+        Alpine.data('egress', (operation) => ({
+            open: false,
+            checkin: null,
+            get image() {
+                switch (operation) {
+                    default:
+                        return lguURL;
+                }
+            },
+            get payload() {
+                switch (operation) {
+                    case 'purchase':
+                        return parseProductRate(Alpine.store('wikonek').data.purchase.product.rate);
+                    case 'count' :
+                        return '₱ ' + Alpine.store('wikonek').data.count.cumulative + ' is equivalent to ';
+                }
+            },
+            get message() {
+                switch (operation) {
+                    case 'purchase':
+                        return parseProductRate(Alpine.store('wikonek').data.purchase.product.rate);
+                    case 'count':
+                        let airtime = null;
+                        switch (Alpine.store('wikonek').data.count.cumulative) {
+                            // switch (Alpine.store('wikonek').counted) {
+                            case '1': airtime = 10; break;
+                            case '2': airtime = 20; break;
+                            case '3': airtime = 30; break;
+                            case '4': airtime = 40; break;
+                            case '5': airtime = 60; break;
+                            case '6': airtime = 70; break;
+                            case '7': airtime = 80; break;
+                            case '8': airtime = 90; break;
+                            case '9': airtime = 100; break;
+                            case '10': airtime = 240; break;
+                            case '11': airtime = 250; break;
+                            case '12': airtime = 260; break;
+                            case '13': airtime = 270; break;
+                            case '14': airtime = 280; break;
+                            case '15': airtime = 300; break;
+                            case '16': airtime = 310; break;
+                            case '17': airtime = 320; break;
+                            case '18': airtime = 330; break;
+                            case '19': airtime = 340; break;
+                            case '20': airtime = 24 * 60; break;
+                            default: airtime = 0;
+                        }
+                        return airtime + ' minutes';
+                    default:
+                        return 'The world is your oyster!';
+                }
+            },
+            get landing() {
+                switch (operation) {
+                    default:
+                        return landingURL;
+                }
+            },
+            get caption() {
+                switch (operation) {
+                    default:
+                        return 'Go!!!';
+                }
             }
         }))
     })
     const gatewayURL = `http://$gwaddress:$gwport/`;
     const backendIPAddress = `206.189.90.222`;
     const splashURL = `http://${backendIPAddress}/splash`;
+    const lguURL = `http://${backendIPAddress}/lgu`; // image of government sponsor
+    const landingURL = `http://${backendIPAddress}/landing`;
     const apiEndPoint = `http://${backendIPAddress}/api`;
     const testClientMACAddress = '31:88:05:53:76:63';
     const virtualStationID = 'virtual';
