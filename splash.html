@@ -1279,7 +1279,10 @@
         </div><!-- Registration Page [end] -->
         <!-- [start] Dashboard Page -->
         <div x-show="registered">
-            <template x-data="dashboard('user')" x-if="$store.wikonek.modes & SHOW_USER"
+            <!------- [start] User Page ------->
+            <template
+                    x-data="dashboard('user')"
+                    x-if="$store.wikonek.modes & SHOW_USER"
             >
                 <!-- [start] User Page -->
                 <div
@@ -1351,12 +1354,18 @@
                         <div
                                 class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]"
                         >
-                            <button x-data x-on:click="$dispatch('open-count-modal')">
+                            <button x-on:click="$dispatch('open-count-modal')" x-show="canInsertCoin">
                                 <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
                                     <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
                                 </svg>
                                 <span>Insert Coin</span>
+                            </button>
+                            <button x-show="!canInsertCoin">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="red-200">
+                                    <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Check Tindera</span>
                             </button>
                             <button x-data x-on:click="redeem">
                                 <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -1392,9 +1401,100 @@
                         </div><!-- Purchase [end] -->
                     </div><!-- content -->
                 </div><!-- User Page [end] -->
+            </template><!-- User Page [end] -->
+            <!------- [start] Manager Page ------->
+            <template x-data="dashboard('tindera')" x-if="$store.wikonek.modes & SHOW_MANAGER">
+                <div class="site-container wrap p-4" id="dashboard-page-tindera" x-show="$store.wikonek.mode & SHOW_MANAGER">
+                    <div class="header" style="max-width: 600px; margin: 5px auto;">
+                        <div class="logo float-left"><img class="wklogotindera" src="images/wklogo_full_tindera3.png"/></div>
+                        <div class="wallet-details float-right">
+                            <div class="wallet-balance float-left text-right pr-2" x-data="airtime">
+                                <div class="text-[17px] font-bold"><span x-text="timeRemaining"></span></div>
+                                <div class="text-[12px]">Remaining Time</div>
+                            </div>
+                            <div class="header-buttons float-right">
+                                <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-topup-modal')">
+                                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                              fill-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                                <button class="bg-[#eeeeee] p-2 rounded-full" x-data
+                                        x-on:click="$dispatch('open-profile-modal')">
+                                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                              fill-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div><!-- header -->
+                    <div class="clear-both"></div>
+                    <div class="station-id" x-text="'Station ID: '+stationID"></div>
+                    <div class="content relative top-[20px]" style="width: 100%; max-width: 600px;">
+                        <div class="timer mb-[35px] bg-[#FE7D00] rounded grid grid-cols-1 gap-4 text-center p-4">
+                            <div class="timer-element">
+                                <div class="time">₱<span x-text="loadRemaining"></span></div>
+                                <div class="label text-white font-semibold text-sm" x-text="captions.balance"></div>
+                            </div>
+                        </div>
+                        <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.replenish" x-show="replenish">
+                        </div>
+                        <div x-data="checkin">
+                            <div class="text-[#26580F] text-center mb-[35px]">
+                                <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
+                                <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-show="unclaimed" x-text="captions.claim"></a>
+                            </div>
+                        </div>
+                        <div class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]">
+                            <button x-data x-on:click="$dispatch('open-count-modal')">
+                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
+                                    <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
+                                </svg>
+                                <span>Insert Coin</span>
+                            </button>
+                            <button x-data x-on:click="$dispatch('open-redeem-modal')">
+                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
+                                </svg>
+                                <span>Redeem Voucher</span>
+                            </button>
+                            <button x-data x-on:click="$dispatch('open-transfer-modal', {transferee: {name: '', mobile: '', amount: ''}})">
+                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd"
+                                          d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
+                                          fill-rule="evenodd"/>
+                                </svg>
+                                <span>Transfer Load</span>
+                            </button>
+                        </div>
+                        <div x-data="transfer" x-show="$store.wikonek.data.ui.recipients && $store.wikonek.data.ui.recipients.length>0">
+                            <div class="font-bold text-[18px] title mb-[15px]">Recent Transactions</div>
+                            <div class="offers mb-[35px]" >
+                                <template x-for="transferee in $store.wikonek.data.ui.recipients" :key=transferee.mobile>
+                                    <div class="product-offers grid grid-cols-2 gap-2">
+                                        <div class="item"><span x-text="'₱' + (+transferee.amount).toLocaleString()"></span><span x-text="transferee.mobile"></span>
+                                            <span x-text="transferee.name"></span></div>
+                                        <button class="buynow" x-data x-on:click="$dispatch('open-transfer-modal', {transferee})">Transfer Again
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <!--            <div class="start-browsing">-->
+                        <!--                <a class="button block mt-[30px]" style="background: #FE7D00;box-shadow: 0px 3px 0px #17A0DC;" x-data-->
+                        <!--                   x-on:click="$dispatch('open-tindera-landing-free-modal')">Start Browsing for FREE</a>-->
+                        <!--                <a class="button block mt-[30px]" style="background: #FE7D00;box-shadow: 0px 3px 0px #17A0DC;" x-data-->
+                        <!--                   x-on:click="$dispatch('open-tindera-landing-credits-modal')">Start Browsing with Credits</a>-->
+                        <!--            </div>-->
+                    </div><!-- content -->
+                </div><!-- site-container -->
             </template>
         </div><!-- Dashboard Page [end] -->
         <div x-text="device.macAddress"></div>
+        <div>sana gumana ang no click sa no insert coin</div>
     </div><!-- Main Canvass [end] -->
 
     <!-- [start] Error Canvass -->
@@ -1425,6 +1525,8 @@
                 environment: 'testing',
                 refreshInterval: 5 * 1000,
                 flashTimeout: 3 * 1000,
+                replenishThreshold: 5000,
+                insertCoinThreshold: 76700, //centavos for now
             },
             connection: {
                 status: {
@@ -1663,7 +1765,7 @@
                 return values;
             },
             get canManage() {
-                return false;
+                return true;
             },
         })
         Alpine.data('ui', () => ({
@@ -2085,6 +2187,19 @@
             },
             get stationID() {
                 return Alpine.store('wikonek').data.station.name;
+            },
+            get manager() {
+                return Alpine.store('wikonek').data.station.user;
+            },
+            get canInsertCoin() {
+                let retval = true;
+                if (this.manager) {
+                    if (this.manager.wallets[0].balance <= Alpine.store('wikonek').config.insertCoinThreshold) {
+                        retval = false;
+                    }
+                }
+
+                return retval;
             },
             redeem() {
                 this.$dispatch('open-redeem-modal');
