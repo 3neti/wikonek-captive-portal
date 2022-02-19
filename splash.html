@@ -424,7 +424,9 @@
     </style>
 </head>
 <body>
-<div x-data="ui">
+<!-- [start] Content Page -->
+<div
+        x-data="ui">
     <!-- [start] Notification Page -->
     <div
             @notify.window="add($event)"
@@ -494,566 +496,10 @@
             </div>
         </template>
     </div><!-- Notification Page [end] -->
-
-    <!-- [start] Profile  Modal -->
-    <div
-            class="modal-wrapper"
-            x-data="{ open: false }"
-            x-on:keyup.escape.window="open = false"
-            x-on:open-profile-modal.window="open = true"
-            x-show="open"
-    >
-        <div
-                class="modal"
-                style="margin: 30px auto;"
-                x-data="profile"
-                x-on:click.outside="open = false"
-                x-on:submit.prevent="submit"
-        >
-            <div class="header">
-                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
-            </div><!-- header -->
-            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          fill-rule="evenodd"/>
-                </svg>
-            </div>
-            <div class="content">
-                <div class="wrap">
-                    <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="title"></div>
-                    <div class="form">
-                        <form class="signup">
-                            <div class="fname form-element">
-                                <label class="text-[13px]">Full Name</label>
-                                <input disabled type="text" x-model="name">
-                            </div>
-                            <div class="mnumber form-element">
-                                <label class="text-[13px]">Mobile Number</label>
-                                <div class="relative">
-                                <span class="absolute top-[7px] left-[8px]">0
-                                    <span class="text-[#d8d8d8]">|</span>
-                                </span>
-                                    <input disabled style="padding-left: 24px !important;"
-                                           type="text" x-model="number">
-                                </div>
-                            </div>
-                            <div class="pinnum form-element">
-                                <label class="text-[13px]">Old Security PIN</label>
-                                <div class="relative" x-data="{ show: true }">
-                                    <input
-                                            :maxlength="fields.old_pin.maxLength"
-                                            :type="show ? 'password' : 'number'"
-                                            @blur="fields.old_pin.validate(validationCallback)"
-                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            placeholder="e.g. 1234"
-                                            required
-                                            x-model="fields.old_pin.value"
-                                    >
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
-                                        <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
-                                             class="h-6 text-gray-700"
-                                             fill="none"
-                                             viewbox="0 0 576 512"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
-                                                  fill="currentColor">
-                                            </path>
-                                        </svg>
-
-                                        <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
-                                             class="h-6 text-gray-700"
-                                             fill="none"
-                                             viewbox="0 0 640 512"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
-                                                  fill="currentColor">
-                                            </path>
-                                        </svg>
-
-                                    </div>
-                                </div>
-                                <p class="text-red-500 text-xs italic py-2" x-cloak><span x-text="fields.old_pin.errorMsg"></span>
-                                </p>
-                            </div>
-                            <div class="pinnum form-element">
-                                <label class="text-[13px]">Security PIN</label>
-                                <div class="relative" x-data="{ show: true }">
-                                    <input
-                                            :maxlength="fields.pin.maxLength"
-                                            :type="show ? 'password' : 'number'"
-                                            @blur="fields.pin.validate(validationCallback)"
-                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            placeholder="e.g. 1234"
-                                            required
-                                            x-model="fields.pin.value"
-                                    >
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
-                                        <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
-                                             class="h-6 text-gray-700"
-                                             fill="none"
-                                             viewbox="0 0 576 512"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
-                                                  fill="currentColor">
-                                            </path>
-                                        </svg>
-
-                                        <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
-                                             class="h-6 text-gray-700"
-                                             fill="none"
-                                             viewbox="0 0 640 512"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
-                                                  fill="currentColor">
-                                            </path>
-                                        </svg>
-
-                                    </div>
-                                </div>
-                                <p class="text-red-500 text-xs italic py-2" x-cloak><span x-text="fields.pin.errorMsg"></span>
-                                </p>
-                            </div>
-                            <div class="confpinnum form-element" style="margin-bottom: 30px;">
-                                <label class="text-[13px]">Confirm Security PIN</label>
-                                <div class="relative" x-data="{ show: true }">
-                                    <input
-                                            :maxlength="fields.pin_confirmation.maxLength"
-                                            :type="show ? 'password' : 'number'"
-                                            @blur="fields.pin_confirmation.validate(validationCallback)"
-                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            placeholder="e.g. 1234"
-                                            required
-                                            x-model="fields.pin_confirmation.value"
-                                    >
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
-                                        <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
-                                             class="h-6 text-gray-700"
-                                             fill="none"
-                                             viewbox="0 0 576 512"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
-                                                  fill="currentColor">
-                                            </path>
-                                        </svg>
-
-                                        <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
-                                             class="h-6 text-gray-700"
-                                             fill="none"
-                                             viewbox="0 0 640 512"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
-                                                  fill="currentColor">
-                                            </path>
-                                        </svg>
-
-                                    </div>
-                                </div>
-                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                        x-text="fields.pin_confirmation.errorMsg"></span></p>
-                            </div>
-                            <div class="submit form-element mt-[30px]">
-                                <input class="enabled" type="submit" :value="caption">
-                            </div>
-                        </form>
-                    </div>
-                    <!-- if successful -->
-                    <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updateProfileSucceeded">
-                        <p>Profile updated.</p>
-                    </div>
-                    <!-- if failed -->
-                    <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="updateProfileFailed">
-                        <p>Update profile failed! Please try again.</p>
-                    </div>
-                </div>
-            </div><!-- content -->
-        </div><!-- site-container -->
-        <div class="clear-both"></div>
-    </div><!-- Profile Modal [end] -->
-
-    <!-- [start] Checkin Landing Modal -->
-    <div
-            class="modal-wrapper"
-            x-data="egress('checkin')"
-            x-on:keyup.escape.window="open = false"
-            x-on:open-landing-free-modal.window="open = true; checkin = $event.detail.checkin"
-            x-show="open"
-    >
-        <div
-                class="modal"
-                style="margin: 30px auto;"
-                x-on:click.outside="open = false"
-        >
-            <div
-                    class="header">
-                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
-            </div><!-- header -->
-            <div
-                    class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]"
-                    x-on:click="open = false"
-            >
-                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          fill-rule="evenodd"/>
-                </svg>
-            </div><!-- close button -->
-            <div class="content">
-                <div class="text-center" style="width: 300px">
-                    <div style="width: 300px;">
-                        <div class="mb-[30px] text-[15px]"><span x-text="checkin.airtime.toLocaleString() + ' minutes'"> </span> <span class="font-bold block" x-text="checkin.splash"></span></div>
-                        <img :src="image" alt="lgu"/>
-                        <div class="notice">
-                            <div class="text-[15px] mt-[30px]">For inquiries or concerns, please visit:</div>
-                            <div class="text-[15px] font-bold"><a href="https://wikonek.ph">wikonek.ph</a></div>
-                        </div>
-                        <div class="clear-both"></div>
-                        <a class="button block mt-[30px]" :href="checkin.url_landing" x-text="caption"></a>
-                    </div>
-                </div>
-            </div><!-- content -->
-        </div><!-- site-container -->
-        <div class="clear-both"></div>
-    </div><!-- Checkin Landing Modal [end] -->
-
-    <!-- [start] Count Modal -->
-    <div
-            class="modal-wrapper"
-            x-data="{ open: false }"
-            x-on:keyup.escape.window="open = false"
-            x-on:open-count-modal.window="open = true"
-            x-show="open"
-    >
-        <div
-                class="modal"
-                style="margin: 30px auto;"
-                x-data="count"
-                x-on:click.outside="open = false"
-                x-on:submit.prevent
-        >
-            <div class="header">
-                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
-            </div><!-- header -->
-            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          fill-rule="evenodd"/>
-                </svg>
-            </div>
-            <div class="content">
-                <div class="wrap">
-                    <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="amount"></div>
-                    <div class="time-insert-coin">
-                        <span class="block text-center" x-show="disarmed" x-text="`Click on the '${caption}' button below. You have ${ticks} seconds to insert coins.`"></span>
-                        <span class="countdown" x-text="timeRemaining"></span>
-                    </div>
-                    <div class="form relative">
-                        <div class="coinbank">
-                            <div class="vcenter" style="width:160px;">
-                                <button class="wrap insertcoin" x-on:click="toggle">
-                                    <img class="absolute top-[10px] left-[10px]" src="images/pointer.png"/>
-                                    <span x-text="caption"></span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- content -->
-        </div><!-- site-container -->
-        <div class="clear-both"></div>
-    </div><!-- Count Modal [end] -->
-
-    <!-- [start] Count Landing Modal -->
-    <div
-            class="modal-wrapper"
-            x-data="egress('count')"
-            x-on:keyup.escape.window="open = false"
-            x-on:open-landing-count-modal.window="open = true; count = $event.detail;"
-            x-show="open"
-    >
-        <div
-                class="modal"
-                style="margin: 30px auto;"
-                x-on:click.outside="open = false"
-                x-on:submit.prevent
-        >
-            <div class="header">
-                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
-            </div><!-- header -->
-            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          fill-rule="evenodd"/>
-                </svg>
-            </div>
-            <div class="content">
-                <div class="text-center" style="width: 300px;">
-                    <div style="width: 300px;">
-                        <div class="mb-[30px] text-[15px]"><span x-text="'₱ ' + count.cumulative"> </span> <span class="font-bold block" x-text="message"></span>
-                        </div>
-                        <img :src="image" alt="splash"/>
-                        <div class="notice">
-                            <div class="text-[15px] mt-[30px]">For inquiries or concerns, please visit:</div>
-                            <div class="text-[15px] font-bold"><a href="https://wikonek.ph">https://wikonek.ph</a></div>
-                        </div>
-                        <div class="clear-both"></div>
-                        <a class="button block mt-[30px]" :href="landing" x-text="caption"></a>
-                    </div>
-                </div>
-            </div><!-- content -->
-        </div><!-- site-container -->
-        <div class="clear-both"></div>
-    </div><!-- Count Landing Modal [end] -->
-
-    <!-- [start] Redeem Modal -->
-    <div
-            class="modal-wrapper"
-            x-data="{ open: false }"
-            x-on:keyup.escape.window="open = false"
-            x-on:open-redeem-modal.window="open = true"
-            x-show="open"
-    >
-        <div
-                class="modal"
-                style="margin: 30px auto;"
-                x-data="redeem"
-                x-on:click.outside="open = false"
-                x-on:submit.prevent="submit"
-        >
-            <div class="header">
-                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
-            </div><!-- header -->
-            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false; done();">
-                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          fill-rule="evenodd"/>
-                </svg>
-            </div>
-            <div class="content">
-                <div class="wrap">
-                    <div class="title text-center font-bold text-[21px] mb-[30px]">Redeem Voucher</div>
-                    <div class="form">
-                        <form class="signup">
-                            <div class="fname form-element">
-                                <label class="text-[13px]">Voucher Code</label>
-                                <input
-                                        :maxlength="fields.voucher.maxLength"
-                                        @blur="fields.voucher.validate(validationCallback)"
-                                        aria-label="Voucher Code"
-                                        placeholder="include the dash e.g. 91LB-H537"
-                                        required
-                                        type="text"
-                                        x-model="fields.voucher.value">
-                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                        x-text="fields.voucher.errorMsg"></span></p>
-                            </div>
-                            <div class="submit form-element mt-[30px]">
-                                <input :value="caption" class="enabled" type="submit">
-                            </div>
-                        </form>
-                    </div>
-                    <!-- if successful -->
-                    <div class="success-message text-center text-[#26580F] m-[15px]" x-show="redemptionSucceeded">
-                        <p x-text="message"></p>
-                    </div>
-                    <!-- if failed -->
-                    <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="redemptionFailed">
-                        <p>Voucher redemption failed! Please input a valid code..</p>
-                    </div>
-                </div>
-            </div><!-- content -->
-        </div><!-- site-container -->
-        <div class="clear-both"></div>
-    </div><!-- Redeem Modal [end] -->
-
-    <!-- [start] Transfer Modal -->
-    <div
-            x-data="transfer">
-        <div
-                class="modal-wrapper"
-                x-data="{ open: false }"
-                x-on:keyup.escape.window="open = false"
-                x-on:open-transfer-modal.window="open = true; const tf = $event.detail.transferee; fields.mobile.value = tf.mobile ? ((tf.mobile + '').substr(2))*1 : ''; fields.amount.value = tf.amount; tf.mobile && validate()"
-                x-show="open"
-        >
-            <div
-                    class="modal"
-                    style="margin: 30px auto;"
-
-                    x-on:click.outside="open = false"
-                    x-on:submit.prevent="submit"
-            >
-                <div class="header">
-                    <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
-                </div><!-- header -->
-                <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path clip-rule="evenodd"
-                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                              fill-rule="evenodd"/>
-                    </svg>
-                </div>
-                <div class="content">
-                    <div class="wrap">
-                        <div class="title text-center font-bold text-[21px] mb-[30px]">Transfer Load</div>
-                        <div class="form">
-                            <form class="signup">
-                                <div class="mnumber form-element">
-                                    <label class="text-[13px]">Mobile Number</label>
-                                    <div class="relative">
-                                <span class="absolute top-[7px] left-[8px]">0 <span
-                                        class="text-[#d8d8d8]">|</span></span>
-                                        <input
-                                                :maxlength="fields.mobile.maxLength"
-                                                @blur="fields.mobile.validate(validationCallback)"
-                                                oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                                placeholder="9xxxxxxxxx e.g. 9123456789" required
-                                                style="padding-left: 24px !important;"
-                                                type="number"
-                                                x-model="fields.mobile.value"
-                                        >
-                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                                x-text="fields.mobile.errorMsg"></span></p>
-                                    </div>
-                                </div>
-                                <div class="bday form-element">
-                                    <label class="text-[13px]">Amount Credits</label>
-                                    <input
-                                            :maxlength="fields.amount.maxLength"
-                                            @blur="fields.amount.validate(validationCallback)"
-                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            placeholder="minimum 5 pesos e.g. 100"
-                                            required
-                                            type="number"
-                                            x-model="fields.amount.value"
-                                    >
-                                    <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                            x-text="fields.amount.errorMsg"></span></p>
-                                    <!--                            <input placeholder="minimum 5 pesos e.g. 100" required type="number" x-model="enteredAmount">-->
-                                </div>
-                                <div class="submit form-element mt-[30px]">
-                                    <input :value="caption" class="enabled" type="submit" x-show="!transferSucceeded">
-                                </div>
-                            </form>
-                        </div>
-                        <!-- if successful -->
-                        <div class="success-message text-center text-[#26580F] m-[15px]" x-show="transferSucceeded">
-                            <p x-text="message"></p>
-                        </div>
-                        <!-- if failed -->
-                        <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="transferFailed">
-                            <p>Transfer failed! Please try again.</p>
-                        </div>
-                    </div>
-                </div><!-- content -->
-            </div><!-- site-container -->
-            <div class="clear-both"></div>
-        </div>
-    </div><!-- Transfer Modal [end] -->
-
-    <!-- [start] Purchase Modal -->
-    <div
-            class="modal-wrapper"
-            x-data="{ open: false, prod: null }"
-            x-on:keyup.escape.window="open = false"
-            x-on:open-confirm-purchase-modal.window="open = true; window.scroll(0,0)"
-            x-show="open"
-    >
-        <div
-                class="modal"
-                style="margin: 30px auto;"
-                x-data="purchase"
-                x-on:click.outside="open = false"
-                x-on:submit.prevent
-        >
-            <div class="header">
-                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
-            </div><!-- header -->
-            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          fill-rule="evenodd"/>
-                </svg>
-            </div>
-            <div class="content">
-                <div class="wrap">
-                    <div style="text-align: center;"
-                         x-show="open" x-transition
-                         x-on:click="open = false"
-                    >
-                        <div
-                                x-on:click.stop
-                                x-trap.noscroll.inert="open"
-                        >
-                            <!-- Title -->
-                            <div class="title text-center font-bold text-[21px] mb-[30px]">Confirm Purchase</div>
-                            <!-- Content -->
-                            <p class="mt-2 text-gray-600" x-text="product.name"></p>
-                            <!-- Buttons -->
-                            <div>
-                                <a class="button block mt-[30px]" x-data x-on:click="submit; open = false">Confirm</a>
-                                <a class="button block mt-[30px]" x-data x-on:click="open = false">Cancel</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- content -->
-        </div><!-- site-container -->
-        <div class="clear-both"></div>
-    </div><!-- Purchase Modal [end] -->
-
-    <!-- [start] Purchase Landing Modal -->
-    <div
-            class="modal-wrapper"
-            x-data="egress('purchase')"
-            x-on:keyup.escape.window="open = false"
-            x-on:open-landing-purchase-modal.window="open = true; purchase = $event.detail.product"
-            x-show="open"
-    >
-        <div
-                class="modal"
-                style="margin: 30px auto;"
-                x-on:click.outside="open = false"
-                x-on:submit.prevent
-        >
-            <div class="header">
-                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
-            </div><!-- header -->
-            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          fill-rule="evenodd"/>
-                </svg>
-            </div>
-            <div class="content">
-                <div class="text-center" style="width: 300px;">
-                    <div style="width: 300px;">
-                        <div class="mb-[30px] text-[15px]">You are now connected with<span class="font-bold block"><span
-                                class="amt" x-text="purchase.rate"></span> Credits</span></div>
-                        <img :src="image" alt="splash"/>
-                        <div class="notice">
-                            <div class="text-[15px] mt-[30px]">For inquiries or concerns, please visit:</div>
-                            <div class="text-[15px] font-bold"><a href="https://wikonek.ph">https://wikonek.ph</a></div>
-                        </div>
-                        <div class="clear-both"></div>
-                        <a class="button block mt-[30px]" :href="landing" x-text="caption"></a>
-                    </div>
-                </div>
-            </div><!-- content -->
-        </div><!-- site-container -->
-        <div class="clear-both"></div>
-    </div><!-- Purchase Landing Modal [end] -->
-
-    <!-- [start] Main Canvass -->
+    <!-- [start] Main Canvas -->
     <div
             x-show="hasDeviceMACAddress">
-        <!-- [start] Splash Page -->
+        <!-- [start] Splash -->
         <div
                 class="splash p-4"
                 id="splash-page"
@@ -1062,8 +508,8 @@
                 <img :src="image" alt="splash" class="fade-in"/>
             </div>
             <div class="rounded-lg" id="loader"></div>
-        </div><!-- Splash Page [end] -->
-        <!-- [start] Registration Page -->
+        </div><!-- Splash [end] -->
+        <!-- [start] Registration -->
         <div
                 class="site-container
                 wrap p-4"
@@ -1276,103 +722,580 @@
                     </div>
                 </div>
             </div><!-- content -->
-        </div><!-- Registration Page [end] -->
-        <!-- [start] Dashboard Page -->
-        <div x-show="registered">
-            <!------- [start] User Page ------->
-            <template
-                    x-data="dashboard('user')"
-                    x-if="$store.wikonek.modes & SHOW_USER"
+        </div><!-- Registration [end] -->
+        <!-- [start] Modals -->
+        <div>
+            <!-- [start] Profile  Modal -->
+            <div
+                    class="modal-wrapper"
+                    x-data="{ open: false }"
+                    x-on:keyup.escape.window="open = false"
+                    x-on:open-profile-modal.window="open = true"
+                    x-show="open"
             >
-                <!-- [start] User Page -->
                 <div
-                        class="site-container wrap p-4"
-                        id="dashboard-page"
-                        x-show="$store.wikonek.mode & SHOW_USER"
+                        class="modal"
+                        style="margin: 30px auto;"
+                        x-data="profile"
+                        x-on:click.outside="open = false"
+                        x-on:submit.prevent="submit"
                 >
-                    <!-- [start] Header -->
+                    <div class="header">
+                        <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                    </div><!-- header -->
+                    <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                        <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path clip-rule="evenodd"
+                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                  fill-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="content">
+                        <div class="wrap">
+                            <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="title"></div>
+                            <div class="form">
+                                <form class="signup">
+                                    <div class="fname form-element">
+                                        <label class="text-[13px]">Full Name</label>
+                                        <input disabled type="text" x-model="name">
+                                    </div>
+                                    <div class="mnumber form-element">
+                                        <label class="text-[13px]">Mobile Number</label>
+                                        <div class="relative">
+                                <span class="absolute top-[7px] left-[8px]">0
+                                    <span class="text-[#d8d8d8]">|</span>
+                                </span>
+                                            <input disabled style="padding-left: 24px !important;"
+                                                   type="text" x-model="number">
+                                        </div>
+                                    </div>
+                                    <div class="pinnum form-element">
+                                        <label class="text-[13px]">Old Security PIN</label>
+                                        <div class="relative" x-data="{ show: true }">
+                                            <input
+                                                    :maxlength="fields.old_pin.maxLength"
+                                                    :type="show ? 'password' : 'number'"
+                                                    @blur="fields.old_pin.validate(validationCallback)"
+                                                    oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                    placeholder="e.g. 1234"
+                                                    required
+                                                    x-model="fields.old_pin.value"
+                                            >
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                                                <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
+                                                     class="h-6 text-gray-700"
+                                                     fill="none"
+                                                     viewbox="0 0 576 512"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
+                                                          fill="currentColor">
+                                                    </path>
+                                                </svg>
+
+                                                <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
+                                                     class="h-6 text-gray-700"
+                                                     fill="none"
+                                                     viewbox="0 0 640 512"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
+                                                          fill="currentColor">
+                                                    </path>
+                                                </svg>
+
+                                            </div>
+                                        </div>
+                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span x-text="fields.old_pin.errorMsg"></span>
+                                        </p>
+                                    </div>
+                                    <div class="pinnum form-element">
+                                        <label class="text-[13px]">Security PIN</label>
+                                        <div class="relative" x-data="{ show: true }">
+                                            <input
+                                                    :maxlength="fields.pin.maxLength"
+                                                    :type="show ? 'password' : 'number'"
+                                                    @blur="fields.pin.validate(validationCallback)"
+                                                    oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                    placeholder="e.g. 1234"
+                                                    required
+                                                    x-model="fields.pin.value"
+                                            >
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                                                <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
+                                                     class="h-6 text-gray-700"
+                                                     fill="none"
+                                                     viewbox="0 0 576 512"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
+                                                          fill="currentColor">
+                                                    </path>
+                                                </svg>
+
+                                                <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
+                                                     class="h-6 text-gray-700"
+                                                     fill="none"
+                                                     viewbox="0 0 640 512"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
+                                                          fill="currentColor">
+                                                    </path>
+                                                </svg>
+
+                                            </div>
+                                        </div>
+                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span x-text="fields.pin.errorMsg"></span>
+                                        </p>
+                                    </div>
+                                    <div class="confpinnum form-element" style="margin-bottom: 30px;">
+                                        <label class="text-[13px]">Confirm Security PIN</label>
+                                        <div class="relative" x-data="{ show: true }">
+                                            <input
+                                                    :maxlength="fields.pin_confirmation.maxLength"
+                                                    :type="show ? 'password' : 'number'"
+                                                    @blur="fields.pin_confirmation.validate(validationCallback)"
+                                                    oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                    placeholder="e.g. 1234"
+                                                    required
+                                                    x-model="fields.pin_confirmation.value"
+                                            >
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                                                <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
+                                                     class="h-6 text-gray-700"
+                                                     fill="none"
+                                                     viewbox="0 0 576 512"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
+                                                          fill="currentColor">
+                                                    </path>
+                                                </svg>
+
+                                                <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
+                                                     class="h-6 text-gray-700"
+                                                     fill="none"
+                                                     viewbox="0 0 640 512"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
+                                                          fill="currentColor">
+                                                    </path>
+                                                </svg>
+
+                                            </div>
+                                        </div>
+                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                x-text="fields.pin_confirmation.errorMsg"></span></p>
+                                    </div>
+                                    <div class="submit form-element mt-[30px]">
+                                        <input class="enabled" type="submit" :value="caption">
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- if successful -->
+                            <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updateProfileSucceeded">
+                                <p>Profile updated.</p>
+                            </div>
+                            <!-- if failed -->
+                            <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="updateProfileFailed">
+                                <p>Update profile failed! Please try again.</p>
+                            </div>
+                        </div>
+                    </div><!-- content -->
+                </div><!-- site-container -->
+                <div class="clear-both"></div>
+            </div><!-- Profile Modal [end] -->
+            <!-- [start] Count Modal -->
+            <div
+                    class="modal-wrapper"
+                    x-data="{ open: false }"
+                    x-on:keyup.escape.window="open = false"
+                    x-on:open-count-modal.window="open = true; window.scroll(0,0)"
+                    x-show="open"
+            >
+                <div
+                        class="modal"
+                        style="margin: 30px auto;"
+                        x-data="count"
+                        x-on:click.outside="open = false"
+                        x-on:submit.prevent
+                >
+                    <div class="header">
+                        <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                    </div><!-- header -->
+                    <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                        <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path clip-rule="evenodd"
+                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                  fill-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="content">
+                        <div class="wrap">
+                            <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="amount"></div>
+                            <div class="time-insert-coin">
+                                <span class="block text-center" x-show="disarmed" x-text="`Click on the '${caption}' button below. You have ${ticks} seconds to insert coins.`"></span>
+                                <span class="countdown" x-text="timeRemaining"></span>
+                            </div>
+                            <div class="form relative">
+                                <div class="coinbank">
+                                    <div class="vcenter" style="width:160px;">
+                                        <button class="wrap insertcoin" x-on:click="toggle">
+                                            <img class="absolute top-[10px] left-[10px]" src="images/pointer.png"/>
+                                            <span x-text="caption"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- content -->
+                </div><!-- site-container -->
+                <div class="clear-both"></div>
+            </div><!-- Count Modal [end] -->
+            <!-- [start] Redeem Modal -->
+            <div
+                    class="modal-wrapper"
+                    x-data="{ open: false }"
+                    x-on:keyup.escape.window="open = false"
+                    x-on:open-redeem-modal.window="open = true; window.scroll(0,0)"
+                    x-show="open"
+            >
+                <div
+                        class="modal"
+                        style="margin: 30px auto;"
+                        x-data="redeem"
+                        x-on:click.outside="open = false"
+                        x-on:submit.prevent="submit"
+                >
+                    <div class="header">
+                        <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                    </div><!-- header -->
+                    <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false; done();">
+                        <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path clip-rule="evenodd"
+                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                  fill-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="content">
+                        <div class="wrap">
+                            <div class="title text-center font-bold text-[21px] mb-[30px]">Redeem Voucher</div>
+                            <div class="form">
+                                <form class="signup">
+                                    <div class="fname form-element">
+                                        <label class="text-[13px]">Voucher Code</label>
+                                        <input
+                                                :maxlength="fields.voucher.maxLength"
+                                                @blur="fields.voucher.validate(validationCallback)"
+                                                aria-label="Voucher Code"
+                                                placeholder="include the dash e.g. 91LB-H537"
+                                                required
+                                                type="text"
+                                                x-model="fields.voucher.value">
+                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                x-text="fields.voucher.errorMsg"></span></p>
+                                    </div>
+                                    <div class="submit form-element mt-[30px]">
+                                        <input :value="caption" class="enabled" type="submit">
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- if successful -->
+                            <div class="success-message text-center text-[#26580F] m-[15px]" x-show="redemptionSucceeded">
+                                <p x-text="message"></p>
+                            </div>
+                            <!-- if failed -->
+                            <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="redemptionFailed">
+                                <p>Voucher redemption failed! Please input a valid code..</p>
+                            </div>
+                        </div>
+                    </div><!-- content -->
+                </div><!-- site-container -->
+                <div class="clear-both"></div>
+            </div><!-- Redeem Modal [end] -->
+            <!-- [start] Transfer Modal -->
+            <div
+                    x-data="transfer">
+                <div
+                        class="modal-wrapper"
+                        x-data="{ open: false }"
+                        x-on:keyup.escape.window="open = false"
+                        x-on:open-transfer-modal.window="open = true; const tf = $event.detail.transferee; fields.mobile.value = tf.mobile ? ((tf.mobile + '').substr(2))*1 : ''; fields.amount.value = tf.amount; tf.mobile && validate(); ; window.scroll(0,0)"
+                        x-show="open"
+                >
                     <div
-                            class="header"
-                            style="max-width: 600px; margin: 5px auto;">
-                        <div class="logo float-left"><img class="wklogo" src="images/wklogo_full.png"/></div>
-                        <div class="wallet-details float-right">
+                            class="modal"
+                            style="margin: 30px auto;"
+
+                            x-on:click.outside="open = false"
+                            x-on:submit.prevent="submit"
+                    >
+                        <div class="header">
+                            <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                        </div><!-- header -->
+                        <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                            <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd"
+                                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                      fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="content">
+                            <div class="wrap">
+                                <div class="title text-center font-bold text-[21px] mb-[30px]">Transfer Load</div>
+                                <div class="form">
+                                    <form class="signup">
+                                        <div class="mnumber form-element">
+                                            <label class="text-[13px]">Mobile Number</label>
+                                            <div class="relative">
+                                <span class="absolute top-[7px] left-[8px]">0 <span
+                                        class="text-[#d8d8d8]">|</span></span>
+                                                <input
+                                                        :maxlength="fields.mobile.maxLength"
+                                                        @blur="fields.mobile.validate(validationCallback)"
+                                                        oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                        placeholder="9xxxxxxxxx e.g. 9123456789" required
+                                                        style="padding-left: 24px !important;"
+                                                        type="number"
+                                                        x-model="fields.mobile.value"
+                                                >
+                                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                        x-text="fields.mobile.errorMsg"></span></p>
+                                            </div>
+                                        </div>
+                                        <div class="bday form-element">
+                                            <label class="text-[13px]">Amount Credits</label>
+                                            <input
+                                                    :maxlength="fields.amount.maxLength"
+                                                    @blur="fields.amount.validate(validationCallback)"
+                                                    oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                    placeholder="minimum 5 pesos e.g. 100"
+                                                    required
+                                                    type="number"
+                                                    x-model="fields.amount.value"
+                                            >
+                                            <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                    x-text="fields.amount.errorMsg"></span></p>
+                                            <!--                            <input placeholder="minimum 5 pesos e.g. 100" required type="number" x-model="enteredAmount">-->
+                                        </div>
+                                        <div class="submit form-element mt-[30px]">
+                                            <input :value="caption" class="enabled" type="submit" x-show="!transferSucceeded">
+                                        </div>
+                                    </form>
+                                </div>
+                                <!-- if successful -->
+                                <div class="success-message text-center text-[#26580F] m-[15px]" x-show="transferSucceeded">
+                                    <p x-text="message"></p>
+                                </div>
+                                <!-- if failed -->
+                                <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="transferFailed">
+                                    <p>Transfer failed! Please try again.</p>
+                                </div>
+                            </div>
+                        </div><!-- content -->
+                    </div><!-- site-container -->
+                    <div class="clear-both"></div>
+                </div>
+            </div><!-- Transfer Modal [end] -->
+            <!-- [start] Purchase Modal -->
+            <div
+                    class="modal-wrapper"
+                    x-data="{ open: false, prod: null }"
+                    x-on:keyup.escape.window="open = false"
+                    x-on:open-confirm-purchase-modal.window="open = true; window.scroll(0,0)"
+                    x-show="open"
+            >
+                <div
+                        class="modal"
+                        style="margin: 30px auto;"
+                        x-data="purchase"
+                        x-on:click.outside="open = false"
+                        x-on:submit.prevent
+                >
+                    <div class="header">
+                        <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                    </div><!-- header -->
+                    <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
+                        <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path clip-rule="evenodd"
+                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                  fill-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="content">
+                        <div class="wrap">
+                            <div style="text-align: center;"
+                                 x-show="open" x-transition
+                                 x-on:click="open = false"
+                            >
+                                <div
+                                        x-on:click.stop
+                                        x-trap.noscroll.inert="open"
+                                >
+                                    <!-- Title -->
+                                    <div class="title text-center font-bold text-[21px] mb-[30px]">Confirm Purchase</div>
+                                    <!-- Content -->
+                                    <p class="mt-2 text-gray-600" x-text="product.name"></p>
+                                    <!-- Buttons -->
+                                    <div>
+                                        <a class="button block mt-[30px]" x-data x-on:click="submit; open = false">Confirm</a>
+                                        <a class="button block mt-[30px]" x-data x-on:click="open = false">Cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- content -->
+                </div><!-- site-container -->
+                <div class="clear-both"></div>
+            </div><!-- Purchase Modal [end] -->
+        </div><!-- Modals [end] -->
+        <!-- [start] Dashboard -->
+        <div
+                x-show="registered">
+            <!-- [start] User Page -->
+            <div
+                    x-data="dashboard"
+                    class="site-container wrap p-4"
+                    id="dashboard-page-user"
+            >
+                <!-- [start] Header -->
+                <div
+                        class="header"
+                        style="max-width: 600px; margin: 5px auto;">
+                    <!-- [start] Logo -->
+                    <div>
+                        <template x-if="isUser">
+                            <div class="logo float-left"><img class="wklogo" src="images/wklogo_full.png" @click="willManage = !willManage"/></div>
+                        </template>
+                        <template x-if="isManager">
+                            <div class="logo float-left"><img class="wklogotindera" src="images/wklogo_full_tindera2.png" @click="willManage = !willManage"/></div>
+                        </template>
+                    </div><!-- Logo [end] -->
+                    <!-- [start] Topup Profile -->
+                    <div
+                            class="wallet-details float-right">
+                        <template x-if="isUser">
                             <div class="wallet-balance float-left text-right pr-2">
                                 <div class="text-[17px] font-bold">₱<span x-text="loadRemaining"></span></div>
                                 <div class="text-[12px]" x-text="captions.balance"></div>
                             </div>
-                            <div class="header-buttons float-right">
-                                <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-topup-modal')">
-                                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path clip-rule="evenodd"
-                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                                              fill-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                                <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-profile-modal')">
-                                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                              fill-rule="evenodd"/>
-                                    </svg>
-                                </button>
+                        </template>
+                        <template x-if="isManager">
+                            <div class="wallet-balance float-left text-right pr-2" x-data="airtime">
+                                <div class="text-[17px] font-bold"><span x-text="timeRemaining"></span></div>
+                                <div class="text-[12px]">Remaining Time</div>
                             </div>
+                        </template>
+                        <div class="header-buttons float-right">
+                            <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-topup-modal')">
+                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd"
+                                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                          fill-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-profile-modal')">
+                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                          fill-rule="evenodd"/>
+                                </svg>
+                            </button>
                         </div>
-                    </div><!-- Header [end] -->
-                    <div class="clear-both"></div><!-- divider -->
-                    <div class="station-id" x-text="'Station ID: ' + stationID"></div><!-- station id -->
-                    <div class="content relative top-[20px]" style="width: 100%; max-width: 600px;">
-                        <!-- [start] Airtime -->
-                        <div
-                                class="timer mb-[35px] bg-[#17A0DC] rounded grid grid-cols-4 gap-4 text-center p-4"
-                                x-data="airtime"
-                        >
-                            <div class="timer-element">
-                                <div class="time" x-text="days"></div>
-                                <div class="label text-white font-semibold text-sm">Days</div>
-                            </div><!-- days -->
-                            <div class="timer-element">
-                                <div class="time" x-text="hours"></div>
-                                <div class="label text-white font-semibold text-sm">Hours</div>
-                            </div><!-- hours -->
-                            <div class="timer-element">
-                                <div class="time" x-text="minutes"></div>
-                                <div class="label text-white font-semibold text-sm">Minutes</div>
-                            </div><!-- minutes -->
-                            <div class="timer-element">
-                                <div class="time" x-text="seconds"></div>
-                                <div class="label text-white font-semibold text-sm">Seconds</div>
-                            </div><!-- seconds -->
-                        </div><!-- Airtime [end] -->
-                        <!-- [start] Checkin -->
-                        <div
-                                x-data="checkin">
-                            <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
-                            <div class="text-[#26580F] text-center mb-[35px]" x-show="unclaimed">
-                                <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="captions.claim"></a>
-                            </div>
-                        </div><!-- Checkin [end] -->
-                        <!-- [start] Count Redeem Transfer -->
-                        <div
-                                class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]"
-                        >
-                            <button x-on:click="$dispatch('open-count-modal')" x-show="canInsertCoin">
-                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
-                                    <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
-                                </svg>
-                                <span>Insert Coin</span>
-                            </button>
-                            <button x-show="!canInsertCoin">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="red-200">
-                                    <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
-                                </svg>
-                                <span>Check Tindera</span>
-                            </button>
+                    </div><!-- Topup Profile [end] -->
+                </div><!-- Header [end] -->
+                <!-- [start] Divider -->
+                <div
+                        class="clear-both"></div><!-- Divider [end] -->
+                <!-- [start] Station ID -->
+                <div
+                        class="station-id"
+                        x-text="'Station ID: ' + stationID"
+                ></div><!-- Station ID [end] -->
+                <!-- [start] Panels -->
+                <div
+                        class="content relative top-[20px]"
+                        style="width: 100%; max-width: 600px;"
+                >
+                    <!-- [start] Airtime | Load Remaining -->
+                    <div>
+                        <template x-if="isUser">
+                            <!-- [start] Airtime -->
+                            <div
+                                    class="timer mb-[35px] bg-[#17A0DC] rounded grid grid-cols-4 gap-4 text-center p-4"
+                            x-data="airtime"
+                    >
+                        <div class="timer-element">
+                            <div class="time" x-text="days"></div>
+                            <div class="label text-white font-semibold text-sm">Days</div>
+                        </div><!-- days -->
+                        <div class="timer-element">
+                            <div class="time" x-text="hours"></div>
+                            <div class="label text-white font-semibold text-sm">Hours</div>
+                        </div><!-- hours -->
+                        <div class="timer-element">
+                            <div class="time" x-text="minutes"></div>
+                            <div class="label text-white font-semibold text-sm">Minutes</div>
+                        </div><!-- minutes -->
+                        <div class="timer-element">
+                            <div class="time" x-text="seconds"></div>
+                            <div class="label text-white font-semibold text-sm">Seconds</div>
+                        </div><!-- seconds -->
+                    </div><!-- Airtime [end] -->
+                        </template>
+                        <template x-if="isManager">
+                            <!-- [start] Load Remaining -->
+                            <div>
+                                <div class="timer mb-[35px] bg-[#FE7D00] rounded grid grid-cols-1 gap-4 text-center p-4">
+                                    <div class="timer-element">
+                                        <div class="time">₱<span x-text="loadRemaining"></span></div>
+                                        <div class="label text-white font-semibold text-sm" x-text="captions.balance"></div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.replenish" x-show="replenish">
+                                </div>
+                            </div><!-- Load Remaining [end] -->
+                        </template>
+                    </div><!-- Airtime | Load Remaining [end] -->
+                    <!-- [start] Checkin -->
+                    <div
+                            x-data="checkin">
+                        <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
+                        <div class="text-[#26580F] text-center mb-[35px]" x-show="unclaimed">
+                            <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="captions.claim"></a>
+                        </div>
+                    </div><!-- Checkin [end] -->
+                    <!-- [start] Count Redeem Transfer -->
+                    <div
+                            class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]"
+                    >
+                        <!-- [start] Count -->
+                        <div>
+                            <template x-if="canInsertCoin">
+                                <button x-on:click="$dispatch('open-count-modal')">
+                                    <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
+                                        <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
+                                    </svg>
+                                    <span>Insert Coin</span>
+                                </button>
+                            </template>
+                            <template x-if="!canInsertCoin">
+                                <button>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="red-200">
+                                        <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Check Tindera</span>
+                                </button>
+                            </template>
+                        </div><!-- Count [end] -->
+                        <!-- [start] Redeem -->
+                        <div>
                             <button x-data x-on:click="redeem">
                                 <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
                                 </svg>
                                 <span>Redeem Voucher</span>
                             </button>
+                        </div><!-- Redeem [end] -->
+                        <!-- [start] Transfer -->
+                        <div>
                             <button x-data x-on:click="transfer">
                                 <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                     <path clip-rule="evenodd"
@@ -1381,128 +1304,58 @@
                                 </svg>
                                 <span>Transfer Load</span>
                             </button>
-                        </div><!-- Count Redeem Transfer [end] -->
-                        <!-- [start] Purchase -->
-                        <div
-                                x-data="purchase"
-                                x-show="canBuy"
-                        >
-                            <div class="font-bold text-[18px] title mb-[15px]" x-text="title"></div>
-                            <div class="offers mb-[35px]">
-                                <template x-for="product in products" :key=product.code>
-                                    <template x-if="price(product.code) <= $store.wikonek.data.ui.balance.load.amount">
+                        </div><!-- Transfer [end] -->
+                    </div><!-- Count Redeem Transfer [end] -->
+                    <!-- [start] List -->
+                    <div>
+                        <template x-if="isUser">
+                            <!-- [start] Purchase -->
+                            <div
+                                    x-data="purchase"
+                                    x-show="canBuy"
+                            >
+                                <div class="font-bold text-[18px] title mb-[15px]" x-text="title"></div>
+                                <div class="offers mb-[35px]">
+                                    <template x-for="product in products" :key=product.code>
+                                        <template x-if="price(product.code) <= $store.wikonek.data.ui.balance.load.amount">
+                                            <div class="product-offers grid grid-cols-2 gap-2">
+                                                <div class="item"><span x-text="product.rate"></span><span x-text="product.name"></span></div>
+                                                <button class="buynow" x-data x-on:click="confirm(product.code)" x-text="caption"></button>
+                                            </div>
+                                        </template>
+                                    </template>
+                                </div>
+                            </div><!-- Purchase [end] -->
+                        </template>
+                        <template x-if="isManager">
+                            <!-- [start] Transfer -->
+                            <div
+                                    x-data="transfer" x-show="$store.wikonek.data.ui.recipients && $store.wikonek.data.ui.recipients.length>0">
+                                <div class="font-bold text-[18px] title mb-[15px]">Recent Transactions</div>
+                                <div class="offers mb-[35px]" >
+                                    <template x-for="transferee in $store.wikonek.data.ui.recipients" :key=transferee.mobile>
                                         <div class="product-offers grid grid-cols-2 gap-2">
-                                            <div class="item"><span x-text="product.rate"></span><span x-text="product.name"></span></div>
-                                            <button class="buynow" x-data x-on:click="confirm(product.code)" x-text="caption"></button>
+                                            <div class="item"><span x-text="'₱' + (+transferee.amount).toLocaleString()"></span><span x-text="transferee.mobile"></span>
+                                                <span x-text="transferee.name"></span></div>
+                                            <button class="buynow" x-data x-on:click="$dispatch('open-transfer-modal', {transferee})">Transfer Again
+                                            </button>
                                         </div>
                                     </template>
-                                </template>
-                            </div>
-                        </div><!-- Purchase [end] -->
-                    </div><!-- content -->
-                </div><!-- User Page [end] -->
-            </template><!-- User Page [end] -->
-            <!------- [start] Manager Page ------->
-            <template x-data="dashboard('tindera')" x-if="$store.wikonek.modes & SHOW_MANAGER">
-                <div class="site-container wrap p-4" id="dashboard-page-tindera" x-show="$store.wikonek.mode & SHOW_MANAGER">
-                    <div class="header" style="max-width: 600px; margin: 5px auto;">
-                        <div class="logo float-left"><img class="wklogotindera" src="images/wklogo_full_tindera3.png"/></div>
-                        <div class="wallet-details float-right">
-                            <div class="wallet-balance float-left text-right pr-2" x-data="airtime">
-                                <div class="text-[17px] font-bold"><span x-text="timeRemaining"></span></div>
-                                <div class="text-[12px]">Remaining Time</div>
-                            </div>
-                            <div class="header-buttons float-right">
-                                <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-topup-modal')">
-                                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path clip-rule="evenodd"
-                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                                              fill-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                                <button class="bg-[#eeeeee] p-2 rounded-full" x-data
-                                        x-on:click="$dispatch('open-profile-modal')">
-                                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                              fill-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div><!-- header -->
-                    <div class="clear-both"></div>
-                    <div class="station-id" x-text="'Station ID: '+stationID"></div>
-                    <div class="content relative top-[20px]" style="width: 100%; max-width: 600px;">
-                        <div class="timer mb-[35px] bg-[#FE7D00] rounded grid grid-cols-1 gap-4 text-center p-4">
-                            <div class="timer-element">
-                                <div class="time">₱<span x-text="loadRemaining"></span></div>
-                                <div class="label text-white font-semibold text-sm" x-text="captions.balance"></div>
-                            </div>
-                        </div>
-                        <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.replenish" x-show="replenish">
-                        </div>
-                        <div x-data="checkin">
-                            <div class="text-[#26580F] text-center mb-[35px]">
-                                <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
-                                <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-show="unclaimed" x-text="captions.claim"></a>
-                            </div>
-                        </div>
-                        <div class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]">
-                            <button x-data x-on:click="$dispatch('open-count-modal')">
-                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
-                                    <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
-                                </svg>
-                                <span>Insert Coin</span>
-                            </button>
-                            <button x-data x-on:click="$dispatch('open-redeem-modal')">
-                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
-                                </svg>
-                                <span>Redeem Voucher</span>
-                            </button>
-                            <button x-data x-on:click="$dispatch('open-transfer-modal', {transferee: {name: '', mobile: '', amount: ''}})">
-                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path clip-rule="evenodd"
-                                          d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
-                                          fill-rule="evenodd"/>
-                                </svg>
-                                <span>Transfer Load</span>
-                            </button>
-                        </div>
-                        <div x-data="transfer" x-show="$store.wikonek.data.ui.recipients && $store.wikonek.data.ui.recipients.length>0">
-                            <div class="font-bold text-[18px] title mb-[15px]">Recent Transactions</div>
-                            <div class="offers mb-[35px]" >
-                                <template x-for="transferee in $store.wikonek.data.ui.recipients" :key=transferee.mobile>
-                                    <div class="product-offers grid grid-cols-2 gap-2">
-                                        <div class="item"><span x-text="'₱' + (+transferee.amount).toLocaleString()"></span><span x-text="transferee.mobile"></span>
-                                            <span x-text="transferee.name"></span></div>
-                                        <button class="buynow" x-data x-on:click="$dispatch('open-transfer-modal', {transferee})">Transfer Again
-                                        </button>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                        <!--            <div class="start-browsing">-->
-                        <!--                <a class="button block mt-[30px]" style="background: #FE7D00;box-shadow: 0px 3px 0px #17A0DC;" x-data-->
-                        <!--                   x-on:click="$dispatch('open-tindera-landing-free-modal')">Start Browsing for FREE</a>-->
-                        <!--                <a class="button block mt-[30px]" style="background: #FE7D00;box-shadow: 0px 3px 0px #17A0DC;" x-data-->
-                        <!--                   x-on:click="$dispatch('open-tindera-landing-credits-modal')">Start Browsing with Credits</a>-->
-                        <!--            </div>-->
-                    </div><!-- content -->
-                </div><!-- site-container -->
-            </template>
-        </div><!-- Dashboard Page [end] -->
+                                </div>
+                            </div><!-- Transfer [end] -->
+                        </template>
+                    </div><!-- List [end] -->
+                </div><!-- Panels [end] -->
+            </div><!-- User Page [end] -->
+        </div><!-- Dashboard [end] -->
         <div x-text="device.macAddress"></div>
-        <div>sana gumana ang no click sa no insert coin</div>
-    </div><!-- Main Canvass [end] -->
-
-    <!-- [start] Error Canvass -->
+    </div><!-- Main Canvas [end] -->
+    <!-- [start] Error Canvas -->
     <div
             x-show="!hasDeviceMACAddress">
         <span x-text="text.errors.deviceMACAddress"></span>
-    </div><!-- Error Canvass [end]-->
-</div>
+    </div><!-- Error Canvas [end]-->
+</div><!-- Content [end] -->
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.store('wikonek', {
@@ -1545,6 +1398,9 @@
                     day_pass_today: {
                         availed: 0
                     },
+                    device: {
+                        user: null,
+                    }
                 },
                 station: {
                     identifier: '',//supposedly MAC address of station
@@ -1663,9 +1519,9 @@
                 console.log('** - stringDate loaded');
                 Iodine.addRule(
                     "plausibleDate",
-                    (value) => moment(value).isBetween(moment().subtract(100,'years'), moment().subtract(10,'years'))
+                    (value) => moment(value).isBetween(moment().subtract(100,'years'), moment().subtract(6,'years'))
                 )
-                Iodine.messages.plausibleDate = "Value must be betweeen -100 years and -10 years from today";
+                Iodine.messages.plausibleDate = "Value must be betweeen -100 years and -6 years from today";
                 console.log('** - plausibleDate loaded');
                 Iodine.addRule(
                     "regexPIN",
@@ -1736,7 +1592,7 @@
                 console.log('** store->wikonek->api_consume()');
                 return await fetch(apiEndPoint+`/consume/${minutes}/${all}`, {method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
                     .then(response =>  response.json().then(data => (data.data)))
-                    // .then(consumption => this.api_extend(consumption.minutes))
+                // .then(consumption => this.api_extend(consumption.minutes))
             },
             async api_extend(minutes) {
                 console.log('*** store->wikonek->api_extend_airtime()');
@@ -1752,10 +1608,12 @@
                     .then(() => this.api_station())
                     .then(() => {
                         this.api_ui()
-                            // .then(() => {this.session.ui_interval_handle = setInterval(() => {this.api_ui()}, this.config.refreshInterval)})
+                            .then(() => {this.session.ui_interval_handle = setInterval(() => {this.api_ui()}, this.config.refreshInterval)})
                     });
             },
-            mode: SHOW_USER,
+            get mode() {
+                return this.canManage ? SHOW_MANAGER : SHOW_USER;
+            },
             get modes() {
                 let values = SHOW_USER;
                 if (this.canManage) {
@@ -1765,10 +1623,20 @@
                 return values;
             },
             get canManage() {
-                return true;
+                let retval = false;
+                if (typeof this.data.station.user === 'object' && this.data.station.user !== null) {
+                    if (typeof this.data.touch.device.user === 'object' && this.data.touch.device.user !== null) {
+                        if (this.data.station.user.id == this.data.touch.device.user.id) {
+                            retval = true;
+                        }
+                    }
+                }
+// retval = true;
+                return retval;
             },
         })
         Alpine.data('ui', () => ({
+            loading: true,
             device: {
                 get macAddress() {
                     return Alpine.store('wikonek').session.deviceMACAddress;
@@ -2167,8 +2035,7 @@
                 }
             },
         }))
-        Alpine.data('dashboard', (mode) => ({
-            registered: true,
+        Alpine.data('dashboard', () => ({
             captions: {
                 balance: 'Wallet Balance',
                 claim: 'Claim your free internet.',
@@ -2179,6 +2046,7 @@
                 return Alpine.store('wikonek').config.replenishThreshold;
             },
             get replenish() {
+                return true;
                 return (Alpine.store('wikonek').data.ui.balance.load.amount * 1) < this.replenishThreshold;
             },
             get loadRemaining() {
@@ -2200,6 +2068,13 @@
                 }
 
                 return retval;
+            },
+            willManage: false,
+            get isManager() {
+                return Alpine.store('wikonek').canManage && this.willManage;
+            },
+            get isUser() {
+                return !this.isManager;
             },
             redeem() {
                 this.$dispatch('open-redeem-modal');
@@ -2293,18 +2168,22 @@
                 console.log(`## data->checkin->api_checkin()`);
                 const device = Alpine.store('wikonek').session.deviceMACAddress;
                 const station = Alpine.store('wikonek').session.stationMACAddress;
-                    await fetch(apiEndPoint+`/checkin/${device}/${station}`, { method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
-                        .then(response =>  response.json().then(data => ({airtime: data.data, success: response.ok, action: this.hydrate(data.data)})))
-                        .then(checkin => checkin.success ? checkin.airtime: {airtime: 0})
-                        .then(data => this.consume(data.airtime))
-                        .then(extension => this.extend(extension))
-                        .then(minutes => this.notify(minutes))
-                        .then(() => this.refresh())
+                await fetch(apiEndPoint+`/checkin/${device}/${station}`, { method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
+                    .then(response =>  response.json().then(data => ({airtime: data.data, success: response.ok, action: this.hydrate(data.data)})))
+                    .then(checkin => checkin.success ? checkin.airtime: {airtime: 0})
+                    .then(data => this.consume(data.airtime))
+                    .then(extension => this.extend(extension))
+                    .then(minutes => this.notify(minutes))
+                    .then(() => this.refresh())
+            },
+            egress() {
+                setInterval( () => location.assign('http://206.189.90.222/egress/checkin'), 5000);
             },
             submit() {
                 console.log(`# data->checkin->submit()`);
-                this.api_checkin()
-                    .then(() => this.$dispatch('open-landing-free-modal', {checkin: this.checkin}));
+                this.api_checkin().then(() => Alpine.store('wikonek').api_ui()).then(() => this.egress());
+                // .then(() => this.egress());
+                // .then(() => this.$dispatch('open-landing-free-modal', {checkin: this.checkin}));
             }
         }))
         Alpine.data('count', () => ({
@@ -2738,76 +2617,7 @@
                 this.$dispatch('open-landing-purchase-modal', {product: this.product});
             },
         }))
-        Alpine.data('egress', (operation) => ({
-            open: false,
-            checkin: {
-                airtime: 0,
-            },
-            count: {
-                cumulative: 0
-            },
-            purchase: {
-                rate: 537,
-            },
-            get image() {
-                switch (operation) {
-                    default:
-                        return lguURL;
-                }
-            },
-            get payload() {
-                switch (operation) {
-                    case 'purchase':
-                        return parseProductRate(Alpine.store('wikonek').data.purchase.product.rate);
-                }
-            },
-            get message() {
-                switch (operation) {
-                    case 'purchase':
-                        return parseProductRate(Alpine.store('wikonek').data.purchase.product.rate);
-                    case 'count':
-                        let airtime = null;
-                        switch (this.count.cumulative) {
-                            case '1': airtime = 10; break;
-                            case '2': airtime = 20; break;
-                            case '3': airtime = 30; break;
-                            case '4': airtime = 40; break;
-                            case '5': airtime = 60; break;
-                            case '6': airtime = 70; break;
-                            case '7': airtime = 80; break;
-                            case '8': airtime = 90; break;
-                            case '9': airtime = 100; break;
-                            case '10': airtime = 240; break;
-                            case '11': airtime = 250; break;
-                            case '12': airtime = 260; break;
-                            case '13': airtime = 270; break;
-                            case '14': airtime = 280; break;
-                            case '15': airtime = 300; break;
-                            case '16': airtime = 310; break;
-                            case '17': airtime = 320; break;
-                            case '18': airtime = 330; break;
-                            case '19': airtime = 340; break;
-                            case '20': airtime = 24 * 60; break;
-                            default: airtime = 0;
-                        }
-                        return airtime + ' minutes';
-                    default:
-                        return 'The world is your oyster!';
-                }
-            },
-            get landing() {
-                switch (operation) {
-                    default:
-                        return landingURL;
-                }
-            },
-            get caption() {
-                switch (operation) {
-                    default:
-                        return 'Go!!!';
-                }
-            }
-        }))
+
     })
     const gatewayURL = `http://$gwaddress:$gwport/`;
     const backendIPAddress = `206.189.90.222`;
