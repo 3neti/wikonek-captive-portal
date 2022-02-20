@@ -1097,7 +1097,7 @@
                     <!-- [start] Purchase Modal -->
                     <div
                             class="modal-wrapper"
-                            x-data="{ open: false, prod: null }"
+                            x-data="{ open: false }"
                             x-on:keyup.escape.window="open = false"
                             x-on:open-confirm-purchase-modal.window="open = true; window.scroll(0,0)"
                             x-show="open"
@@ -1496,11 +1496,6 @@
                 },
                 ui_interval_handle: null,
             },
-            selectedProduct: {
-                code: '1HIA',
-                name: 'UNLI Data 1 Hour',
-                rate: '₱ 5.00'
-            },
             loadValidations() {
                 console.log('** store->wikonek->loadValidations()');
                 Iodine.addRule(
@@ -1605,6 +1600,10 @@
                     .then(response =>  response.text().then(text => ({success: response.ok, action: console.log(text)})))
                     .then(extension => extension.success ? minutes : 0);
             },
+            egress(param1, param2) {
+                const uri = rootURL + `/egress/${param1}/${param2}`;
+                setTimeout( () => location.assign(uri), this.config.egressTimeout);
+            },
             init() {
                 console.log('* store->wikonek->init()');
                 this.loadValidations();
@@ -1612,7 +1611,7 @@
                     .then(() => this.api_station())
                     .then(() => {
                         this.api_ui()
-                            .then(() => {this.session.ui_interval_handle = setInterval(() => {this.api_ui()}, this.config.refreshInterval)})
+                            // .then(() => {this.session.ui_interval_handle = setInterval(() => {this.api_ui()}, this.config.refreshInterval)})
                     });
             },
             get mode() {
@@ -2159,6 +2158,7 @@
             },
             extend(consumption) {
                 setTimeout(() => {Alpine.store('wikonek').api_extend(consumption.minutes)}, 500);
+                this.extension = consumption.minutes;
 
                 return consumption.minutes;
             },
@@ -2182,13 +2182,13 @@
                     .then(() => this.refresh())
             },
             egress() {
-                setTimeout( () => location.assign(egressEndPoint), Alpine.store('wikonek').config.egressTimeout);
+                const param1 = `Complimentary ${this.checkin.airtime} minutes`;
+                const param2 = this.checkin.splash;
+                Alpine.store('wikonek').egress(param1, param2);
             },
             submit() {
                 console.log(`# data->checkin->submit()`);
                 this.api_checkin().then(() => Alpine.store('wikonek').api_ui()).then(() => this.egress());
-                // .then(() => this.egress());
-                // .then(() => this.$dispatch('open-landing-free-modal', {checkin: this.checkin}));
             }
         }))
         Alpine.data('count', () => ({
@@ -2561,7 +2561,11 @@
             }
         }))
         Alpine.data('purchase', () => ({
-            image: splashURL,
+            product: {
+                code: '1HIA',
+                name: 'UNLI Data 1 Hour',
+                rate: '₱ 5.00'
+            },
             purchaseSucceeded: null,
             purchaseFailed: null,
             get title() {
@@ -2575,21 +2579,28 @@
             },
             get canBuy() {
                 return +Alpine.store('wikonek').data.ui.balance.load.amount >= this.minimumSpend;
-                // return +Alpine.store('wikonek').wallet.load.amount >= this.minimumSpend;
             },
             get products() {
                 return Alpine.store('wikonek').data.ui.products
-            },
-            get product() {
-                return Alpine.store('wikonek').selectedProduct;
             },
             price(code) {
                 const product = this.products.find(n => n.code == code);
 
                 return parseProductRate(product.rate)
             },
+            confirm(code) {
+                console.log(`# data->purchase->confirm()`);
+                this.product = this.products.find(n => n.code == code);
+                this.$dispatch('open-confirm-purchase-modal');
+            },
+            egress() {
+                console.log(`# data->purchase->egress()`);
+                const param1 = this.product.name;
+                const param2 = this.product.rate;
+                Alpine.store('wikonek').egress(param1, param2);
+            },
             async api_purchase(code) {
-                console.log(`# data->transfer->api_purchase()`);
+                console.log(`# data->purchase->api_purchase()`);
                 const product = this.products.find(n => n.code == code)
                 console.log(product, 'product to purchase');
                 const url = apiEndPoint+`/purchase/${product.code}`;
@@ -2619,23 +2630,15 @@
                         }
                     })
             },
-            confirm(code) {
-                Alpine.store('wikonek').selectedProduct = this.products.find(n => n.code == code);
-                this.$dispatch('open-confirm-purchase-modal');
-            },
-            egress() {
-                setTimeout( () => location.assign(egressEndPoint), Alpine.store('wikonek').config.egressTimeout);
-            },
             submit() {
-                console.log(`# data->transfer->submit()`);
+                console.log(`# data->purchase->submit()`);
                 this.api_purchase(this.product.code).then(() => this.egress());
-                // this.$dispatch('open-landing-purchase-modal', {product: this.product});
             },
         }))
-
     })
     const gatewayURL = `http://$gwaddress:$gwport/`;
     const backendIPAddress = `206.189.90.222`;
+    const rootURL = `http://${backendIPAddress}`;
     const splashURL = `http://${backendIPAddress}/splash`;
     const lguURL = `http://${backendIPAddress}/lgu`; // image of government sponsor
     const landingURL = `http://${backendIPAddress}/landing`;
