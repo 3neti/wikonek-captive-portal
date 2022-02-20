@@ -2182,7 +2182,7 @@
                     .then(() => this.refresh())
             },
             egress() {
-                setTimeout( () => location.assign('http://206.189.90.222/egress/checkin'), Alpine.store('wikonek').config.egressTimeout);
+                setTimeout( () => location.assign(egressEndPoint), Alpine.store('wikonek').config.egressTimeout);
             },
             submit() {
                 console.log(`# data->checkin->submit()`);
@@ -2436,9 +2436,12 @@
                     })
                 ;
             },
+            egress() {
+                setTimeout( () => location.assign(egressEndPoint), Alpine.store('wikonek').config.egressTimeout);
+            },
             submit() {
                 if (this.canRedeem) {
-                    this.api_redeem();
+                    this.api_redeem().then(() => this.egress());
                 }
             },
             done() {
@@ -2617,7 +2620,7 @@
                 this.$dispatch('open-confirm-purchase-modal');
             },
             egress() {
-                setTimeout( () => location.assign('http://206.189.90.222/egress/checkin'), Alpine.store('wikonek').config.egressTimeout);
+                setTimeout( () => location.assign(egressEndPoint), Alpine.store('wikonek').config.egressTimeout);
             },
             submit() {
                 console.log(`# data->transfer->submit()`);
@@ -2633,6 +2636,7 @@
     const lguURL = `http://${backendIPAddress}/lgu`; // image of government sponsor
     const landingURL = `http://${backendIPAddress}/landing`;
     const apiEndPoint = `http://${backendIPAddress}/api`;
+    const egressEndPoint = `http://${backendIPAddress}/egress/checkin`
     const testClientMACAddress = '31:88:05:53:76:63';
     const virtualStationID = 'virtual';
     const SHOW_USER = 0x1;
