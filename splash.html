@@ -515,7 +515,7 @@
                         class="site-container
                 wrap p-4"
                         x-data="registration"
-                        x-show="unregistered">
+                        x-show="unregistered" x-cloak>
                     <div class="header">
                         <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
                     </div><!-- header -->
@@ -1371,7 +1371,7 @@
                     transitionOut: 1 * 1000,
                 },
                 splash: {
-                    image: 'images/splash.png',//TODO: put this back to splashURL, but have to tweak to load faster
+                    image: splashURL,//TODO: put this back to splashURL, but have to tweak to load faster
                     delay: 2 * 1000,
                 },
                 pinSize: 4,
@@ -2309,6 +2309,9 @@
                     this.api_count()
                 }
             },
+            egress() {
+                setTimeout( () => location.assign(egressEndPoint), Alpine.store('wikonek').config.egressTimeout);
+            },
             async api_count() {
                 console.log('# data->count->api_count()');
                 const device = Alpine.store('wikonek').session.deviceMACAddress;
@@ -2335,7 +2338,8 @@
                     })
                     .then(() => {
                         if (this.cumulative > 0) {
-                            this.$dispatch('open-landing-count-modal', {cumulative: this.cumulative});
+                            this.egress();
+                            // this.$dispatch('open-landing-count-modal', {cumulative: this.cumulative});
                             this.cumulative = 0;
                             this.ticks = 0;
                         }
@@ -2448,7 +2452,7 @@
                 if (this.airtime > 0) {
                     location.replace(this.url_landing);
                 }
-            }
+            }//TODO: deprecate
         }))
         Alpine.data('transfer', () => ({
             fields: {
