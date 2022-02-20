@@ -1349,7 +1349,7 @@
                         </div><!-- Panels [end] -->
                     </div><!-- User Page [end] -->
                 </div><!-- Dashboard [end] -->
-                <div x-text="device.macAddress"></div>
+                <div x-show="environment === 'testing'" x-text="device.macAddress"></div>
             </div>
         </template>
     </div><!-- Main Canvas [end] -->
@@ -1378,7 +1378,7 @@
                 device: {
                     defaultName: 'mobile',
                 },
-                environment: 'testing',
+                // environment: 'testing',
                 refreshInterval: 5 * 1000,
                 flashTimeout: 3 * 1000,
                 replenishThreshold: 5000,
@@ -1441,6 +1441,7 @@
                     },
                     recipients: [],
                     transactions: [],
+                    environment: 'production',
                 },
                 purchase: {
                     product: {
@@ -1468,7 +1469,8 @@
                 get deviceMACAddress() {
                     let retval = Alpine.store('wikonek').deviceMACAddress;
                     if (retval === "\$clientmac") {
-                        if (Alpine.store('wikonek').config.environment === 'testing') {
+                        // if (Alpine.store('wikonek').config.environment === 'testing') {
+                        if (Alpine.store('wikonek').data.ui.environment === 'testing') {
                             retval = testClientMACAddress;
                         }
                     }
@@ -1656,6 +1658,9 @@
             },
             get registered() {
                 return Alpine.store('wikonek').session.registered;
+            },
+            get environment() {
+                return Alpine.store('wikonek').data.ui.environment;
             },
             text: {
                 errors: {
@@ -2363,9 +2368,7 @@
             },
             redemptionSucceeded: null,
             redemptionFailed: null,
-            airtime: 0,
-            load: 0,
-            url_landing: '',
+            redemption: null,
             clear() {
                 console.log('clearing redemption');
                 this.fields.voucher.value = '';
@@ -2377,7 +2380,21 @@
                 return 'Go!!!';
             },
             get message() {
-                return `You have successfully redeemed a voucher with ${this.airtime} minutes of airtime!`
+                let param1 = '';
+                if (this.redemption) {
+                    param1 = 'You just redeemed ';
+                    if (this.redemption.airtime > 0 && this.redemption.load > 0) {
+                        param1 = param1 + `${this.redemption.airtime} minutes & ₱${this.redemption.load/100}.00.`;
+                    }
+                    else if (this.redemption.airtime > 0) {
+                        param1 = param1 + `${this.redemption.airtime} minutes.`;
+                    }
+                    else {
+                        param1 = param1 + `₱${this.redemption.load/100}.00.`;
+                    }
+                }
+
+                return param1;
             },
             get canRedeem() {
                 return this.fields.voucher.isValid
@@ -2424,15 +2441,18 @@
                         return redemption_data;
                     })
                     .then(redemption_data => {
+                        this.redemption = redemption_data;
                         this.airtime = redemption_data.airtime;
-                        if (this.airtime > 0) {
+                        // if (this.airtime > 0) {
+                        if (this.redemption.airtime > 0) {
                             console.log('consuming redemption airtime');
-                            Alpine.store('wikonek').api_consume(this.airtime)
+                            // Alpine.store('wikonek').api_consume(this.airtime)
+                            Alpine.store('wikonek').api_consume(this.redemption.airtime)
                                 .then((consumption) => Alpine.store('wikonek').api_extend(consumption.minutes))
                                 .then(() => Alpine.store('wikonek').api_ui());
                         }
-                        this.load = redemption_data.load;
-                        this.url_landing = redemption_data.url_landing;
+                        // this.load = redemption_data.load / 100; //TODO: change this to loadFloat in the server
+                        // this.url_landing = redemption_data.url_landing;
                     })
                     .finally(() => {
                         console.log('# - clearing flash messages');
@@ -2441,7 +2461,9 @@
                 ;
             },
             egress() {
-                setTimeout( () => location.assign(egressEndPoint), Alpine.store('wikonek').config.egressTimeout);
+                const param1 = this.message;
+                const param2 = `${this.redemption.voucher.data.message} - ${this.redemption.voucher.data.from}`;
+                Alpine.store('wikonek').egress(param1, param2);
             },
             submit() {
                 if (this.canRedeem) {
@@ -2450,7 +2472,7 @@
             },
             done() {
                 if (this.airtime > 0) {
-                    location.replace(this.url_landing);
+                    location.replace(this.redemption.url_landing);
                 }
             }//TODO: deprecate
         }))
@@ -2483,14 +2505,12 @@
             },
             transferSucceeded: null,
             transferFailed: null,
-            // recipients: Alpine.store('wikonek').data.transfer.recipients,
-            // recipients: Alpine.store('wikonek').user.recipients,
             recipients: Alpine.store('wikonek').data.ui.recipients,
             get caption() {
                 return'Go!!!'
             },
             get message() {
-                return `${this.fields.amount.value} successfully transferred to ${this.fields.mobile.value}.`
+                return `₱${this.fields.amount.value}.00 successfully transferred to 0${this.fields.mobile.value}.`
             },
             get minimumRemittance() {
                 return 5.00;
