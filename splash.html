@@ -1097,9 +1097,9 @@
                     <!-- [start] Purchase Modal -->
                     <div
                             class="modal-wrapper"
-                            x-data="{ open: false }"
+                            x-data="{ open: false, prod: {code: '', name: '', rate: 0} }"
                             x-on:keyup.escape.window="open = false"
-                            x-on:open-confirm-purchase-modal.window="open = true; window.scroll(0,0)"
+                            x-on:open-confirm-purchase-modal.window="open = true; prod = $event.detail.product, window.scroll(0,0)"
                             x-show="open"
                     >
                         <div
@@ -1132,10 +1132,10 @@
                                             <!-- Title -->
                                             <div class="title text-center font-bold text-[21px] mb-[30px]">Confirm Purchase</div>
                                             <!-- Content -->
-                                            <p class="mt-2 text-gray-600" x-text="product.name"></p>
+                                            <p class="mt-2 text-gray-600" x-text="prod.name"></p>
                                             <!-- Buttons -->
                                             <div>
-                                                <a class="button block mt-[30px]" x-data x-on:click="submit; open = false">Confirm</a>
+                                                <a class="button block mt-[30px]" x-data x-on:click="submit(prod.code); open = false">Confirm</a>
                                                 <a class="button block mt-[30px]" x-data x-on:click="open = false">Cancel</a>
                                             </div>
                                         </div>
@@ -1215,6 +1215,20 @@
                         >
                             <!-- [start] Airtime | Load Remaining -->
                             <div>
+                                <template x-if="isManager">
+                                    <!-- [start] Load Remaining -->
+                                    <div>
+                                        <div class="timer mb-[35px] bg-[#FE7D00] rounded grid grid-cols-1 gap-4 text-center p-4">
+                                            <div class="timer-element">
+                                                <div class="time">₱<span x-text="loadRemaining"></span></div>
+                                                <div class="label text-white font-semibold text-sm" x-text="captions.balance"></div>
+                                            </div>
+                                        </div>
+                                        <div
+                                                class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.replenish" x-show="replenish">
+                                        </div>
+                                    </div><!-- Load Remaining [end] -->
+                                </template>
                                 <template x-if="isUser">
                                     <!-- [start] Airtime -->
                                     <div
@@ -1239,20 +1253,7 @@
                                         </div><!-- seconds -->
                                     </div><!-- Airtime [end] -->
                                 </template>
-                                <template x-if="isManager">
-                                    <!-- [start] Load Remaining -->
-                                    <div>
-                                        <div class="timer mb-[35px] bg-[#FE7D00] rounded grid grid-cols-1 gap-4 text-center p-4">
-                                            <div class="timer-element">
-                                                <div class="time">₱<span x-text="loadRemaining"></span></div>
-                                                <div class="label text-white font-semibold text-sm" x-text="captions.balance"></div>
-                                            </div>
-                                        </div>
-                                        <div
-                                                class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.replenish" x-show="replenish">
-                                        </div>
-                                    </div><!-- Load Remaining [end] -->
-                                </template>
+
                             </div><!-- Airtime | Load Remaining [end] -->
                             <!-- [start] Checkin -->
                             <div
@@ -1262,6 +1263,7 @@
                                     <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="captions.claim"></a>
                                 </div>
                             </div><!-- Checkin [end] -->
+
                             <!-- [start] Count Redeem Transfer -->
                             <div
                                     class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]"
@@ -1350,6 +1352,7 @@
                     </div><!-- User Page [end] -->
                 </div><!-- Dashboard [end] -->
                 <div x-show="environment === 'testing'" x-text="device.macAddress"></div>
+                <div x-show="environment === 'testing'" x-text="device.stationID"></div>
             </div>
         </template>
     </div><!-- Main Canvas [end] -->
@@ -2601,13 +2604,9 @@
             }
         }))
         Alpine.data('purchase', () => ({
-            product: {
-                code: '1HIA',
-                name: 'UNLI Data 1 Hour',
-                rate: '₱ 5.00'
-            },
             purchaseSucceeded: null,
             purchaseFailed: null,
+            selectedProduct: null,
             get title() {
                 return 'Product Bundles';
             },
@@ -2630,13 +2629,14 @@
             },
             confirm(code) {
                 console.log(`# data->purchase->confirm()`);
-                this.product = this.products.find(n => n.code == code);
-                this.$dispatch('open-confirm-purchase-modal');
+                console.log(this.selectedProduct, 'confirm selectedProduct');
+                this.$dispatch('open-confirm-purchase-modal', { product: this.products.find(n => n.code == code) });
             },
-            egress: function () {
+            egress (code) {
                 console.log(`# data->purchase->egress()`);
-                const param1 = this.product.name;
-                const param2 = this.product.rate;
+                const product = this.products.find(n => n.code == code);
+                const param1 = product.name;
+                const param2 = product.rate;
                 Alpine.store('wikonek').egress(param1, param2);
             },
             async api_purchase(code) {
@@ -2660,6 +2660,7 @@
                         this.purchaseSucceeded = obj.isOk;
                         this.purchaseFailed = !obj.isOk;
 
+                        console.log(purchase_data, 'purchase data');
                         return purchase_data;
                     })
                     .then(purchase_data => {
@@ -2670,9 +2671,10 @@
                         }
                     })
             },
-            submit() {
-                console.log(`# data->purchase->submit()`);
-                this.api_purchase(this.product.code).then(() => this.egress());
+            submit(code) {
+                console.log(`# data->purchase->submit(code)`);
+                this.api_purchase(code)
+                    .then(() => this.egress(code));
             },
         }))
     })
