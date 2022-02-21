@@ -1379,7 +1379,7 @@
                     defaultName: 'mobile',
                 },
                 // environment: 'testing',
-                refreshInterval: 5 * 1000,
+                refreshInterval: 0 * 1000,
                 flashTimeout: 3 * 1000,
                 replenishThreshold: 5000,
                 insertCoinThreshold: 76700, //centavos for now
@@ -1448,6 +1448,7 @@
                         rate: 'P 0.00',
                     }
                 },
+                inspiration: `"To fight and conquer in all your battles is not supreme excellence; supreme excellence consists in breaking the enemy's resistance without fighting.” – Sun Tzu,`,
             },
             session: {
                 get hasDeviceMACAddress() {
@@ -1541,9 +1542,9 @@
                 console.log('** store->wikonek->api_touch()');
                 const device = this.session.deviceMACAddress;
                 const device_name = this.config.device.defaultName;
-                const url = apiEndPoint+`/touch/${device}/${device_name}`;
+                const url = apiEndPoint + `/touch/${device}/${device_name}`;
                 await fetch(url, {method: 'POST'})
-                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(response => response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
                     .then(obj => {
                         if (obj.isOk === true) {
                             console.log(`** - fetch touch`);
@@ -1602,6 +1603,13 @@
                     .then(response =>  response.text().then(text => ({success: response.ok, action: console.log(text)})))
                     .then(extension => extension.success ? minutes : 0);
             },
+            async api_inspire() {
+                console.log('** store->wikonek->api_inspire()');
+                const url = apiEndPoint + `/inspire`;
+                return await fetch(url, {method: 'GET'})
+                    .then(response => response.text())
+                    .then(inspiration => {this.data.inspiration = inspiration})
+            },
             egress(param1, param2, param3=landingURL) {
                 let url = new URL(rootURL + `/egress`);
                 url.searchParams.append('param1', param1);
@@ -1616,8 +1624,13 @@
                     .then(() => this.api_station())
                     .then(() => {
                         this.api_ui()
-                            // .then(() => {this.session.ui_interval_handle = setInterval(() => {this.api_ui()}, this.config.refreshInterval)})
-                    });
+                            .then(() => {
+                                if (this.config.refreshInterval > 0) {
+                                    this.session.ui_interval_handle = setInterval(() => {this.api_ui()}, this.config.refreshInterval)
+                                }
+                            })
+                    })
+                    .finally(() => this.api_inspire());
             },
             get mode() {
                 return this.canManage ? SHOW_MANAGER : SHOW_USER;
@@ -1905,7 +1918,7 @@
                     headers: {'Content-Type': 'application/json', 'Accept': 'text/plain'},
                     body: `${credentials}`
                 })
-                    .then(response =>  response.text().then(data => ({
+                    .then(response => response.text().then(data => ({
                         status: response.status,
                         body: data,
                         isOk: response.ok
@@ -2319,7 +2332,9 @@
                 }
             },
             egress() {
-                setTimeout( () => location.assign(egressEndPoint), Alpine.store('wikonek').config.egressTimeout);
+                const param1 = `₱${this.cumulative}.00`;
+                const param2 = Alpine.store('wikonek').data.inspiration;
+                Alpine.store('wikonek').egress(param1, param2);
             },
             async api_count() {
                 console.log('# data->count->api_count()');
