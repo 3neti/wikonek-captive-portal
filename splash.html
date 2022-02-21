@@ -1602,9 +1602,12 @@
                     .then(response =>  response.text().then(text => ({success: response.ok, action: console.log(text)})))
                     .then(extension => extension.success ? minutes : 0);
             },
-            egress(param1, param2) {
-                const uri = rootURL + `/egress/${param1}/${param2}`;
-                setTimeout( () => location.assign(uri), this.config.egressTimeout);
+            egress(param1, param2, param3=landingURL) {
+                let url = new URL(rootURL + `/egress`);
+                url.searchParams.append('param1', param1);
+                url.searchParams.append('param2', param2);
+                url.searchParams.append('param3', param3);
+                setTimeout( () => location.assign(url), this.config.egressTimeout);
             },
             init() {
                 console.log('* store->wikonek->init()');
@@ -2189,7 +2192,8 @@
             egress() {
                 const param1 = `Complimentary ${this.checkin.airtime} minutes`;
                 const param2 = this.checkin.splash;
-                Alpine.store('wikonek').egress(param1, param2);
+                const param3 = this.checkin.url_landing;
+                Alpine.store('wikonek').egress(param1, param2, param3);
             },
             submit() {
                 console.log(`# data->checkin->submit()`);
@@ -2463,7 +2467,8 @@
             egress() {
                 const param1 = this.message;
                 const param2 = `${this.redemption.voucher.data.message} - ${this.redemption.voucher.data.from}`;
-                Alpine.store('wikonek').egress(param1, param2);
+                const param3 = this.redemption.url_landing;
+                Alpine.store('wikonek').egress(param1, param2, param3);
             },
             submit() {
                 if (this.canRedeem) {
@@ -2613,7 +2618,7 @@
                 this.product = this.products.find(n => n.code == code);
                 this.$dispatch('open-confirm-purchase-modal');
             },
-            egress() {
+            egress: function () {
                 console.log(`# data->purchase->egress()`);
                 const param1 = this.product.name;
                 const param2 = this.product.rate;
