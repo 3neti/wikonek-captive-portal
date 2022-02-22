@@ -1165,10 +1165,10 @@
                             <!-- [start] Logo -->
                             <div>
                                 <template x-if="isUser">
-                                    <div class="logo float-left"><img class="wklogo" :src="assets.logo.main" @click="willManage = !willManage"/></div>
+                                    <div class="logo float-left"><img class="wklogo" :src="assets.logo.main" @click="toggleRoles()"/></div>
                                 </template>
                                 <template x-if="isManager">
-                                    <div class="logo float-left"><img class="wklogotindera" :src="assets.logo.manager" @click="willManage = !willManage"/></div>
+                                    <div class="logo float-left"><img class="wklogotindera" :src="assets.logo.manager" @click="toggleRoles"/></div>
                                 </template>
                             </div><!-- Logo [end] -->
                             <!-- [start] Topup Profile -->
@@ -1266,7 +1266,6 @@
                                     <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="captions.claim"></a>
                                 </div>
                             </div><!-- Checkin [end] -->
-
                             <!-- [start] Count Redeem Transfer -->
                             <div
                                     class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]"
@@ -1366,9 +1365,31 @@
     </div><!-- Error Canvas [end]-->
 </div><!-- Content [end] -->
 <script>
+    const dummyClientMACAddress = '37:60:06:07:73:40';
+    let device_mac_address = dummyClientMACAddress;
+    // let device_mac_address = `$clientmac`;
+
+    document.addEventListener('readystatechange', event => {
+
+        // When HTML/DOM elements are ready:
+        if (event.target.readyState === "interactive") {   //does same as:  ..addEventListener("DOMContentLoaded"..
+            device_mac_address = `$clientmac`
+
+            // alert(macadd);
+        }
+
+        // When window loaded ( external resources are loaded too- `css`,`src`, etc...)
+        if (event.target.readyState === "complete") {
+
+            // alert(`$clientmac`);
+            device_mac_address = `$clientmac`
+        }
+    });
+
     document.addEventListener('alpine:init', () => {
         Alpine.store('wikonek', {
-            deviceMACAddress: `$clientmac`,
+            // deviceMACAddress: `$clientmac`,
+            deviceMACAddress: device_mac_address,
             stationMACAddress: `$gatewaymac`,
             coinExpiry: `$queueTime`,
             config: {
@@ -1458,7 +1479,8 @@
             },
             session: {
                 get hasDeviceMACAddress() {
-                    return this.deviceMACAddress !== "\$clientmac";
+                    // return this.deviceMACAddress !== "\$clientmac";
+                    return this.deviceMACAddress !== dummyClientMACAddress;
                 },
                 get token() {
                     return Alpine.store('wikonek').data.touch.token;
@@ -1475,8 +1497,7 @@
                 },
                 get deviceMACAddress() {
                     let retval = Alpine.store('wikonek').deviceMACAddress;
-                    if (retval === "\$clientmac") {
-                        // if (Alpine.store('wikonek').config.environment === 'testing') {
+                    if (retval === dummyClientMACAddress) {
                         if (Alpine.store('wikonek').data.ui.environment === 'testing') {
                             retval = testClientMACAddress;
                         }
@@ -1600,7 +1621,6 @@
                 console.log('** store->wikonek->api_consume()');
                 return await fetch(apiEndPoint+`/consume/${minutes}/${all}`, {method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
                     .then(response =>  response.json().then(data => (data.data)))
-                // .then(consumption => this.api_extend(consumption.minutes))
             },
             async api_extend(minutes) {
                 console.log('*** store->wikonek->api_extend_airtime()');
@@ -1638,13 +1658,16 @@
                     })
                     .finally(() => this.api_inspire());
             },
-            get mode() {
-                return this.canManage ? SHOW_MANAGER : SHOW_USER;
-            },
+            // get mode() {
+            //     return this.canManage ? SHOW_MANAGER : SHOW_USER;
+            // },
             get modes() {
                 let values = SHOW_USER;
                 if (this.canManage) {
                     values = values | SHOW_MANAGER;
+                }
+                if (this.canAdminister) {
+                    values = values | SHOW_ADMIN;
                 }
 
                 return values;
@@ -1658,8 +1681,11 @@
                         }
                     }
                 }
-// retval = true;
+
                 return retval;
+            },
+            get canAdminister() {
+                return true
             },
         })
         Alpine.data('ui', () => ({
@@ -2088,7 +2114,6 @@
                 return (Alpine.store('wikonek').data.ui.balance.load.amount * 1) < this.replenishThreshold;
             },
             get loadRemaining() {
-                // return (Alpine.store('wikonek').load * 1).toLocaleString();
                 return (Alpine.store('wikonek').data.ui.balance.load.amount * 1).toLocaleString();
             },
             get stationID() {
@@ -2114,11 +2139,18 @@
             get isUser() {
                 return !this.isManager;
             },
+            toggleRoles() {
+                this.willManage = !this.willManage;
+            },
             redeem() {
                 this.$dispatch('open-redeem-modal');
             },
             transfer() {
                 this.$dispatch('open-transfer-modal', {transferee: {name: '', mobile: '', amount: ''}});
+            },
+            macaddress: null,
+            init() {
+                this.$watch('macaddress', value => console.log(value, 'this is a mac address'));
             },
         }))
         Alpine.data('airtime', () => ({
@@ -2688,6 +2720,7 @@
             },
         }))
     })
+
     const gatewayURL = `http://$gwaddress:$gwport/`;
     const backendIPAddress = `206.189.90.222`;
     const rootURL = `http://${backendIPAddress}`;
