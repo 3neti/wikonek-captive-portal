@@ -6,6 +6,7 @@
     <meta content="ie=edge" http-equiv="X-UA-Compatible">
     <script defer src="images/iodine.js"></script>
     <script defer src="images/moment.js"></script>
+    <script defer src="images/trap.js"></script>
     <script defer src="images/alpine.js"></script>
     <script src="images/tailwind.js"></script>
     <title>WiKONEK Captive Portal v0.9</title>
@@ -519,7 +520,7 @@
                         x-data="registration"
                         x-show="unregistered" x-cloak>
                     <div class="header">
-                        <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                        <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/logo.png"/></div>
                     </div><!-- header -->
                     <div class="content">
                         <div class="wrap">
@@ -744,7 +745,7 @@
                                 x-on:submit.prevent="submit"
                         >
                             <div class="header">
-                                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                                <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                             </div><!-- header -->
                             <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
                                 <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -920,7 +921,7 @@
                                 x-on:submit.prevent
                         >
                             <div class="header">
-                                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                                <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                             </div><!-- header -->
                             <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
                                 <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -940,7 +941,7 @@
                                         <div class="coinbank">
                                             <div class="vcenter" style="width:160px;">
                                                 <button class="wrap insertcoin" x-on:click="toggle">
-                                                    <img class="absolute top-[10px] left-[10px]" src="images/pointer.png"/>
+                                                    <img class="absolute top-[10px] left-[10px]" :src="assets.logo.pointer"/>
                                                     <span x-text="caption"></span>
                                                 </button>
                                             </div>
@@ -967,7 +968,7 @@
                                 x-on:submit.prevent="submit"
                         >
                             <div class="header">
-                                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                                <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                             </div><!-- header -->
                             <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false; done();">
                                 <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -1030,7 +1031,7 @@
                                     x-on:submit.prevent="submit"
                             >
                                 <div class="header">
-                                    <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                                    <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                                 </div><!-- header -->
                                 <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
                                     <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -1112,7 +1113,7 @@
                                 x-on:submit.prevent
                         >
                             <div class="header">
-                                <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/wklogo_full.png"/></div>
+                                <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                             </div><!-- header -->
                             <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
                                 <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -1164,10 +1165,10 @@
                             <!-- [start] Logo -->
                             <div>
                                 <template x-if="isUser">
-                                    <div class="logo float-left"><img class="wklogo" src="images/wklogo_full.png" @click="willManage = !willManage"/></div>
+                                    <div class="logo float-left"><img class="wklogo" :src="assets.logo.main" @click="willManage = !willManage"/></div>
                                 </template>
                                 <template x-if="isManager">
-                                    <div class="logo float-left"><img class="wklogotindera" src="images/wklogo_full_tindera2.png" @click="willManage = !willManage"/></div>
+                                    <div class="logo float-left"><img class="wklogotindera" :src="assets.logo.manager" @click="willManage = !willManage"/></div>
                                 </template>
                             </div><!-- Logo [end] -->
                             <!-- [start] Topup Profile -->
@@ -1387,7 +1388,7 @@
                 refreshInterval: 0 * 1000,
                 flashTimeout: 3 * 1000,
                 replenishThreshold: 5000,
-                insertCoinThreshold: 76700, //centavos for now
+                insertCoinThreshold: 0 * 100, //centavos for now, should be zero most of the time
                 egressTimeout: 1 * 1000,
             },
             connection: {
@@ -1670,6 +1671,13 @@
                 get stationID() {
                     return Alpine.store('wikonek').session.stationMACAddress;
                 },
+            },
+            assets: {
+                logo: {
+                    main: 'images/logo.png',
+                    manager: 'images/manager.png',
+                    pointer: 'images/pointer.png',
+                }
             },
             get hasDeviceMACAddress() {
                 return Alpine.store('wikonek').session.hasDeviceMACAddress;
