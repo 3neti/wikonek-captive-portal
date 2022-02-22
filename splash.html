@@ -729,7 +729,7 @@
                 </div><!-- Registration [end] -->
                 <!-- [start] Modals -->
                 <div>
-                    <!-- [start] Profile  Modal -->
+                    <!-- [start] Profile Modal -->
                     <div
                             class="modal-wrapper"
                             x-data="{ open: false }"
@@ -747,13 +747,7 @@
                             <div class="header">
                                 <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                             </div><!-- header -->
-                            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path clip-rule="evenodd"
-                                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                          fill-rule="evenodd"/>
-                                </svg>
-                            </div>
+                            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
                             <div class="content">
                                 <div class="wrap">
                                     <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="title"></div>
@@ -765,12 +759,8 @@
                                             </div>
                                             <div class="mnumber form-element">
                                                 <label class="text-[13px]">Mobile Number</label>
-                                                <div class="relative">
-                                <span class="absolute top-[7px] left-[8px]">0
-                                    <span class="text-[#d8d8d8]">|</span>
-                                </span>
-                                                    <input disabled style="padding-left: 24px !important;"
-                                                           type="text" x-model="number">
+                                                <div class="relative"><span class="absolute top-[7px] left-[8px]">0<span class="text-[#d8d8d8]">|</span></span>
+                                                    <input disabled style="padding-left: 24px !important;" type="text" x-model="number">
                                                 </div>
                                             </div>
                                             <div class="pinnum form-element">
@@ -923,13 +913,7 @@
                             <div class="header">
                                 <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                             </div><!-- header -->
-                            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path clip-rule="evenodd"
-                                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                          fill-rule="evenodd"/>
-                                </svg>
-                            </div>
+                            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
                             <div class="content">
                                 <div class="wrap">
                                     <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="amount"></div>
@@ -970,13 +954,7 @@
                             <div class="header">
                                 <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                             </div><!-- header -->
-                            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false; done();">
-                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path clip-rule="evenodd"
-                                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                          fill-rule="evenodd"/>
-                                </svg>
-                            </div>
+                            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false; done();" x-html="$store.wikonek.html.modalClose"></div>
                             <div class="content">
                                 <div class="wrap">
                                     <div class="title text-center font-bold text-[21px] mb-[30px]">Redeem Voucher</div>
@@ -1033,13 +1011,7 @@
                                 <div class="header">
                                     <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                                 </div><!-- header -->
-                                <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                                    <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path clip-rule="evenodd"
-                                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                              fill-rule="evenodd"/>
-                                    </svg>
-                                </div>
+                                <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
                                 <div class="content">
                                     <div class="wrap">
                                         <div class="title text-center font-bold text-[21px] mb-[30px]">Transfer Load</div>
@@ -1115,13 +1087,7 @@
                             <div class="header">
                                 <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                             </div><!-- header -->
-                            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false">
-                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path clip-rule="evenodd"
-                                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                          fill-rule="evenodd"/>
-                                </svg>
-                            </div>
+                            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
                             <div class="content">
                                 <div class="wrap">
                                     <div style="text-align: center;"
@@ -1148,6 +1114,80 @@
                         </div><!-- site-container -->
                         <div class="clear-both"></div>
                     </div><!-- Purchase Modal [end] -->
+                    <!-- [start] Station Modal -->
+                    <div
+                            class="modal-wrapper"
+                            x-data="{ open: false }"
+                            x-on:keyup.escape.window="open = false"
+                            x-on:open-station-modal.window="open = true"
+                            x-show="open"
+                    >
+                        <div
+                                class="modal"
+                                style="margin: 30px auto;"
+                                x-data="station"
+                                x-on:click.outside="open = false"
+                                x-on:submit.prevent="submit"
+                        >
+                            <div class="header">
+                                <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
+                            </div><!-- header -->
+                            <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
+                            <div class="content">
+                                <div class="wrap">
+                                    <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="title"></div>
+                                    <div class="form">
+                                        <form class="signup">
+                                            <div class="fname form-element">
+                                                <label class="text-[13px]">Station Name</label>
+                                                <input
+                                                        :maxlength="fields.name.maxLength"
+                                                        :placeholder="fields.mobile.placeholder"
+                                                        @blur="fields.name.validate(validationCallback)"
+                                                        aria-label="Station Name"
+                                                        required
+                                                        type="text"
+                                                        x-model="fields.name.value"
+                                                >
+                                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                        x-text="fields.name.errorMsg"></span></p>
+                                            </div>
+                                            <div class="mnumber form-element">
+                                                <label class="text-[13px]">Mobile Number</label>
+                                                <div class="relative">
+                                                    <span class="absolute top-[7px] left-[8px]">0 <span class="text-[#d8d8d8]">|</span></span>
+                                                    <input
+                                                            :maxlength="fields.mobile.maxLength"
+                                                            :placeholder="fields.mobile.placeholder"
+                                                            @blur="fields.mobile.validate(validationCallback)"
+                                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                            required
+                                                            style="padding-left: 24px !important;"
+                                                            type="number"
+                                                            x-model="fields.mobile.value"
+                                                    >
+                                                    <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                            x-text="fields.mobile.errorMsg"></span></p>
+                                                </div>
+                                            </div>
+                                            <div class="submit form-element mt-[30px]">
+                                                <input class="enabled" type="submit" :value="caption">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- if successful -->
+                                    <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updateStationSucceeded">
+                                        <p>Station updated.</p>
+                                    </div>
+                                    <!-- if failed -->
+                                    <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="updateStationFailed">
+                                        <p>Update station failed! Please try again.</p>
+                                    </div>
+                                </div>
+                            </div><!-- content -->
+                        </div><!-- site-container -->
+                        <div class="clear-both"></div>
+                    </div><!-- Station Modal [end] -->
                 </div><!-- Modals [end] -->
                 <!-- [start] Dashboard -->
                 <div
@@ -1187,7 +1227,7 @@
                                     </div>
                                 </template>
                                 <div class="header-buttons float-right">
-                                    <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-topup-modal')">
+                                    <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-station-modal')">
                                         <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                             <path clip-rule="evenodd"
                                                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
@@ -1367,28 +1407,23 @@
 <script>
     const dummyClientMACAddress = '37:60:06:07:73:40';
     let device_mac_address = dummyClientMACAddress;
-    // let device_mac_address = `$clientmac`;
 
     document.addEventListener('readystatechange', event => {
-
         // When HTML/DOM elements are ready:
         if (event.target.readyState === "interactive") {   //does same as:  ..addEventListener("DOMContentLoaded"..
-            device_mac_address = `$clientmac`
-
-            // alert(macadd);
+            if (`$clientmac` !== "\$clientmac") {
+                device_mac_address = `$clientmac`
+            }
         }
-
         // When window loaded ( external resources are loaded too- `css`,`src`, etc...)
         if (event.target.readyState === "complete") {
-
-            // alert(`$clientmac`);
-            device_mac_address = `$clientmac`
+            if (`$clientmac` !== "\$clientmac") {
+                device_mac_address = `$clientmac`
+            }
         }
     });
-
     document.addEventListener('alpine:init', () => {
         Alpine.store('wikonek', {
-            // deviceMACAddress: `$clientmac`,
             deviceMACAddress: device_mac_address,
             stationMACAddress: `$gatewaymac`,
             coinExpiry: `$queueTime`,
@@ -1525,6 +1560,9 @@
                     return retval;
                 },
                 ui_interval_handle: null,
+            },
+            html: {
+                modalClose: `<svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" fill-rule="evenodd"/></svg>`,
             },
             loadValidations() {
                 console.log('** store->wikonek->loadValidations()');
@@ -2147,11 +2185,7 @@
             },
             transfer() {
                 this.$dispatch('open-transfer-modal', {transferee: {name: '', mobile: '', amount: ''}});
-            },
-            macaddress: null,
-            init() {
-                this.$watch('macaddress', value => console.log(value, 'this is a mac address'));
-            },
+            }
         }))
         Alpine.data('airtime', () => ({
             code: '',
@@ -2717,6 +2751,103 @@
                 console.log(`# data->purchase->submit(code)`);
                 this.api_purchase(code)
                     .then(() => this.egress(code));
+            },
+        }))
+        Alpine.data('station', () => ({
+            title: 'Update Station',
+            caption: 'Go!!!',
+            fields: {
+                mobile: {
+                    value: Alpine.store('wikonek').data.station.user.mobile.substring(3),
+                    maxLength: 10,
+                    rules: ['required', 'regexMobile'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null,
+                    placeholder: "9xxxxxxxxx e.g. 9123456789"
+                },
+                name: {
+                    value: Alpine.store('wikonek').data.station.name,
+                    maxLength: 50,
+                    rules: ['required'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null,
+                    placeholder: "e.g. Aling Petra's Sari-Sari Store"
+                },
+            },
+            updateStationSucceeded: false,
+            updateStationFailed: false,
+            canUpdate() {
+                return this.fields.mobile.isValid && this.fields.name.isValid;
+            },
+            clear() {
+                console.log(`# data->profile->clear()`);
+                this.fields.mobile.value = '';
+                this.fields.mobile.errorMsg = '';
+                this.fields.name.value = '';
+                this.fields.name.errorMsg = '';
+                this.updateStationSucceeded = null;
+                this.updateStationFailed = null;
+            },
+            async api_pair_station() {
+                console.log(`# data->profile->api_station()`);
+                const station = Alpine.store('wikonek').session.stationMACAddress;
+                const url = apiEndPoint+`/pair/${station}/${this.fields.mobile.value}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            this.updateStationSucceeded = true;
+                        }
+                        else {
+                            this.updateStationFailed = true;
+                            setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+                        }
+                    })
+                ;
+            },
+            async api_update_station() {
+                console.log(`# data->profile->api_update_station()`);
+                const station = Alpine.store('wikonek').session.stationMACAddress;
+                const name = this.fields.name.value;
+                const url = apiEndPoint+`/stations/${station}?name=${name}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'PUT',
+                    headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            this.updateStationSucceeded = true;
+                        }
+                        else {
+                            this.updateStationFailed = true;
+                            setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+                        }
+                    })
+                ;
+            },
+            submit() {
+                console.log(`# data->profile->submit()`);
+                if (this.canUpdate) {
+                    this.api_pair_station()
+                        .then(() => this.api_update_station())
+                        .then(() => Alpine.store('wikonek').api_ui());
+                }
             },
         }))
     })
