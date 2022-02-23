@@ -1125,7 +1125,7 @@
                         <div
                                 class="modal"
                                 style="margin: 30px auto;"
-                                x-data="station"
+                                x-data="admin"
                                 x-on:click.outside="open = false"
                                 x-on:submit.prevent="submit"
                         >
@@ -1139,10 +1139,10 @@
                                     <div class="form">
                                         <form class="signup">
                                             <div class="fname form-element">
-                                                <label class="text-[13px]">Station Name</label>
+                                                <label class="text-[13px]" x-text="fields.mobile.label"></label>
                                                 <input
                                                         :maxlength="fields.name.maxLength"
-                                                        :placeholder="fields.mobile.placeholder"
+                                                        :placeholder="fields.name.placeholder"
                                                         @blur="fields.name.validate(validationCallback)"
                                                         aria-label="Station Name"
                                                         required
@@ -1153,7 +1153,7 @@
                                                         x-text="fields.name.errorMsg"></span></p>
                                             </div>
                                             <div class="mnumber form-element">
-                                                <label class="text-[13px]">Mobile Number</label>
+                                                <label class="text-[13px]" x-text="fields.mobile.label"></label>
                                                 <div class="relative">
                                                     <span class="absolute top-[7px] left-[8px]">0 <span class="text-[#d8d8d8]">|</span></span>
                                                     <input
@@ -1227,7 +1227,7 @@
                                     </div>
                                 </template>
                                 <div class="header-buttons float-right">
-                                    <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-station-modal')">
+                                    <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-station-modal')" x-show="canAdminister">
                                         <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                             <path clip-rule="evenodd"
                                                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
@@ -1500,6 +1500,7 @@
                         name: '',
                         birthdate: '',
                         address: '',
+                        role: '',
                     },
                     recipients: [],
                     transactions: [],
@@ -1563,6 +1564,9 @@
             },
             html: {
                 modalClose: `<svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" fill-rule="evenodd"/></svg>`,
+            },
+            get station() {
+                return this.data.station;
             },
             loadValidations() {
                 console.log('** store->wikonek->loadValidations()');
@@ -1704,9 +1708,9 @@
                 if (this.canManage) {
                     values = values | SHOW_MANAGER;
                 }
-                if (this.canAdminister) {
-                    values = values | SHOW_ADMIN;
-                }
+                // if (this.canAdminister) {
+                //     values = values | SHOW_ADMIN;
+                // }
 
                 return values;
             },
@@ -1723,7 +1727,7 @@
                 return retval;
             },
             get canAdminister() {
-                return true
+                return (this.data.ui.profile.role === 'agent');
             },
         })
         Alpine.data('ui', () => ({
@@ -2170,14 +2174,26 @@
 
                 return retval;
             },
+            willUse: true,
             willManage: false,
+            role: SHOW_USER,
+            get isUser() {
+                return !this.isManager;
+                // return this.willUse;
+            },
             get isManager() {
                 return Alpine.store('wikonek').canManage && this.willManage;
             },
-            get isUser() {
-                return !this.isManager;
+            get canAdminister() {
+                return Alpine.store('wikonek').canAdminister;
             },
             toggleRoles() {
+                // let i=0;
+                // let roles = Alpine.store('wikonek').roles;
+                // return function() {
+                //     i = ++i % roles.length;
+                //     this.role = roles[i];
+                // }
                 this.willManage = !this.willManage;
             },
             redeem() {
@@ -2753,25 +2769,12 @@
                     .then(() => this.egress(code));
             },
         }))
-        Alpine.data('station', () => ({
+        Alpine.data('admin', () => ({
             title: 'Update Station',
             caption: 'Go!!!',
             fields: {
-                mobile: {
-                    value: Alpine.store('wikonek').data.station.user.mobile.substring(3),
-                    maxLength: 10,
-                    rules: ['required', 'regexMobile'],
-                    validate(callback) {
-                        let {isValid, errorMsg} = callback(this);
-                        this.isValid = isValid;
-                        this.errorMsg = errorMsg;
-                    },
-                    isValid: null,
-                    errorMsg: null,
-                    placeholder: "9xxxxxxxxx e.g. 9123456789"
-                },
                 name: {
-                    value: Alpine.store('wikonek').data.station.name,
+                    value: null,
                     maxLength: 50,
                     rules: ['required'],
                     validate(callback) {
@@ -2781,8 +2784,24 @@
                     },
                     isValid: null,
                     errorMsg: null,
+                    label: "Station ID",
                     placeholder: "e.g. Aling Petra's Sari-Sari Store"
                 },
+                mobile: {
+                    value: null,
+                    maxLength: 10,
+                    rules: ['required', 'regexMobile'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null,
+                    label: "Mobile Number [Tindera]",
+                    placeholder: "9xxxxxxxxx e.g. 9123456789"
+                },
+
             },
             updateStationSucceeded: false,
             updateStationFailed: false,
@@ -2797,6 +2816,17 @@
                 this.fields.name.errorMsg = '';
                 this.updateStationSucceeded = null;
                 this.updateStationFailed = null;
+            },
+            station: Alpine.store('wikonek').station,
+            init() {
+                console.log(`# data->admin->init()`);
+
+                setTimeout(() => {
+                    this.fields.name.value = Alpine.store('wikonek').data.station.name;
+                    const mobile = Alpine.store('wikonek').data.station.user.mobile;
+                    const number = mobile ? mobile.substr(3) : null;
+                    this.fields.mobile.value = number;
+                }, 2000); //TODO: improve this, this is cheating
             },
             async api_pair_station() {
                 console.log(`# data->profile->api_station()`);
@@ -2842,10 +2872,11 @@
                 ;
             },
             submit() {
-                console.log(`# data->profile->submit()`);
+                console.log(`# data->admin->submit()`);
                 if (this.canUpdate) {
                     this.api_pair_station()
                         .then(() => this.api_update_station())
+                        .then(() => Alpine.store('wikonek').api_station())
                         .then(() => Alpine.store('wikonek').api_ui());
                 }
             },
