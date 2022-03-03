@@ -1018,16 +1018,16 @@
                                             <form class="signup">
                                                 <div class="mnumber form-element">
                                                     <label class="text-[13px]">Mobile Number</label>
-                                                        <input
-                                                                :maxlength="fields.mobile.maxLength"
-                                                                @blur="fields.mobile.validate(validationCallback)"
-                                                                oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                                                placeholder="09xxxxxxxxx e.g. 09123456789" required
-                                                                type="number"
-                                                                x-model="fields.mobile.value"
-                                                        >
-                                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                                                x-text="fields.mobile.errorMsg"></span></p>
+                                                    <input
+                                                            :maxlength="fields.mobile.maxLength"
+                                                            @blur="fields.mobile.validate(validationCallback)"
+                                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                            placeholder="09xxxxxxxxx e.g. 09123456789" required
+                                                            type="number"
+                                                            x-model="fields.mobile.value"
+                                                    >
+                                                    <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                            x-text="fields.mobile.errorMsg"></span></p>
                                                 </div>
                                                 <div class="bday form-element">
                                                     <label class="text-[13px]">Amount Credits</label>
@@ -1148,20 +1148,20 @@
                                             </div>
                                             <div class="mnumber form-element">
                                                 <label class="text-[13px]" x-text="fields.mobile.label"></label>
-<!--                                                <div class="relative">-->
-<!--                                                    <span class="absolute top-[7px] left-[8px]">0 <span class="text-[#d8d8d8]">|</span></span>-->
-                                                    <input
-                                                            :maxlength="fields.mobile.maxLength"
-                                                            :placeholder="fields.mobile.placeholder"
-                                                            @blur="fields.mobile.validate(validationCallback)"
-                                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                                            required
-                                                            type="number"
-                                                            x-model="fields.mobile.value"
-                                                    >
-                                                    <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                                            x-text="fields.mobile.errorMsg"></span></p>
-<!--                                                </div>-->
+                                                <!--                                                <div class="relative">-->
+                                                <!--                                                    <span class="absolute top-[7px] left-[8px]">0 <span class="text-[#d8d8d8]">|</span></span>-->
+                                                <input
+                                                        :maxlength="fields.mobile.maxLength"
+                                                        :placeholder="fields.mobile.placeholder"
+                                                        @blur="fields.mobile.validate(validationCallback)"
+                                                        oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                                        required
+                                                        type="number"
+                                                        x-model="fields.mobile.value"
+                                                >
+                                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                        x-text="fields.mobile.errorMsg"></span></p>
+                                                <!--                                                </div>-->
                                             </div>
                                             <div class="submit form-element mt-[30px]">
                                                 <input class="enabled" type="submit" :value="caption">
@@ -2842,9 +2842,11 @@
 
                 setTimeout(() => {
                     this.fields.name.value = Alpine.store('wikonek').data.station.name;
-                    const mobile = Alpine.store('wikonek').data.station.user.mobile;
-                    const number = mobile ? '0' + mobile.substr(3) : null;
-                    this.fields.mobile.value = number;
+                    if (Alpine.store('wikonek').data.station.user) {
+                        const mobile = Alpine.store('wikonek').data.station.user.mobile;
+                        const number = mobile ? '0' + mobile.substr(3) : null;
+                        this.fields.mobile.value = number;
+                    }
                 }, 2000); //TODO: improve this, this is cheating
             },
             async api_pair_station() {
