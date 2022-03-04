@@ -528,6 +528,25 @@
                                  x-text="captions.title"></div>
                             <div class="form">
                                 <form class="signup" x-on:submit.prevent="submit">
+                                    <div class="flex items-start mb-6">
+                                        <div class="flex items-center h-5">
+                                            <input
+                                                    aria-describedby="already"
+                                                    class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                                                    id="already"
+                                                    type="checkbox"
+                                                    x-model="wantToLogin"
+                                            >
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <label
+                                                    class="font-medium text-gray-900 dark:text-gray-300"
+                                                    for="already"
+                                                    x-text="captions.already"
+                                            >
+                                            </label>
+                                        </div>
+                                    </div>
                                     <div class="mnumber form-element">
                                         <label class="text-[13px]">Mobile Number</label>
 <!--                                        <div class="relative">-->
@@ -691,25 +710,6 @@
                                             </div>
                                         </div>
                                     </template>
-                                    <div class="flex items-start mb-6">
-                                        <div class="flex items-center h-5">
-                                            <input
-                                                    aria-describedby="already"
-                                                    class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
-                                                    id="already"
-                                                    type="checkbox"
-                                                    x-model="wantToLogin"
-                                            >
-                                        </div>
-                                        <div class="ml-3 text-sm">
-                                            <label
-                                                    class="font-medium text-gray-900 dark:text-gray-300"
-                                                    for="already"
-                                                    x-text="captions.already"
-                                            >
-                                            </label>
-                                        </div>
-                                    </div>
                                     <template x-if="wantToRegister">
                                         <div class="submit form-element">
                                             <input :class="canRegister && agreed ? 'enabled' : 'disabled'" type="submit"
@@ -880,6 +880,7 @@
                                                 <input class="enabled" type="submit" :value="caption">
                                             </div>
                                         </form>
+                                        <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="dissociate">Unpair Mobile</a>
                                     </div>
                                     <!-- if successful -->
                                     <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updateProfileSucceeded">
@@ -1621,6 +1622,7 @@
                 const device = this.session.deviceMACAddress;
                 const device_name = this.config.device.defaultName;
                 const url = apiEndPoint + `/touch/${device}/${device_name}`;
+                console.log(url, 'fetch url');
                 await fetch(url, {method: 'POST'})
                     .then(response => response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
                     .then(obj => {
@@ -1636,6 +1638,7 @@
                 console.log('** store->wikonek->api_station()');
                 const station = this.session.stationMACAddress;
                 const url = apiEndPoint+`/stations/${station}`;
+                console.log(url, 'fetch url');
                 await fetch(url, {
                     method: 'GET',
                     headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
@@ -2089,6 +2092,8 @@
             },
             updateProfileSucceeded: false,
             updateProfileFailed: false,
+            dissociateSubscriberSucceeded: false,
+            dissociateSubscriberFailed: false,
             init() {
                 console.log(`# data->profile->init()`);
                 Iodine.addRule(
@@ -2154,10 +2159,37 @@
                     })
                 ;
             },
+            async api_dissociate() {
+                console.log(`# data->profile->api_dissociate()`);
+                const device = Alpine.store('wikonek').session.deviceMACAddress;
+                const url = apiEndPoint+`/dissociate/${device}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            this.dissociateSubscriberSucceeded = true;
+                        }
+                        else {
+                            this.dissociateSubscriberFailed = true;
+                        }
+                    })
+                    .finally(() => {
+                        setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+                    })
+                ;
+            },
             submit() {
                 if (this.canUpdate) {
                     this.api_password();
                 }
+            },
+            dissociate() {
+                this.api_dissociate()
+                    .then(() => Alpine.store('wikonek').api_ui());
             },
         }))
         Alpine.data('dashboard', () => ({
