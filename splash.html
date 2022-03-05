@@ -880,7 +880,6 @@
                                                 <input class="enabled" type="submit" :value="caption">
                                             </div>
                                         </form>
-                                        <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="dissociate">Unpair Mobile</a>
                                     </div>
                                     <!-- if successful -->
                                     <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updateProfileSucceeded">
@@ -1228,12 +1227,61 @@
                                                   fill-rule="evenodd"/>
                                         </svg>
                                     </button>
-                                    <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-profile-modal')">
-                                        <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                                  fill-rule="evenodd"/>
-                                        </svg>
-                                    </button>
+                                    <!-- [start] Account Menu -->
+                                    <div
+                                            class="relative z-40"
+                                            x-data="{
+                                                open: false,
+                                                toggle() {
+                                                    if (this.open) {
+                                                        return this.close()
+                                                    }
+                                                    this.open = true
+                                                },
+                                                close(focusAfter) {
+                                                    if (! this.open) return
+                                                    this.open = false
+                                                    focusAfter && focusAfter.focus()
+                                                }
+                                            }"
+                                            x-id="['dropdown-button']"
+                                            x-on:focusin.window="! $refs.panel.contains($event.target) && close()"
+                                            x-on:keydown.escape.prevent.stop="close($refs.button)"
+                                    >
+                                        <!-- Button -->
+                                        <button
+                                                :aria-controls="$id('dropdown-button')"
+                                                :aria-expanded="open"
+                                                class="bg-[#eeeeee] p-2 rounded-full"
+                                                type="button"
+                                                x-on:click="toggle()"
+                                                x-ref="button"
+                                        >
+                                            <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                                      fill-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                        <!-- Panel -->
+                                        <div
+                                                :id="$id('dropdown-button')"
+                                                class="absolute right-0 mt-2 w-36 bg-white border border-black rounded shadow-md overflow-hidden"
+                                                style="display: none;"
+                                                x-on:click.outside="close($refs.button)"
+                                                x-ref="panel"
+                                                x-show="open"
+                                                x-transition.origin.top.left
+                                        >
+                                            <div>
+                                                <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="$dispatch('open-profile-modal')">
+                                                    Update Profile
+                                                </a>
+                                                <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="dissociate">
+                                                    Unpair Mobile
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div><!-- Account Menu [end] -->
                                 </div>
                             </div><!-- Topup Profile [end] -->
                         </div><!-- Header [end] -->
@@ -2092,8 +2140,8 @@
             },
             updateProfileSucceeded: false,
             updateProfileFailed: false,
-            dissociateSubscriberSucceeded: false,
-            dissociateSubscriberFailed: false,
+            // dissociateSubscriberSucceeded: false,
+            // dissociateSubscriberFailed: false,
             init() {
                 console.log(`# data->profile->init()`);
                 Iodine.addRule(
@@ -2159,38 +2207,38 @@
                     })
                 ;
             },
-            async api_dissociate() {
-                console.log(`# data->profile->api_dissociate()`);
-                const device = Alpine.store('wikonek').session.deviceMACAddress;
-                const url = apiEndPoint+`/dissociate/${device}`;
-                console.log(`# - fetching ${url}`);
-                await fetch(url, {
-                    method: 'POST',
-                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
-                })
-                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
-                    .then(obj => {
-                        if (obj.isOk === true) {
-                            this.dissociateSubscriberSucceeded = true;
-                        }
-                        else {
-                            this.dissociateSubscriberFailed = true;
-                        }
-                    })
-                    .finally(() => {
-                        setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
-                    })
-                ;
-            },
+            // async api_dissociate() {
+            //     console.log(`# data->profile->api_dissociate()`);
+            //     const device = Alpine.store('wikonek').session.deviceMACAddress;
+            //     const url = apiEndPoint+`/dissociate/${device}`;
+            //     console.log(`# - fetching ${url}`);
+            //     await fetch(url, {
+            //         method: 'POST',
+            //         headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+            //     })
+            //         .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+            //         .then(obj => {
+            //             if (obj.isOk === true) {
+            //                 this.dissociateSubscriberSucceeded = true;
+            //             }
+            //             else {
+            //                 this.dissociateSubscriberFailed = true;
+            //             }
+            //         })
+            //         .finally(() => {
+            //             setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+            //         })
+            //     ;
+            // },
             submit() {
                 if (this.canUpdate) {
                     this.api_password();
                 }
             },
-            dissociate() {
-                this.api_dissociate()
-                    .then(() => Alpine.store('wikonek').api_ui());
-            },
+            // dissociate() {
+            //     this.api_dissociate()
+            //         .then(() => Alpine.store('wikonek').api_ui());
+            // },
         }))
         Alpine.data('dashboard', () => ({
             captions: {
@@ -2199,6 +2247,8 @@
                 claimed: 'You already claimed your FREE internet for the day',
                 replenish: 'Please add funds to your wallet balance soon.',
             },
+            dissociateSubscriberSucceeded: false,//TODO: link to ui
+            dissociateSubscriberFailed: false,//TODO: link to ui
             get replenishThreshold() {
                 return Alpine.store('wikonek').config.replenishThreshold;
             },
@@ -2252,7 +2302,31 @@
             },
             transfer() {
                 this.$dispatch('open-transfer-modal', {transferee: {name: '', mobile: '', amount: ''}});
-            }
+            },
+            async api_dissociate() {
+                console.log(`# data->profile->api_dissociate()`);
+                const device = Alpine.store('wikonek').session.deviceMACAddress;
+                const url = apiEndPoint+`/dissociate/${device}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            this.dissociateSubscriberSucceeded = true;
+                        }
+                        else {
+                            this.dissociateSubscriberFailed = true;
+                        }
+                    })
+                ;
+            },
+            dissociate() {
+                this.api_dissociate()
+                    .then(() => Alpine.store('wikonek').api_ui());
+            },
         }))
         Alpine.data('airtime', () => ({
             code: '',
