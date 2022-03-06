@@ -1452,11 +1452,9 @@
     </template>
     <template x-if="inaccessible">
         <div>
-            <img class="splash p-4" src="images/no_internet.jpg" alt="no internet"/>
+            <img class="splash p-4" src="images/no_internet.jpg" alt="no internet" x-show="loading"/>
         </div>
     </template>
-
-
 </div><!-- UI [end] -->
 <script>
     const dummyClientMACAddress = '37:60:06:07:73:40';
@@ -1574,6 +1572,9 @@
                 inspiration: `"To fight and conquer in all your battles is not supreme excellence; supreme excellence consists in breaking the enemy's resistance without fighting.” – Sun Tzu,`,
             },
             session: {
+                loading: null,
+                loaded: false,
+                ui_interval_handle: null,
                 get hasDeviceMACAddress() {
                     // return this.deviceMACAddress !== "\$clientmac";
                     return this.deviceMACAddress !== dummyClientMACAddress;
@@ -1630,7 +1631,6 @@
 
                     return retval;
                 },
-                ui_interval_handle: null,
             },
             html: {
                 modalClose: `<svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" fill-rule="evenodd"/></svg>`,
@@ -1679,6 +1679,7 @@
             },
             async api_touch() {
                 console.log('** store->wikonek->api_touch()');
+                this.session.loading = true;
                 const device = this.session.deviceMACAddress;
                 const device_name = this.config.device.defaultName;
                 const url = apiEndPoint + `/touch/${device}/${device_name}`;
@@ -1692,11 +1693,13 @@
                         }
                         this.connection.status.internet = true;
                         this.connection.status.backend = obj.isOk;
+                        this.session.loaded = true;
                     })
                     .catch(error => {
                         this.connection.status.internet = false;
                         console.log('** error caught in store->wikonek->api_touch()');
                     })
+                    .finally(() => { this.loading = true; })
             },
             async api_station() {
                 console.log('** store->wikonek->api_station()');
@@ -1815,7 +1818,6 @@
             },
         })
         Alpine.data('ui', () => ({
-            loaded: false,
             device: {
                 get macAddress() {
                     return Alpine.store('wikonek').session.deviceMACAddress;
@@ -1833,6 +1835,9 @@
                     manager: 'images/manager.png',
                     pointer: 'images/pointer.png',
                 }
+            },
+            get loading() {
+                return Alpine.store('wikonek').session.loading;
             },
             get hasDeviceMACAddress() {
                 return Alpine.store('wikonek').session.hasDeviceMACAddress;
@@ -1864,16 +1869,29 @@
                 },
             },
             init() {
-                if (this.hasDeviceMACAddress) {
-                    this.$nextTick(() => {
+                this.$nextTick(() => {
+                    if (this.hasDeviceMACAddress) {
                         this.$dispatch('notify', {
                                 content: `Your MAC Address is ${this.device.macAddress}.`,
                                 type: 'info'
                             }
                         );
-                    });
-                    this.loaded = true;
-                }
+                        // this.loaded = true;
+                    }
+                });
+                // if (this.hasDeviceMACAddress) {
+                //     this.$nextTick(() => {
+                //         this.$dispatch('notify', {
+                //                 content: `Your MAC Address is ${this.device.macAddress}.`,
+                //                 type: 'info'
+                //             }
+                //         );
+                //     });
+                //     this.loaded = true;
+                // }
+                // if (this.inaccessible) {
+                //
+                // }
             },
         }))
         Alpine.data('ingress', () => ({
