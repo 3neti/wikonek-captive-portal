@@ -1285,6 +1285,9 @@
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="consumeAirtime">
                                                             Consume Airtime
                                                         </a>
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="stashAirtime">
+                                                            Stash Airtime
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div><!-- Account Menu [end] -->
@@ -1583,6 +1586,7 @@
                 loading: null,
                 loaded: false,
                 ui_interval_handle: null,
+                airtime: 0,
                 get hasDeviceMACAddress() {
                     // return this.deviceMACAddress !== "\$clientmac";
                     return this.deviceMACAddress !== dummyClientMACAddress;
@@ -1766,6 +1770,11 @@
                 return await fetch(url, {method: 'GET'})
                     .then(response => response.text())
                     .then(inspiration => {this.data.inspiration = inspiration});
+            },
+            async api_stash(minutes) {
+                console.log('** store->wikonek->api_stash()');
+                return await fetch(apiEndPoint+`/stash/${minutes}`, {method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
+                    .then(response => response.json().then(() => minutes))
             },
             ingress() {
                 location.assign(gatewayURL);
@@ -2387,11 +2396,25 @@
             },
             consumeAirtime() {
                 const airtime = Alpine.store('wikonek').data.ui.balance.airtime.amount * 1;
-                Alpine.store('wikonek').api_consume(airtime).then(minutes => Alpine.store('wikonek').api_extend(minutes))
+                Alpine.store('wikonek').api_consume(airtime)
+                    .then(() => Alpine.store('wikonek').api_extend(airtime))
+                    .then(() => Alpine.store('wikonek').api_ui());
+            },
+            stashAirtime() {
+                const airtime = Math.round(Alpine.store('wikonek').session.airtime/60);
+                Alpine.store('wikonek').api_stash(airtime)
+                    .then(minutes => Alpine.store('wikonek').api_extend(minutes * -1))
+                    .then(() => Alpine.store('wikonek').api_ui());
             },
         }))
         Alpine.data('airtime', () => ({
-            code: '',
+            // code: '',
+            get code() {
+                return Alpine.store('wikonek').session.airtime;
+            },
+            set code(value) {
+                Alpine.store('wikonek').session.airtime = value;
+            },
             caption: 'Airtime',
             handle: null,
             get days() {
