@@ -1452,7 +1452,11 @@
     </template>
     <template x-if="inaccessible">
         <div>
-            <img class="splash p-4" src="images/no_internet.jpg" alt="no internet" x-show="loading"/>
+            <span x-show="loading">Loading...</span>
+            <div x-show="loaded">
+                <img class="object-scale-down h-48 w-96" src="images/no_internet.jpg" alt="no internet" />
+                <div>Contact the station manager to check the internet connection.</div>
+            </div >
         </div>
     </template>
 </div><!-- UI [end] -->
@@ -1693,13 +1697,15 @@
                         }
                         this.connection.status.internet = true;
                         this.connection.status.backend = obj.isOk;
-                        this.session.loaded = true;
                     })
                     .catch(error => {
                         this.connection.status.internet = false;
                         console.log('** error caught in store->wikonek->api_touch()');
                     })
-                    .finally(() => { this.loading = true; })
+                    .finally(() => {
+                        this.session.loaded = true;
+                        this.session.loading = false;
+                    })
             },
             async api_station() {
                 console.log('** store->wikonek->api_station()');
@@ -1838,6 +1844,9 @@
             },
             get loading() {
                 return Alpine.store('wikonek').session.loading;
+            },
+            get loaded() {
+                return Alpine.store('wikonek').session.loaded;
             },
             get hasDeviceMACAddress() {
                 return Alpine.store('wikonek').session.hasDeviceMACAddress;
