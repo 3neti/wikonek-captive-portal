@@ -1210,8 +1210,9 @@
                                     <div
                                             class="wallet-details float-right">
                                         <template x-if="isUser">
-                                            <div class="wallet-balance float-left text-right pr-2">
-                                                <div class="text-[17px] font-bold">₱<span x-text="loadRemaining"></span></div>
+                                            <div class="wallet-balance float-left text-right pr-2" @click="toggleWallets">
+<!--                                                <div class="text-[17px] font-bold">₱<span x-text="loadRemaining"></span></div>-->
+                                                <div class="text-[17px] font-bold" x-text="remaining(wallet)"></div>
                                                 <div class="text-[12px]" x-text="captions.balance"></div>
                                             </div>
                                         </template>
@@ -1280,6 +1281,9 @@
                                                         </a>
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="dissociate">
                                                             Unpair Mobile
+                                                        </a>
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="consumeAirtime">
+                                                            Consume Airtime
                                                         </a>
                                                     </div>
                                                 </div>
@@ -1502,7 +1506,7 @@
                     defaultName: 'mobile',
                 },
                 // environment: 'testing',
-                refreshInterval: 0 * 1000,
+                refreshInterval: 60 * 1000,
                 flashTimeout: 3 * 1000,
                 replenishThreshold: 5000,
                 insertCoinThreshold: 0 * 100, //centavos for now, should be zero most of the time
@@ -2270,6 +2274,7 @@
             },
         }))
         Alpine.data('dashboard', () => ({
+            wallet: 'load',
             captions: {
                 balance: 'Wallet Balance',
                 claim: 'Claim your free internet.',
@@ -2285,8 +2290,26 @@
                 return true;
                 return (Alpine.store('wikonek').data.ui.balance.load.amount * 1) < this.replenishThreshold;
             },
-            get loadRemaining() {
-                return (Alpine.store('wikonek').data.ui.balance.load.amount * 1).toLocaleString();
+            // get loadRemaining() {
+            //     return (Alpine.store('wikonek').data.ui.balance.load.amount * 1).toLocaleString();
+            //     // return this.remaining('load');
+            // },
+            remaining(wallet) {
+                let retval = '';
+                switch (wallet) {
+                    case 'load':
+                        retval = (Alpine.store('wikonek').data.ui.balance.load.amount * 1).toLocaleString();
+                        retval += ' ';
+                        retval += Alpine.store('wikonek').data.ui.balance.load.units;
+                        break;
+                    case 'airtime':
+                        retval = (Alpine.store('wikonek').data.ui.balance.airtime.amount * 1).toLocaleString();
+                        retval += ' ';
+                        retval += Alpine.store('wikonek').data.ui.balance.airtime.units;
+                        break;
+                }
+
+                return retval;
             },
             get stationID() {
                 return Alpine.store('wikonek').data.station.name;
@@ -2326,6 +2349,12 @@
                 // }
                 this.willManage = !this.willManage;
             },
+            toggleWallets() {
+                if (this.wallet === 'load')
+                    this.wallet = 'airtime';
+                else
+                    this.wallet = 'load';
+            },
             redeem() {
                 this.$dispatch('open-redeem-modal');
             },
@@ -2355,6 +2384,10 @@
             dissociate() {
                 this.api_dissociate()
                     .then(() => Alpine.store('wikonek').ingress());
+            },
+            consumeAirtime() {
+                const airtime = Alpine.store('wikonek').data.ui.balance.airtime.amount * 1;
+                Alpine.store('wikonek').api_consume(airtime).then(minutes => Alpine.store('wikonek').api_extend(minutes))
             },
         }))
         Alpine.data('airtime', () => ({
