@@ -1015,7 +1015,7 @@
                                         <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
                                         <div class="content">
                                             <div class="wrap">
-                                                <div class="title text-center font-bold text-[21px] mb-[30px]">Transfer Load</div>
+                                                <div class="title text-center font-bold text-[21px] mb-[30px]">Send Load</div>
                                                 <div class="form">
                                                     <form class="signup">
                                                         <div class="mnumber form-element">
@@ -1276,17 +1276,20 @@
                                                         x-transition.origin.top.left
                                                 >
                                                     <div>
-                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="$dispatch('open-profile-modal')">
-                                                            Update Profile
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-profile-modal')">
+                                                            Update PIN
                                                         </a>
-                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="dissociate">
-                                                            Unpair Mobile
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="consumeAirtime; toggle()" x-show="Alpine.store('wikonek').session.stashed === true">
+                                                            Start Session
                                                         </a>
-                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="consumeAirtime">
-                                                            Consume Airtime
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="stashAirtime; toggle()" x-show="Alpine.store('wikonek').session.stashed === false">
+                                                            End Session
                                                         </a>
-                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="stashAirtime">
-                                                            Stash Airtime
+                                                    </div>
+                                                    <div class="border-t border-black">
+
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="dissociate; toggle()">
+                                                            Logout
                                                         </a>
                                                     </div>
                                                 </div>
@@ -1347,100 +1350,101 @@
                                                 </div><!-- seconds -->
                                             </div><!-- Airtime [end] -->
                                         </template>
-
                                     </div><!-- Airtime | Load Remaining [end] -->
-                                    <!-- [start] Checkin -->
-                                    <div
-                                            x-data="checkin">
-                                        <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
-                                        <div class="text-[#26580F] text-center mb-[35px]" x-show="unclaimed">
-                                            <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="captions.claim"></a>
-                                        </div>
-                                    </div><!-- Checkin [end] -->
-                                    <!-- [start] Count Redeem Transfer -->
-                                    <div
-                                            class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]"
-                                    >
-                                        <!-- [start] Count -->
-                                        <div>
-                                            <template x-if="canInsertCoin">
-                                                <button x-on:click="$dispatch('open-count-modal')">
+                                    <div x-show="Alpine.store('wikonek').session.stashed === false">
+                                        <!-- [start] Checkin -->
+                                        <div
+                                                x-data="checkin">
+                                            <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
+                                            <div class="text-[#26580F] text-center mb-[35px]" x-show="unclaimed">
+                                                <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="captions.claim"></a>
+                                            </div>
+                                        </div><!-- Checkin [end] -->
+                                        <!-- [start] Count Redeem Transfer -->
+                                        <div
+                                                class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]"
+                                        >
+                                            <!-- [start] Count -->
+                                            <div>
+                                                <template x-if="canInsertCoin">
+                                                    <button x-on:click="$dispatch('open-count-modal')">
+                                                        <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
+                                                            <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
+                                                        </svg>
+                                                        <span>Insert Coin</span>
+                                                    </button>
+                                                </template>
+                                                <template x-if="!canInsertCoin">
+                                                    <button>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="red-200">
+                                                            <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span>Check Tindera</span>
+                                                    </button>
+                                                </template>
+                                            </div><!-- Count [end] -->
+                                            <!-- [start] Redeem -->
+                                            <div>
+                                                <button x-data x-on:click="redeem">
                                                     <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
-                                                        <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
+                                                        <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
                                                     </svg>
-                                                    <span>Insert Coin</span>
+                                                    <span>Redeem Voucher</span>
                                                 </button>
-                                            </template>
-                                            <template x-if="!canInsertCoin">
-                                                <button>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="red-200">
-                                                        <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+                                            </div><!-- Redeem [end] -->
+                                            <!-- [start] Transfer -->
+                                            <div>
+                                                <button x-data x-on:click="transfer">
+                                                    <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                        <path clip-rule="evenodd"
+                                                              d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
+                                                              fill-rule="evenodd"/>
                                                     </svg>
-                                                    <span>Check Tindera</span>
+                                                    <span>Send Ur Load</span>
                                                 </button>
+                                            </div><!-- Transfer [end] -->
+                                        </div><!-- Count Redeem Transfer [end] -->
+                                        <!-- [start] List -->
+                                        <div>
+                                            <template x-if="isUser">
+                                                <!-- [start] Purchase -->
+                                                <div
+                                                        x-data="purchase"
+                                                        x-show="canBuy"
+                                                >
+                                                    <div class="font-bold text-[18px] title mb-[15px]" x-text="title"></div>
+                                                    <div class="offers mb-[35px]">
+                                                        <template x-for="product in products" :key=product.code>
+                                                            <template x-if="price(product.code) <= $store.wikonek.data.ui.balance.load.amount">
+                                                                <div class="product-offers grid grid-cols-2 gap-2">
+                                                                    <div class="item"><span x-text="product.rate"></span><span x-text="product.name"></span></div>
+                                                                    <button class="buynow" x-data x-on:click="confirm(product.code)" x-text="caption"></button>
+                                                                </div>
+                                                            </template>
+                                                        </template>
+                                                    </div>
+                                                </div><!-- Purchase [end] -->
                                             </template>
-                                        </div><!-- Count [end] -->
-                                        <!-- [start] Redeem -->
-                                        <div>
-                                            <button x-data x-on:click="redeem">
-                                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
-                                                </svg>
-                                                <span>Redeem Voucher</span>
-                                            </button>
-                                        </div><!-- Redeem [end] -->
-                                        <!-- [start] Transfer -->
-                                        <div>
-                                            <button x-data x-on:click="transfer">
-                                                <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                    <path clip-rule="evenodd"
-                                                          d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
-                                                          fill-rule="evenodd"/>
-                                                </svg>
-                                                <span>Transfer Load</span>
-                                            </button>
-                                        </div><!-- Transfer [end] -->
-                                    </div><!-- Count Redeem Transfer [end] -->
-                                    <!-- [start] List -->
-                                    <div>
-                                        <template x-if="isUser">
-                                            <!-- [start] Purchase -->
-                                            <div
-                                                    x-data="purchase"
-                                                    x-show="canBuy"
-                                            >
-                                                <div class="font-bold text-[18px] title mb-[15px]" x-text="title"></div>
-                                                <div class="offers mb-[35px]">
-                                                    <template x-for="product in products" :key=product.code>
-                                                        <template x-if="price(product.code) <= $store.wikonek.data.ui.balance.load.amount">
+                                            <template x-if="isManager">
+                                                <!-- [start] Transfer -->
+                                                <div
+                                                        x-data="transfer" x-show="$store.wikonek.data.ui.recipients && $store.wikonek.data.ui.recipients.length>0">
+                                                    <div class="font-bold text-[18px] title mb-[15px]">Recent Transactions</div>
+                                                    <div class="offers mb-[35px]" >
+                                                        <template x-for="transferee in $store.wikonek.data.ui.recipients" :key=transferee.mobile>
                                                             <div class="product-offers grid grid-cols-2 gap-2">
-                                                                <div class="item"><span x-text="product.rate"></span><span x-text="product.name"></span></div>
-                                                                <button class="buynow" x-data x-on:click="confirm(product.code)" x-text="caption"></button>
+                                                                <div class="item"><span x-text="'₱' + (+transferee.amount).toLocaleString()"></span><span x-text="transferee.mobile"></span>
+                                                                    <span x-text="transferee.name"></span></div>
+                                                                <button class="buynow" x-data x-on:click="$dispatch('open-transfer-modal', {transferee})">Transfer Again
+                                                                </button>
                                                             </div>
                                                         </template>
-                                                    </template>
-                                                </div>
-                                            </div><!-- Purchase [end] -->
-                                        </template>
-                                        <template x-if="isManager">
-                                            <!-- [start] Transfer -->
-                                            <div
-                                                    x-data="transfer" x-show="$store.wikonek.data.ui.recipients && $store.wikonek.data.ui.recipients.length>0">
-                                                <div class="font-bold text-[18px] title mb-[15px]">Recent Transactions</div>
-                                                <div class="offers mb-[35px]" >
-                                                    <template x-for="transferee in $store.wikonek.data.ui.recipients" :key=transferee.mobile>
-                                                        <div class="product-offers grid grid-cols-2 gap-2">
-                                                            <div class="item"><span x-text="'₱' + (+transferee.amount).toLocaleString()"></span><span x-text="transferee.mobile"></span>
-                                                                <span x-text="transferee.name"></span></div>
-                                                            <button class="buynow" x-data x-on:click="$dispatch('open-transfer-modal', {transferee})">Transfer Again
-                                                            </button>
-                                                        </div>
-                                                    </template>
-                                                </div>
-                                            </div><!-- Transfer [end] -->
-                                        </template>
-                                    </div><!-- List [end] -->
+                                                    </div>
+                                                </div><!-- Transfer [end] -->
+                                            </template>
+                                        </div><!-- List [end] -->
+                                    </div>
                                 </div><!-- Panels [end] -->
                             </div><!-- User Page [end] -->
                         </div><!-- Dashboard [end] -->
@@ -1587,6 +1591,7 @@
                 loaded: false,
                 ui_interval_handle: null,
                 airtime: 0,
+                stashed: false,
                 get hasDeviceMACAddress() {
                     // return this.deviceMACAddress !== "\$clientmac";
                     return this.deviceMACAddress !== dummyClientMACAddress;
@@ -1774,7 +1779,10 @@
             async api_stash(minutes) {
                 console.log('** store->wikonek->api_stash()');
                 return await fetch(apiEndPoint+`/stash/${minutes}`, {method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
-                    .then(response => response.json().then(() => minutes))
+                    // .then(response => response.json().then(() => minutes))
+                    .then(response => response.json())
+                    .then(() => {this.session.stashed = true;})
+                    .then(() => minutes)
             },
             ingress() {
                 location.assign(gatewayURL);
@@ -1798,6 +1806,7 @@
                                 }
                             })
                     })
+
                     .finally(() => this.api_inspire());
             },
             init() {
@@ -2396,9 +2405,18 @@
             },
             consumeAirtime() {
                 const airtime = Alpine.store('wikonek').data.ui.balance.airtime.amount * 1;
-                Alpine.store('wikonek').api_consume(airtime)
-                    .then(() => Alpine.store('wikonek').api_extend(airtime))
-                    .then(() => Alpine.store('wikonek').api_ui());
+                if (airtime > 0) {
+                    Alpine.store('wikonek').api_consume(airtime)
+                        .then(() => Alpine.store('wikonek').api_extend(airtime))
+                        .then(() => Alpine.store('wikonek').api_ui())
+                        .then(() => {
+                            Alpine.store('wikonek').session.stashed = false;
+                        });
+                    this.$dispatch('notify', {
+                        content: `You have ${airtime} minutes.`,
+                        type: 'info'}
+                    );
+                }
             },
             stashAirtime() {
                 const airtime = Math.round(Alpine.store('wikonek').session.airtime/60);
@@ -2406,11 +2424,19 @@
                     .then(minutes => Alpine.store('wikonek').api_extend(minutes * -1))
                     .then(() => Alpine.store('wikonek').api_ui());
             },
+            init() {
+                setTimeout(() => this.consumeAirtime(), Alpine.store('wikonek').config.notification.delay)
+            },
         }))
         Alpine.data('airtime', () => ({
             // code: '',
             get code() {
-                return Alpine.store('wikonek').session.airtime;
+                let retval = Alpine.store('wikonek').session.airtime;
+                if (Alpine.store('wikonek').session.stashed === true) {
+                    retval = Alpine.store('wikonek').data.ui.balance.airtime.amount * 60;
+                }
+
+                return retval;
             },
             set code(value) {
                 Alpine.store('wikonek').session.airtime = value;
