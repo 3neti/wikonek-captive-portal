@@ -263,6 +263,9 @@
             color: #17A0DC;
             font-size: 14px;
             border-radius: 3px;
+            display: block;
+            width: 100%;
+            margin: auto;
         }
 
         .grid {
@@ -1283,13 +1286,13 @@
                                                             I'm back!
                                                         </a>
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="stash; toggle()" x-show="Alpine.store('wikonek').session.stashed === false">
-                                                            I'm moving...
+                                                            Roaming...
                                                         </a>
                                                     </div>
                                                     <div class="border-t border-black">
 
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="dissociate; toggle()">
-                                                            Logout
+                                                            Log Off...
                                                         </a>
                                                     </div>
                                                 </div>
@@ -1370,18 +1373,22 @@
                                             <div>
                                                 <template x-if="canInsertCoin">
                                                     <button x-on:click="$dispatch('open-count-modal')">
-                                                        <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
-                                                            <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
-                                                        </svg>
+                                                        <center>
+                                                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"/>
+                                                                <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"/>
+                                                            </svg>
+                                                        </center>
                                                         <span>Insert Coin</span>
                                                     </button>
                                                 </template>
                                                 <template x-if="!canInsertCoin">
                                                     <button>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="red-200">
-                                                            <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
-                                                        </svg>
+                                                        <center>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="red-200">
+                                                                <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </center>
                                                         <span>Check Tindera</span>
                                                     </button>
                                                 </template>
@@ -1389,21 +1396,25 @@
                                             <!-- [start] Redeem -->
                                             <div>
                                                 <button x-data x-on:click="redeem">
-                                                    <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
-                                                    </svg>
+                                                    <center>
+                                                        <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/>
+                                                        </svg>
+                                                    </center>
                                                     <span>Redeem Voucher</span>
                                                 </button>
                                             </div><!-- Redeem [end] -->
                                             <!-- [start] Transfer -->
                                             <div>
                                                 <button x-data x-on:click="transfer">
-                                                    <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                        <path clip-rule="evenodd"
+                                                    <center>
+                                                        <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                            <path clip-rule="evenodd"
                                                               d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
                                                               fill-rule="evenodd"/>
-                                                    </svg>
-                                                    <span>Send Ur Load</span>
+                                                        </svg>
+                                                    </center>
+                                                    <span>Transfer Load</span>
                                                 </button>
                                             </div><!-- Transfer [end] -->
                                         </div><!-- Count | Redeem | Transfer [end] -->
