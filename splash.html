@@ -1138,7 +1138,7 @@
                                             <div class="form">
                                                 <form class="signup">
                                                     <div class="fname form-element">
-                                                        <label class="text-[13px]" x-text="fields.mobile.label"></label>
+                                                        <label class="text-[13px]" x-text="fields.name.label"></label>
                                                         <input
                                                                 :maxlength="fields.name.maxLength"
                                                                 :placeholder="fields.name.placeholder"
@@ -1202,8 +1202,11 @@
                                         style="max-width: 600px; margin: 5px auto;">
                                     <!-- [start] Logo -->
                                     <div>
-                                        <template x-if="isUser">
+                                        <template x-if="isUser && !canAdminister">
                                             <div class="logo float-left"><img class="wklogo" :src="assets.logo.main" @click="toggleRoles()"/></div>
+                                        </template>
+                                        <template x-if="isUser && canAdminister">
+                                            <div class="logo float-left"><img class="wklogotindera" :src="assets.logo.agent" @click="toggleRoles()"/></div>
                                         </template>
                                         <template x-if="isManager">
                                             <div class="logo float-left"><img class="wklogotindera" :src="assets.logo.manager" @click="toggleRoles"/></div>
@@ -1225,14 +1228,9 @@
                                                 <div class="text-[12px]">Remaining Time</div>
                                             </div>
                                         </template>
-                                        <div class="header-buttons float-right">
-                                            <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-station-modal')" x-show="canAdminister">
-                                                <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                    <path clip-rule="evenodd"
-                                                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                                                          fill-rule="evenodd"/>
-                                                </svg>
-                                            </button>
+                                        <!-- [start] Icon Menu -->
+                                        <div
+                                                class="header-buttons float-right">
                                             <!-- [start] Account Menu -->
                                             <div
                                                     class="relative z-40"
@@ -1279,25 +1277,24 @@
                                                         x-transition.origin.top.left
                                                 >
                                                     <div>
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-station-modal')">
+                                                            Setup Station...
+                                                        </a>
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-profile-modal')">
-                                                            Update PIN
-                                                        </a>
-                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="unstash; toggle()" x-show="Alpine.store('wikonek').session.stashed === true">
-                                                            I'm back!
-                                                        </a>
-                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="stash; toggle()" x-show="Alpine.store('wikonek').session.stashed === false">
-                                                            Roaming...
+                                                            Update PIN...
                                                         </a>
                                                     </div>
                                                     <div class="border-t border-black">
-
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="stash; toggle()" x-show="Alpine.store('wikonek').session.stashed === false">
+                                                            Leave Station
+                                                        </a>
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="dissociate; toggle()">
-                                                            Log Off...
+                                                            Log Off
                                                         </a>
                                                     </div>
                                                 </div>
                                             </div><!-- Account Menu [end] -->
-                                        </div>
+                                        </div><!-- Icon Menu [end] -->
                                     </div><!-- Topup | Account [end] -->
                                 </div><!-- Header [end] -->
                                 <!-- [start] Divider -->
@@ -1887,6 +1884,7 @@
                     main: 'images/logo.png',
                     manager: 'images/manager.png',
                     pointer: 'images/pointer.png',
+                    agent: 'images/agent.png',
                 }
             },
             get loading() {
@@ -3071,7 +3069,7 @@
             },
         }))
         Alpine.data('admin', () => ({
-            title: 'Update Station',
+            title: 'Setup Station',
             caption: 'Go!!!',
             fields: {
                 name: {
