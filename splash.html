@@ -1206,7 +1206,7 @@
                                             <div class="logo float-left"><img class="wklogotindera" :src="assets.logo.manager" @click="toggleRoles"/></div>
                                         </template>
                                     </div><!-- Logo [end] -->
-                                    <!-- [start] Topup Account -->
+                                    <!-- [start] Topup | Account -->
                                     <div
                                             class="wallet-details float-right">
                                         <template x-if="isUser">
@@ -1279,11 +1279,11 @@
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-profile-modal')">
                                                             Update PIN
                                                         </a>
-                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="consumeAirtime; toggle()" x-show="Alpine.store('wikonek').session.stashed === true">
-                                                            Start Session
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="unstash; toggle()" x-show="Alpine.store('wikonek').session.stashed === true">
+                                                            I'm back!
                                                         </a>
-                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="stashAirtime; toggle()" x-show="Alpine.store('wikonek').session.stashed === false">
-                                                            End Session
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="stash; toggle()" x-show="Alpine.store('wikonek').session.stashed === false">
+                                                            I'm moving...
                                                         </a>
                                                     </div>
                                                     <div class="border-t border-black">
@@ -1295,7 +1295,7 @@
                                                 </div>
                                             </div><!-- Account Menu [end] -->
                                         </div>
-                                    </div><!-- Topup Account [end] -->
+                                    </div><!-- Topup | Account [end] -->
                                 </div><!-- Header [end] -->
                                 <!-- [start] Divider -->
                                 <div
@@ -1351,16 +1351,18 @@
                                             </div><!-- Airtime [end] -->
                                         </template>
                                     </div><!-- Airtime | Load Remaining [end] -->
-                                    <div x-show="Alpine.store('wikonek').session.stashed === false">
-                                        <!-- [start] Checkin -->
-                                        <div
-                                                x-data="checkin">
-                                            <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>
-                                            <div class="text-[#26580F] text-center mb-[35px]" x-show="unclaimed">
-                                                <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="captions.claim"></a>
-                                            </div>
-                                        </div><!-- Checkin [end] -->
-                                        <!-- [start] Count Redeem Transfer -->
+                                    <!-- [start] Checkin -->
+                                    <div
+                                            x-data="checkin">
+<!--                                        <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>-->
+                                        <div class="text-[#26580F] text-center mb-[35px]">
+                                            <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="checkinCaption"></a>
+                                        </div>
+                                    </div><!-- Checkin [end] -->
+                                    <!-- [start] Count | Redeem | Transfer | List -->
+                                    <div
+                                            x-show="Alpine.store('wikonek').session.stashed === false">
+                                        <!-- [start] Count | Redeem | Transfer -->
                                         <div
                                                 class="nav clear-both grid grid-cols-3 gap-5 mb-[30px]"
                                         >
@@ -1404,7 +1406,7 @@
                                                     <span>Send Ur Load</span>
                                                 </button>
                                             </div><!-- Transfer [end] -->
-                                        </div><!-- Count Redeem Transfer [end] -->
+                                        </div><!-- Count | Redeem | Transfer [end] -->
                                         <!-- [start] List -->
                                         <div>
                                             <template x-if="isUser">
@@ -1444,7 +1446,7 @@
                                                 </div><!-- Transfer [end] -->
                                             </template>
                                         </div><!-- List [end] -->
-                                    </div>
+                                    </div><!-- Count | Redeem | Transfer | List [end] -->
                                 </div><!-- Panels [end] -->
                             </div><!-- User Page [end] -->
                         </div><!-- Dashboard [end] -->
@@ -1779,7 +1781,6 @@
             async api_stash(minutes) {
                 console.log('** store->wikonek->api_stash()');
                 return await fetch(apiEndPoint+`/stash/${minutes}`, {method: 'POST', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
-                    // .then(response => response.json().then(() => minutes))
                     .then(response => response.json())
                     .then(() => {this.session.stashed = true;})
                     .then(() => minutes)
@@ -1843,6 +1844,19 @@
             },//TODO: this should be server-based
             get canAdminister() {
                 return (this.data.ui.profile.role === 'agent');
+            },
+            unstash() {
+                const airtime = this.data.ui.balance.airtime.amount * 1;
+                if (airtime > 0) {
+                    this.api_consume(airtime)
+                        .then(() => this.api_extend(airtime))
+                        .then(() => this.api_ui())
+                        .then(() => {
+                            this.session.stashed = false;
+                        });
+                }
+
+                return airtime;
             },
         })
         Alpine.data('ui', () => ({
@@ -2295,8 +2309,8 @@
             wallet: 'load',
             captions: {
                 balance: 'Wallet Balance',
-                claim: 'Claim your free internet.',
-                claimed: 'You already claimed your FREE internet for the day',
+                claim: 'Claim your free internet.',//deprecate
+                claimed: 'You already claimed your FREE internet for the day',//deprecate
                 replenish: 'Please add funds to your wallet balance soon.',
             },
             dissociateSubscriberSucceeded: false,//TODO: link to ui
@@ -2403,29 +2417,23 @@
                 this.api_dissociate()
                     .then(() => Alpine.store('wikonek').ingress());
             },
-            consumeAirtime() {
-                const airtime = Alpine.store('wikonek').data.ui.balance.airtime.amount * 1;
-                if (airtime > 0) {
-                    Alpine.store('wikonek').api_consume(airtime)
-                        .then(() => Alpine.store('wikonek').api_extend(airtime))
-                        .then(() => Alpine.store('wikonek').api_ui())
-                        .then(() => {
-                            Alpine.store('wikonek').session.stashed = false;
-                        });
+            unstash() {
+                const airtime = Alpine.store('wikonek').unstash();
+                if (airtime > 0)
                     this.$dispatch('notify', {
-                        content: `You have ${airtime} minutes.`,
+                        content: `You have unstashed ${airtime} minutes.`,
                         type: 'info'}
                     );
-                }
             },
-            stashAirtime() {
+            stash() {
                 const airtime = Math.round(Alpine.store('wikonek').session.airtime/60);
                 Alpine.store('wikonek').api_stash(airtime)
                     .then(minutes => Alpine.store('wikonek').api_extend(minutes * -1))
-                    .then(() => Alpine.store('wikonek').api_ui());
+                    .then(() => setTimeout(() => Alpine.store('wikonek').api_ui(), 100));
+            // .then(() => Alpine.store('wikonek').api_ui());
             },
             init() {
-                setTimeout(() => this.consumeAirtime(), Alpine.store('wikonek').config.notification.delay)
+                setTimeout(() => this.unstash(), 500)
             },
         }))
         Alpine.data('airtime', () => ({
@@ -2499,8 +2507,26 @@
             get claimed() {
                 return Alpine.store('wikonek').session.dayPassClaimed
             },
+            get hasAirtime() {
+                return Alpine.store('wikonek').session.airtime > 0;
+            },
+            get hasStash() {
+                return Alpine.store('wikonek').session.stashed && Alpine.store('wikonek').data.ui.balance.airtime.amount > 0
+            },
             get unclaimed() {
                 return ! this.claimed;
+            },
+            get checkinCaption() {
+                 return this.hasAirtime
+                     ? 'Click here to surf the internet!'
+                     : this.hasStash ? 'If you are staying, click here to continue.'
+                         : this.unclaimed
+                             ? 'Click here to surf the internet for free!'
+                             : 'Click here for promos.'
+                ;
+            },
+            get inspiration() {
+                return Alpine.store('wikonek').data.inspiration
             },
             hydrate(data) {
                 this.checkin = data;
@@ -2533,15 +2559,43 @@
                     .then(minutes => this.notify(minutes))
                     .then(() => this.refresh())
             },
+            update() {
+                return Alpine.store('wikonek').api_ui()
+            },
+            surf() {
+                const param1 = this.inspiration;
+                const param2 = '';
+                const param3 = sponsorURL;
+                Alpine.store('wikonek').egress(param1, param2, param3);
+            },
             egress() {
                 const param1 = `Complimentary ${this.checkin.airtime} minutes`;
                 const param2 = this.checkin.splash;
                 const param3 = this.checkin.url_landing;
                 Alpine.store('wikonek').egress(param1, param2, param3);
             },
+            promos() {
+                const param1 = 'All vouchers have been claimed!';
+                const param2 = 'Please come back next time.';
+                const param3 = gatewayURL;
+                Alpine.store('wikonek').egress(param1, param2, param3);
+            },
             submit() {
                 console.log(`# data->checkin->submit()`);
-                this.api_checkin().then(() => Alpine.store('wikonek').api_ui()).then(() => this.egress());
+                if (this.hasAirtime) {
+                    this.surf()
+                }
+                else if (this.hasStash) {
+                    Alpine.store('wikonek').unstash()
+                }
+                else if (this.unclaimed) {
+                    this.api_checkin()
+                        .then(() => this.update())
+                        .then(() => this.egress())
+                }
+                else {
+                    this.promos()
+                }
             }
         }))
         Alpine.data('count', () => ({
@@ -3125,6 +3179,7 @@
     const backendIPAddress = `206.189.90.222`;
     const rootURL = `http://${backendIPAddress}`;
     const splashURL = `http://${backendIPAddress}/splash`;
+    const sponsorURL = 'https://wikonek.ph';
     const lguURL = `http://${backendIPAddress}/lgu`; // image of government sponsor
     const landingURL = `http://${backendIPAddress}/landing`;
     const apiEndPoint = `http://${backendIPAddress}/api`;
