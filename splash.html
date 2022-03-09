@@ -922,7 +922,7 @@
                                         <div class="wrap">
                                             <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="amount"></div>
                                             <div class="time-insert-coin">
-                                                <span class="block text-center" x-show="disarmed" x-text="`Click on the '${caption}' button below. You have ${ticks} seconds to insert coins.`"></span>
+                                                <span class="block text-center" x-show="disarmed" x-text="`Click the '${caption}' button below. Insert coins within ${ticks} seconds.`"></span>
                                                 <span class="countdown" x-text="timeRemaining"></span>
                                             </div>
                                             <div class="form relative">
@@ -1018,7 +1018,7 @@
                                         <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
                                         <div class="content">
                                             <div class="wrap">
-                                                <div class="title text-center font-bold text-[21px] mb-[30px]">Send Load</div>
+                                                <div class="title text-center font-bold text-[21px] mb-[30px]">Transfer Load</div>
                                                 <div class="form">
                                                     <form class="signup">
                                                         <div class="mnumber form-element">
@@ -1269,7 +1269,7 @@
                                                 <!-- Panel -->
                                                 <div
                                                         :id="$id('dropdown-button')"
-                                                        class="absolute right-0 mt-2 w-36 bg-white border border-black rounded shadow-md overflow-hidden"
+                                                        class="absolute right-0 mt-2 w-40 bg-white border border-black rounded shadow-md overflow-hidden"
                                                         style="display: none;"
                                                         x-on:click.outside="close($refs.button)"
                                                         x-ref="panel"
@@ -1277,16 +1277,18 @@
                                                         x-transition.origin.top.left
                                                 >
                                                     <div>
-                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-station-modal')">
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-station-modal')" x-show="canAdminister">
                                                             Setup Station...
                                                         </a>
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-profile-modal')">
-                                                            Update PIN...
+                                                            View Profile...
+                                                        </a>
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); toggleRoles()" x-show="canManage" x-text="isUser ? 'Tindera Mode' : 'User Mode'">
                                                         </a>
                                                     </div>
                                                     <div class="border-t border-black">
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="stash; toggle()" x-show="Alpine.store('wikonek').session.stashed === false">
-                                                            Leave Station
+                                                            Transfer Station
                                                         </a>
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="dissociate; toggle()">
                                                             Log Off
@@ -2201,7 +2203,7 @@
             },
         }))
         Alpine.data('profile', () => ({
-            title: 'Update PIN',
+            title: 'Profile',
             caption: 'Go!!!',
             fields: {
                 old_pin: {
@@ -2357,6 +2359,9 @@
             },
             get manager() {
                 return Alpine.store('wikonek').data.station.user;
+            },
+            get canManage() {
+                return this.manager !== null;
             },
             get canInsertCoin() {
                 let retval = true;
@@ -2528,10 +2533,10 @@
             get checkinCaption() {
                  return this.hasAirtime
                      ? 'Click here to surf the internet!'
-                     : this.hasStash ? 'If you are staying, click here to continue.'
+                     : this.hasStash ? 'If you are staying in this station, click here to continue.'
                          : this.unclaimed
-                             ? 'Click here to surf the internet for free!'
-                             : 'Click here for promos.'
+                             ? 'Click here to claim your free internet!'
+                             : 'Buy minutes to enjoy WiKONEK-tion.'
                 ;
             },
             get inspiration() {
@@ -2584,10 +2589,11 @@
                 Alpine.store('wikonek').egress(param1, param2, param3);
             },
             promos() {
-                const param1 = 'All vouchers have been claimed!';
-                const param2 = 'Please come back next time.';
-                const param3 = gatewayURL;
-                Alpine.store('wikonek').egress(param1, param2, param3);
+                // const param1 = 'Eat';
+                // const param2 = 'Bulaga!';
+                // const param3 = gatewayURL;
+                // Alpine.store('wikonek').egress(param1, param2, param3);
+                Alpine.store('wikonek').api_ui();
             },
             submit() {
                 console.log(`# data->checkin->submit()`);
