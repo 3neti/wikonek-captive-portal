@@ -7,6 +7,9 @@
     <script defer src="images/iodine.js"></script>
     <script defer src="images/moment.js"></script>
     <script defer src="images/trap.js"></script>
+    <script defer src="images/mask.js"></script>
+<!--    <script defer src="images/cleave.js"></script>-->
+    <script defer src="images/cleave-phone.ph.js"></script>
     <script defer src="images/alpine.js"></script>
     <script src="images/tailwind.js"></script>
     <title>WiKONEK Captive Portal v0.9</title>
@@ -520,49 +523,25 @@
                     <div>
                         <!-- [start] Registration -->
                         <div
-                                class="site-container
-                wrap p-4"
+                                class="site-container wrap p-4"
                                 x-data="registration"
                                 x-show="unregistered" x-cloak>
                             <div class="header">
                                 <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/logo.png"/></div>
                             </div><!-- header -->
-                            <div class="content">
+                            <div class="content" x-trap="unregistered">
                                 <div class="wrap">
-                                    <div class="title text-center font-bold text-[21px] mb-[30px]"
-                                         x-text="captions.title"></div>
-                                    <div class="form">
+                                    <div class="title text-center font-bold text-[21px] mb-[30px]" x-show="wantToLogin">Log In</div>
+                                    <div class="title text-center font-bold text-[21px] mb-[30px]" x-show="wantToRegister">Sign Up</div>
+                                    <div class="form" x-trap="true">
                                         <form class="signup" x-on:submit.prevent="submit">
-                                            <div class="flex items-start mb-6">
-                                                <div class="flex items-center h-5">
-                                                    <input
-                                                            aria-describedby="already"
-                                                            class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
-                                                            id="already"
-                                                            type="checkbox"
-                                                            x-model="wantToLogin"
-                                                    >
-                                                </div>
-                                                <div class="ml-3 text-sm">
-                                                    <label
-                                                            class="font-medium text-gray-900 dark:text-gray-300"
-                                                            for="already"
-                                                            x-text="captions.already"
-                                                    >
-                                                    </label>
-                                                </div>
-                                            </div>
                                             <div class="mnumber form-element">
                                                 <label class="text-[13px]">Mobile Number</label>
-                                                <!--                                        <div class="relative">-->
-                                                <!--                                            <span class="absolute top-[7px] left-[8px]">0 <span class="text-[#d8d8d8]">|</span></span>-->
                                                 <input
-                                                        :maxlength="fields.mobile.maxLength"
-                                                        placeholder="09xxxxxxxxx e.g. 09123456789"
+                                                        placeholder="09xx xxx xxxx e.g. 0912 345 6789"
                                                         @blur="fields.mobile.validate(validationCallback)"
-                                                        oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                                         required
-                                                        type="number"
+                                                        x-mask="{ phone: true , phoneRegionCode: 'PH'}"
                                                         x-model="fields.mobile.value"
                                                 >
                                                 <p class="text-red-500 text-xs italic py-2" x-cloak><span
@@ -715,6 +694,33 @@
                                                     </div>
                                                 </div>
                                             </template>
+<!--                                            <div class="flex items-start mb-6">-->
+<!--                                                <div class="flex items-center h-5">-->
+<!--                                                    <input-->
+<!--                                                            aria-describedby="already"-->
+<!--                                                            class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"-->
+<!--                                                            id="already"-->
+<!--                                                            type="checkbox"-->
+<!--                                                            x-model="wantToRegister"-->
+<!--                                                    >-->
+<!--                                                </div>-->
+<!--                                                <div class="ml-3 text-sm">-->
+<!--                                                    <label-->
+<!--                                                            class="font-medium text-gray-900 dark:text-gray-300"-->
+<!--                                                            for="already"-->
+<!--                                                            x-show="wantToRegister"-->
+<!--                                                    >-->
+<!--                                                        Sign Up-->
+<!--                                                    </label>-->
+<!--                                                    <label-->
+<!--                                                            class="font-medium text-gray-900 dark:text-gray-300"-->
+<!--                                                            for="already"-->
+<!--                                                            x-show="wantToLogin"-->
+<!--                                                    >-->
+<!--                                                        Log In-->
+<!--                                                    </label>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
                                             <template x-if="wantToRegister">
                                                 <div class="submit form-element">
                                                     <input :class="canRegister && agreed ? 'enabled' : 'disabled'" type="submit"
@@ -728,6 +734,8 @@
                                             </template>
                                         </form>
                                     </div>
+                                    <a @click="wantToRegister = true" x-show="wantToLogin">Don't have an account yet? Sign Up.</a>
+                                    <a @click="wantToLogin = true" x-show="wantToRegister">Already have an account? Log In.</a>
                                 </div>
                             </div><!-- content -->
                         </div><!-- Registration [end] -->
@@ -752,7 +760,7 @@
                                         <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                                     </div><!-- header -->
                                     <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
-                                    <div class="content">
+                                    <div class="content" x-trap="open">
                                         <div class="wrap">
                                             <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="title"></div>
                                             <div class="form">
@@ -962,7 +970,7 @@
                                     <div class="content">
                                         <div class="wrap">
                                             <div class="title text-center font-bold text-[21px] mb-[30px]">Redeem Voucher</div>
-                                            <div class="form">
+                                            <div class="form" x-trap="open">
                                                 <form class="signup">
                                                     <div class="fname form-element">
                                                         <label class="text-[13px]">Voucher Code</label>
@@ -972,6 +980,7 @@
                                                                 aria-label="Voucher Code"
                                                                 placeholder="include the dash e.g. 91LB-H537"
                                                                 required
+                                                                x-mask="{blocks: [4, 4],delimiter: '—', numericOnly: false}"
                                                                 type="text"
                                                                 x-model="fields.voucher.value">
                                                         <p class="text-red-500 text-xs italic py-2" x-cloak><span
@@ -1002,13 +1011,12 @@
                                         class="modal-wrapper"
                                         x-data="{ open: false }"
                                         x-on:keyup.escape.window="open = false"
-                                        x-on:open-transfer-modal.window="open = true; const tf = $event.detail.transferee; fields.mobile.value = tf.mobile ? '0' + ((tf.mobile + '').substr(2))*1 : ''; fields.amount.value = tf.amount; tf.mobile && validate(); ; window.scroll(0,0)"
+                                        x-on:open-transfer-modal.window="open = true; const tf = $event.detail.transferee; fields.mobile.value = tf.mobile; fields.amount.value = tf.amount; tf.mobile && validate(); ; window.scroll(0,0)"
                                         x-show="open"
                                 >
                                     <div
                                             class="modal"
                                             style="margin: 30px auto;"
-
                                             x-on:click.outside="open = false"
                                             x-on:submit.prevent="submit"
                                     >
@@ -1016,7 +1024,7 @@
                                             <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                                         </div><!-- header -->
                                         <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
-                                        <div class="content">
+                                        <div class="content" x-trap="open">
                                             <div class="wrap">
                                                 <div class="title text-center font-bold text-[21px] mb-[30px]">Transfer Load</div>
                                                 <div class="form">
@@ -1024,11 +1032,10 @@
                                                         <div class="mnumber form-element">
                                                             <label class="text-[13px]">Mobile Number</label>
                                                             <input
-                                                                    :maxlength="fields.mobile.maxLength"
+                                                                    placeholder="09xx xxx xxxx e.g. 0912 345 6789"
                                                                     @blur="fields.mobile.validate(validationCallback)"
-                                                                    oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                                                    placeholder="09xxxxxxxxx e.g. 09123456789" required
-                                                                    type="number"
+                                                                    required
+                                                                    x-mask="{ phone: true , phoneRegionCode: 'PH'}"
                                                                     x-model="fields.mobile.value"
                                                             >
                                                             <p class="text-red-500 text-xs italic py-2" x-cloak><span
@@ -1047,7 +1054,6 @@
                                                             >
                                                             <p class="text-red-500 text-xs italic py-2" x-cloak><span
                                                                     x-text="fields.amount.errorMsg"></span></p>
-                                                            <!--                            <input placeholder="minimum 5 pesos e.g. 100" required type="number" x-model="enteredAmount">-->
                                                         </div>
                                                         <div class="submit form-element mt-[30px]">
                                                             <input :value="caption" class="enabled" type="submit" x-show="!transferSucceeded">
@@ -1132,7 +1138,7 @@
                                         <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
                                     </div><!-- header -->
                                     <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
-                                    <div class="content">
+                                    <div class="content" x-trap="open">
                                         <div class="wrap">
                                             <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="title"></div>
                                             <div class="form">
@@ -1156,12 +1162,10 @@
                                                         <!--                                                <div class="relative">-->
                                                         <!--                                                    <span class="absolute top-[7px] left-[8px]">0 <span class="text-[#d8d8d8]">|</span></span>-->
                                                         <input
-                                                                :maxlength="fields.mobile.maxLength"
                                                                 :placeholder="fields.mobile.placeholder"
                                                                 @blur="fields.mobile.validate(validationCallback)"
-                                                                oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                                                 required
-                                                                type="number"
+                                                                x-mask="{ phone: true , phoneRegionCode: 'PH'}"
                                                                 x-model="fields.mobile.value"
                                                         >
                                                         <p class="text-red-500 text-xs italic py-2" x-cloak><span
@@ -1319,7 +1323,7 @@
                                             <div>
                                                 <div class="timer mb-[35px] bg-[#FE7D00] rounded grid grid-cols-1 gap-4 text-center p-4">
                                                     <div class="timer-element">
-                                                        <div class="time">₱<span x-text="loadRemaining"></span></div>
+                                                        <div class="time" x-text="remaining('load')"></div>
                                                         <div class="label text-white font-semibold text-sm" x-text="captions.balance"></div>
                                                     </div>
                                                 </div>
@@ -1441,12 +1445,13 @@
                                             <template x-if="isManager">
                                                 <!-- [start] Transfer -->
                                                 <div
-                                                        x-data="transfer" x-show="$store.wikonek.data.ui.recipients && $store.wikonek.data.ui.recipients.length>0">
+                                                        x-data="transfer" x-show="$store.wikonek.data.ui.transferees && $store.wikonek.data.ui.transferees.length>0">
+
                                                     <div class="font-bold text-[18px] title mb-[15px]">Recent Transactions</div>
                                                     <div class="offers mb-[35px]" >
-                                                        <template x-for="transferee in $store.wikonek.data.ui.recipients" :key=transferee.mobile>
+                                                        <template x-for="transferee in $store.wikonek.data.ui.transferees" :key=transferee.mobile>
                                                             <div class="product-offers grid grid-cols-2 gap-2">
-                                                                <div class="item"><span x-text="'₱' + (+transferee.amount).toLocaleString()"></span><span x-text="transferee.mobile"></span>
+                                                                <div class="item"><span x-text="'₱' + (+transferee.amount).toLocaleString()"></span><span x-text="formatPhone(transferee.mobile)"></span>
                                                                     <span x-text="transferee.name"></span></div>
                                                                 <button class="buynow" x-data x-on:click="$dispatch('open-transfer-modal', {transferee})">Transfer Again
                                                                 </button>
@@ -1593,7 +1598,7 @@
                 },
                 purchase: {
                     product: {
-                        rate: 'P 0.00',
+                        rate: '₱ 0.00',
                     }
                 },
                 inspiration: `"To fight and conquer in all your battles is not supreme excellence; supreme excellence consists in breaking the enemy's resistance without fighting.” – Sun Tzu,`,
@@ -1677,9 +1682,10 @@
                 console.log('** - regexFullName loaded');
                 Iodine.addRule(
                     "regexMobile",
-                    (value) => Iodine.isRegexMatch(value, "09\\d{9}$")
+                    (value) => Iodine.isRegexMatch(value, "09\\d{2}\\s?\\d{3}\\s?\\d{4}$")
+                    // (value) => Iodine.isRegexMatch(value, "09\\d{9}$")
                 );
-                Iodine.messages.regexMobile = "Value must match 09#########";
+                Iodine.messages.regexMobile = "Value must match 09## ### ####";
                 console.log('** - regexMobile loaded');
                 Iodine.addRule(
                     "stringDate",
@@ -1705,6 +1711,12 @@
                 );
                 Iodine.messages.regexVoucher = "Value must match ****-****";
                 console.log('** - regexVoucher loaded');
+                Iodine.addRule(
+                    "maskedNumber",
+                    (value) => ~~value.replace(/\D/g,'')>0
+                );
+                Iodine.messages.maskedNumber = "Value must be a positive number";
+                console.log('** - positiveNumber loaded');
             },
             async api_touch() {
                 console.log('** store->wikonek->api_touch()');
@@ -1961,7 +1973,7 @@
         }))
         Alpine.data('registration', () => ({
             agreed: false,
-            wantToLogin: false,
+            wantToLogin: true,
             fields: {
                 mobile: {
                     value: null,
@@ -2037,10 +2049,12 @@
             },
             captions: {
                 get title() {
-                    return this.wantToLogin ? 'Authenticate' : 'Sign Up';
+                    return this.wantToLogin ? 'Sign Up' : 'Log In';
                 },
                 agreed: "Check here to indicate that you have read and agree to the terms of the LyfLyn.Net Customer Agreement.",
-                already: "Already have an account.",
+                get already() {
+                    return this.wantToLogin ? 'Uncheck to login.' : 'Check to register.'
+                }
             },
             get registered() {
                 return Alpine.store('wikonek').session.registered;
@@ -2068,6 +2082,9 @@
             },
             get wantToRegister() {
                 return !this.wantToLogin;
+            },
+            set wantToRegister(value) {
+                this.wantToLogin = !value;
             },
             get email() {
                 const number = this.fields.mobile.value.substr(1);
@@ -2341,14 +2358,16 @@
                 let retval = '';
                 switch (wallet) {
                     case 'load':
-                        retval = (Alpine.store('wikonek').data.ui.balance.load.amount * 1).toLocaleString();
-                        retval += ' ';
-                        retval += Alpine.store('wikonek').data.ui.balance.load.units;
+                        // retval = (Alpine.store('wikonek').data.ui.balance.load.amount * 1).toLocaleString();
+                        // retval += ' ';
+                        // retval += Alpine.store('wikonek').data.ui.balance.load.units;
+                        retval = formatCurrency(Alpine.store('wikonek').data.ui.balance.load.amount);
                         break;
                     case 'airtime':
-                        retval = (Alpine.store('wikonek').data.ui.balance.airtime.amount * 1).toLocaleString();
-                        retval += ' ';
-                        retval += Alpine.store('wikonek').data.ui.balance.airtime.units;
+                        // retval = (Alpine.store('wikonek').data.ui.balance.airtime.amount * 1).toLocaleString();
+                        // retval += ' ';
+                        // retval += Alpine.store('wikonek').data.ui.balance.airtime.units;
+                        retval = formatDuration(Alpine.store('wikonek').data.ui.balance.airtime.amount, Alpine.store('wikonek').data.ui.balance.airtime.units);
                         break;
                 }
 
@@ -2820,7 +2839,7 @@
             },
             async api_redeem() {
                 console.log(`# data->redeem->api_redeem()`);
-                const voucher = this.fields.voucher.value;
+                const voucher = formatVoucher(this.fields.voucher.value);
                 const authorization = Alpine.store('wikonek').authorization;
                 const url = apiEndPoint+`/redeem/${voucher}`;;
                 console.log(`# - using voucher code ${voucher}`);
@@ -2929,8 +2948,17 @@
             get caption() {
                 return'Go!!!'
             },
+            get mobile() {
+                return this.fields.amount.value
+                    ? formatPhone(this.fields.mobile.value)
+                    : ''
+            },
+            get amount() {
+                // return `₱${this.fields.amount.value}.00`;
+                return formatCurrency(this.fields.amount.value)
+            },
             get message() {
-                return `₱${this.fields.amount.value}.00 successfully transferred to ${this.fields.mobile.value}.`
+                return `${this.amount} successfully transferred to ${this.mobile}.`
             },
             get minimumRemittance() {
                 return 5.00;
@@ -3021,7 +3049,6 @@
             },
             price(code) {
                 const product = this.products.find(n => n.code == code);
-
                 return parseProductRate(product.rate)
             },
             confirm(code) {
@@ -3191,7 +3218,8 @@
     })
 
     const gatewayURL = `http://$gwaddress:$gwport/`;
-    const backendIPAddress = `206.189.90.222`;
+    // const backendIPAddress = `206.189.90.222`;
+    const backendIPAddress = `wikonek.test`;
     const rootURL = `http://${backendIPAddress}`;
     const splashURL = `http://${backendIPAddress}/splash`;
     const sponsorURL = 'https://wikonek.ph';
@@ -3232,6 +3260,28 @@
         num = num.toString();
         while (num.length < size) num = "0" + num;
         return num;
+    }
+    function formatPhone(mobile) {
+        return mobile
+            .replace(/\D/g,"")
+            .replace(/^(\d{4})(\d{3})(\d{4})$/g, '($1) $2-$3')
+    }
+    function formatCurrency(number) {
+        var formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'PHP',
+        });
+
+        return formatter.format(number);
+    }
+    function formatVoucher(code) {
+        return code
+            .replace(/^(\w{4})(\w{4})$/g, '$1-$2')
+    }
+    function formatDuration(value, units = 'minutes') {
+        return value > 0
+            ? moment.duration(value, units).humanize()
+            : '0 minutes'
     }
 </script>
 </body>

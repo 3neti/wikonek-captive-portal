@@ -1,3 +1,12 @@
+x-on:open-transfer-modal.window="open = true; const tf = $event.detail.transferee; fields.mobile.value = tf.mobile ? '0' + ((tf.mobile + '').substr(2))*1 : ''; fields.amount.value = tf.amount; tf.mobile && validate(); ; window.scroll(0,0)"
+x-init="new Cleave($el, { phone: true , phoneRegionCode: 'PH'})"
+
+:maxlength="fields.mobile.maxLength"
+x-model="fields.amount.value"
+
+oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"//registration
+oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"//transfer
+
 <button class="bg-[#eeeeee] p-2 rounded-full" x-data x-on:click="$dispatch('open-station-modal')" x-show="canAdminister">
     <svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
         <path clip-rule="evenodd"
