@@ -694,33 +694,33 @@
                                                     </div>
                                                 </div>
                                             </template>
-<!--                                            <div class="flex items-start mb-6">-->
-<!--                                                <div class="flex items-center h-5">-->
-<!--                                                    <input-->
-<!--                                                            aria-describedby="already"-->
-<!--                                                            class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"-->
-<!--                                                            id="already"-->
-<!--                                                            type="checkbox"-->
-<!--                                                            x-model="wantToRegister"-->
-<!--                                                    >-->
-<!--                                                </div>-->
-<!--                                                <div class="ml-3 text-sm">-->
-<!--                                                    <label-->
-<!--                                                            class="font-medium text-gray-900 dark:text-gray-300"-->
-<!--                                                            for="already"-->
-<!--                                                            x-show="wantToRegister"-->
-<!--                                                    >-->
-<!--                                                        Sign Up-->
-<!--                                                    </label>-->
-<!--                                                    <label-->
-<!--                                                            class="font-medium text-gray-900 dark:text-gray-300"-->
-<!--                                                            for="already"-->
-<!--                                                            x-show="wantToLogin"-->
-<!--                                                    >-->
-<!--                                                        Log In-->
-<!--                                                    </label>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
+                                            <!--                                            <div class="flex items-start mb-6">-->
+                                            <!--                                                <div class="flex items-center h-5">-->
+                                            <!--                                                    <input-->
+                                            <!--                                                            aria-describedby="already"-->
+                                            <!--                                                            class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"-->
+                                            <!--                                                            id="already"-->
+                                            <!--                                                            type="checkbox"-->
+                                            <!--                                                            x-model="wantToRegister"-->
+                                            <!--                                                    >-->
+                                            <!--                                                </div>-->
+                                            <!--                                                <div class="ml-3 text-sm">-->
+                                            <!--                                                    <label-->
+                                            <!--                                                            class="font-medium text-gray-900 dark:text-gray-300"-->
+                                            <!--                                                            for="already"-->
+                                            <!--                                                            x-show="wantToRegister"-->
+                                            <!--                                                    >-->
+                                            <!--                                                        Sign Up-->
+                                            <!--                                                    </label>-->
+                                            <!--                                                    <label-->
+                                            <!--                                                            class="font-medium text-gray-900 dark:text-gray-300"-->
+                                            <!--                                                            for="already"-->
+                                            <!--                                                            x-show="wantToLogin"-->
+                                            <!--                                                    >-->
+                                            <!--                                                        Log In-->
+                                            <!--                                                    </label>-->
+                                            <!--                                                </div>-->
+                                            <!--                                            </div>-->
                                             <template x-if="wantToRegister">
                                                 <div class="submit form-element">
                                                     <input :class="canRegister && agreed ? 'enabled' : 'disabled'" type="submit"
@@ -1221,7 +1221,7 @@
                                             class="wallet-details float-right">
                                         <template x-if="isUser">
                                             <div class="wallet-balance float-left text-right pr-2" @click="toggleWallets">
-<!--                                                <div class="text-[17px] font-bold">₱<span x-text="loadRemaining"></span></div>-->
+                                                <!--                                                <div class="text-[17px] font-bold">₱<span x-text="loadRemaining"></span></div>-->
                                                 <div class="text-[17px] font-bold" x-text="remaining(wallet)"></div>
                                                 <div class="text-[12px]" x-text="captions.balance"></div>
                                             </div>
@@ -1360,7 +1360,7 @@
                                     <!-- [start] Checkin -->
                                     <div
                                             x-data="checkin">
-<!--                                        <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>-->
+                                        <!--                                        <div class="text-[#FF0000] text-center mb-[35px]" style="font-weight: bold !important;" x-text="captions.claimed" x-show="claimed"></div>-->
                                         <div class="text-[#26580F] text-center mb-[35px]">
                                             <a style="color: #26580F !important; font-weight: bold; cursor: pointer;" x-on:click="submit" x-text="checkinCaption"></a>
                                         </div>
@@ -1413,8 +1413,8 @@
                                                     <center>
                                                         <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                                             <path clip-rule="evenodd"
-                                                              d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
-                                                              fill-rule="evenodd"/>
+                                                                  d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
+                                                                  fill-rule="evenodd"/>
                                                         </svg>
                                                     </center>
                                                     <span>Transfer Load</span>
@@ -1478,14 +1478,25 @@
             </div><!-- Error Canvas [end]-->
         </div>
     </template>
-    <template x-if="inaccessible">
+    <template x-if="underMaintenance">
         <div>
             <span x-show="loading">Loading...</span>
             <div x-show="loaded">
-                <img class="object-scale-down h-48 w-96" src="images/no_internet.jpg" alt="no internet" />
-                <div>Contact the station manager to check the internet connection.</div>
+                <img class="object-scale-down h-48 w-96" src="images/maintenance-mode.png" alt="maintenance mode" />
+                <div>System is under maintenance.</div>
             </div >
         </div>
+    </template>
+    <template x-if="notUnderMaintenance">
+        <template x-if="inaccessible">
+            <div>
+                <span x-show="loading">Loading...</span>
+                <div x-show="loaded">
+                    <img class="object-scale-down h-48 w-96" src="images/no_internet.jpg" alt="no internet" />
+                    <div>Contact the station manager to check the internet connection.</div>
+                </div >
+            </div>
+        </template>
     </template>
 </div><!-- UI [end] -->
 <script>
@@ -1546,6 +1557,7 @@
                     },
                     internet: false,
                     backend: false,
+                    maintenance: true,
                 },
             },
             data: {
@@ -1732,6 +1744,7 @@
                             this.data.touch = obj.body.data;
                             console.log(this.data.touch, 'this.data.touch');
                         }
+                        this.connection.status.maintenance = (obj.status == 503);
                         this.connection.status.internet = true;
                         this.connection.status.backend = obj.isOk;
                     })
@@ -1760,6 +1773,7 @@
                             this.data.station = obj.body.data;
                             console.log(this.data.station, 'this.data.station');
                         }
+                        this.connection.status.maintenance = (obj.status == 503);
                         this.connection.status.backend = obj.isOk;
                     })
             },
@@ -1777,6 +1791,7 @@
                         else {
                             clearInterval(this.session.ui_interval_handle);
                         }
+                        this.connection.status.maintenance = (obj.status == 503);
                         this.connection.status.backend = obj.isOk;
                     })
                     .catch(() => clearInterval(this.session.ui_interval_handle))
@@ -1927,6 +1942,12 @@
             },
             get registered() {
                 return Alpine.store('wikonek').session.registered;
+            },
+            get underMaintenance() {
+                return Alpine.store('wikonek').connection.status.maintenance
+            },
+            get notUnderMaintenance() {
+                return !this.underMaintenance
             },
             get environment() {
                 return Alpine.store('wikonek').data.ui.environment;
@@ -3218,15 +3239,18 @@
     })
 
     const gatewayURL = `http://$gwaddress:$gwport/`;
+    const protocol = 'https';
     // const backendIPAddress = `206.189.90.222`;
-    const backendIPAddress = `wikonek.test`;
-    const rootURL = `http://${backendIPAddress}`;
-    const splashURL = `http://${backendIPAddress}/splash`;
+    // const backendIPAddress = `wikonek.test`;
+    // const backendIPAddress = `139.59.107.184`;
+    const backendIPAddress = `staging.wikonek.site`;
+    const rootURL = `${protocol}://${backendIPAddress}`;
+    const splashURL = `${protocol}://${backendIPAddress}/splash`;
     const sponsorURL = 'https://wikonek.ph';
-    const lguURL = `http://${backendIPAddress}/lgu`; // image of government sponsor
-    const landingURL = `http://${backendIPAddress}/landing`;
-    const apiEndPoint = `http://${backendIPAddress}/api`;
-    const egressEndPoint = `http://${backendIPAddress}/egress/checkin`
+    const lguURL = `${protocol}://${backendIPAddress}/lgu`; // image of government sponsor
+    const landingURL = `${protocol}://${backendIPAddress}/landing`;
+    const apiEndPoint = `${protocol}://${backendIPAddress}/api`;
+    const egressEndPoint = `${protocol}://${backendIPAddress}/egress/checkin`
     const testClientMACAddress = '31:88:05:53:76:63';
     const testClientIPAddress = '31.88.00.210';
     const virtualStationID = 'virtual';
