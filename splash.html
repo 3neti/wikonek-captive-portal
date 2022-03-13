@@ -1883,6 +1883,7 @@
                 return (this.data.ui.profile.role === 'agent');
             },
             unstash() {
+                this.api_ui();
                 const airtime = this.data.ui.balance.airtime.amount * 1;
                 if (airtime > 0) {
                     this.api_consume(airtime)
