@@ -8,7 +8,6 @@
     <script defer src="images/moment.js"></script>
     <script defer src="images/trap.js"></script>
     <script defer src="images/mask.js"></script>
-<!--    <script defer src="images/cleave.js"></script>-->
     <script defer src="images/cleave-phone.ph.js"></script>
     <script defer src="images/alpine.js"></script>
     <script src="images/tailwind.js"></script>
@@ -546,53 +545,7 @@
                                                 >
                                                 <p class="text-red-500 text-xs italic py-2" x-cloak><span
                                                         x-text="fields.mobile.errorMsg"></span></p>
-                                                <!--                                        </div>-->
                                             </div>
-                                            <template x-if="wantToRegister">
-                                                <div class="fname form-element">
-                                                    <label class="text-[13px]">Full Name</label>
-                                                    <input
-                                                            :maxlength="fields.name.maxLength"
-                                                            @blur="fields.name.validate(validationCallback)"
-                                                            aria-label="Full Name" placeholder="[First Name] [Last Name] e.g. Juan Luna"
-                                                            required
-                                                            type="text"
-                                                            x-model="fields.name.value"
-                                                    >
-                                                    <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                                            x-text="fields.name.errorMsg"></span></p>
-                                                </div>
-                                            </template>
-                                            <template x-if="wantToRegister">
-                                                <div class="bday form-element">
-                                                    <label class="text-[13px]">Birthday</label>
-                                                    <input
-                                                            :value="date.toLocaleDateString('sv-en')"
-                                                            @blur="fields.birthdate.validate(validationCallback)"
-                                                            required
-                                                            type="date"
-                                                            x-data="{date: new Date($el.dataset.value)}"
-                                                            x-model="fields.birthdate.value"
-                                                    >
-                                                    <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                                            x-text="fields.birthdate.errorMsg"></span></p>
-                                                </div>
-                                            </template>
-                                            <template x-if="wantToRegister">
-                                                <div class="address form-element">
-                                                    <label class="text-[13px]">Address</label>
-                                                    <textarea
-                                                            :maxlength="fields.address.maxLength"
-                                                            @blur="fields.address.validate(validationCallback)"
-                                                            placeholder="88 Malakas St., Barangay Pinyahan, Quezon City 1100"
-                                                            required
-                                                            x-model="fields.address.value"
-                                                    >
-                        </textarea>
-                                                    <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                                            x-text="fields.address.errorMsg"></span></p>
-                                                </div>
-                                            </template>
                                             <div class="pinnum form-element">
                                                 <label class="text-[13px]">Security PIN</label>
                                                 <div class="relative" x-data="{ show: true }">
@@ -694,33 +647,6 @@
                                                     </div>
                                                 </div>
                                             </template>
-                                            <!--                                            <div class="flex items-start mb-6">-->
-                                            <!--                                                <div class="flex items-center h-5">-->
-                                            <!--                                                    <input-->
-                                            <!--                                                            aria-describedby="already"-->
-                                            <!--                                                            class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"-->
-                                            <!--                                                            id="already"-->
-                                            <!--                                                            type="checkbox"-->
-                                            <!--                                                            x-model="wantToRegister"-->
-                                            <!--                                                    >-->
-                                            <!--                                                </div>-->
-                                            <!--                                                <div class="ml-3 text-sm">-->
-                                            <!--                                                    <label-->
-                                            <!--                                                            class="font-medium text-gray-900 dark:text-gray-300"-->
-                                            <!--                                                            for="already"-->
-                                            <!--                                                            x-show="wantToRegister"-->
-                                            <!--                                                    >-->
-                                            <!--                                                        Sign Up-->
-                                            <!--                                                    </label>-->
-                                            <!--                                                    <label-->
-                                            <!--                                                            class="font-medium text-gray-900 dark:text-gray-300"-->
-                                            <!--                                                            for="already"-->
-                                            <!--                                                            x-show="wantToLogin"-->
-                                            <!--                                                    >-->
-                                            <!--                                                        Log In-->
-                                            <!--                                                    </label>-->
-                                            <!--                                                </div>-->
-                                            <!--                                            </div>-->
                                             <template x-if="wantToRegister">
                                                 <div class="submit form-element">
                                                     <input :class="canRegister && agreed ? 'enabled' : 'disabled'" type="submit"
@@ -744,15 +670,14 @@
                             <!-- [start] Profile Modal -->
                             <div
                                     class="modal-wrapper"
-                                    x-data="{ open: false }"
+                                    x-data="profile"
                                     x-on:keyup.escape.window="open = false"
-                                    x-on:open-profile-modal.window="open = true"
+                                    x-on:open-profile-modal.window="open = true; profile = Alpine.store('wikonek').data.ui.profile"
                                     x-show="open"
                             >
                                 <div
                                         class="modal"
                                         style="margin: 30px auto;"
-                                        x-data="profile"
                                         x-on:click.outside="open = false"
                                         x-on:submit.prevent="submit"
                                 >
@@ -767,14 +692,96 @@
                                                 <form class="signup">
                                                     <div class="fname form-element">
                                                         <label class="text-[13px]">Full Name</label>
-                                                        <input disabled type="text" x-model="name">
+                                                        <input
+                                                                :maxlength="fields.name.maxLength"
+                                                                @blur="fields.name.validate(validationCallback)"
+                                                                aria-label="Full Name" placeholder="[First Name] [Last Name] e.g. Juan Luna"
+                                                                required
+                                                                type="text"
+                                                                x-model="fields.name.value"
+                                                        >
+                                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                                x-text="fields.name.errorMsg"></span></p>
                                                     </div>
                                                     <div class="mnumber form-element">
                                                         <label class="text-[13px]">Mobile Number</label>
-                                                        <div class="relative"><span class="absolute top-[7px] left-[8px]">0<span class="text-[#d8d8d8]">|</span></span>
-                                                            <input disabled style="padding-left: 24px !important;" type="text" x-model="number">
-                                                        </div>
+                                                        <input
+                                                                placeholder="09xx xxx xxxx e.g. 0912 345 6789"
+                                                                @blur="fields.mobile.validate(validationCallback)"
+                                                                required
+                                                                x-mask="{ phone: true , phoneRegionCode: 'PH'}"
+                                                                x-model="fields.mobile.value"
+                                                        >
+                                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                                x-text="fields.mobile.errorMsg"></span></p>
                                                     </div>
+                                                    <div class="bday form-element">
+                                                        <label class="text-[13px]">Birthday</label>
+                                                        <input
+                                                                :value="date.toLocaleDateString('sv-en')"
+                                                                @blur="fields.birthdate.validate(validationCallback)"
+                                                                required
+                                                                type="date"
+                                                                x-data="{date: new Date($el.dataset.value)}"
+                                                                x-model="fields.birthdate.value"
+                                                        >
+                                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                                x-text="fields.birthdate.errorMsg"></span></p>
+                                                    </div>
+                                                    <div class="address form-element">
+                                                        <label class="text-[13px]">Address</label>
+                                                        <textarea
+                                                                :maxlength="fields.address.maxLength"
+                                                                @blur="fields.address.validate(validationCallback)"
+                                                                placeholder="88 Malakas St., Barangay Pinyahan, Quezon City 1100"
+                                                                required
+                                                                x-model="fields.address.value"
+                                                        >
+                                                        </textarea>
+                                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                                x-text="fields.address.errorMsg"></span></p>
+                                                    </div>
+                                                    <div class="submit form-element mt-[30px]">
+                                                        <input class="enabled" type="submit" :value="caption">
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <!-- if successful -->
+                                            <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updateProfileSucceeded">
+                                                <p>Profile updated.</p>
+                                            </div>
+                                            <!-- if failed -->
+                                            <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="updateProfileFailed">
+                                                <p>Update profile failed! Please try again.</p>
+                                            </div>
+                                        </div>
+                                    </div><!-- content -->
+                                </div><!-- site-container -->
+                                <div class="clear-both"></div>
+                            </div><!-- Profile Modal [end] -->
+                            <!-- [start] Password Modal -->
+                            <div
+                                    class="modal-wrapper"
+                                    x-data="password"
+                                    x-on:keyup.escape.window="open = false"
+                                    x-on:open-password-modal.window="open = true; profile = Alpine.store('wikonek').data.ui.profile"
+                                    x-show="open"
+                            >
+                                <div
+                                        class="modal"
+                                        style="margin: 30px auto;"
+                                        x-on:click.outside="open = false"
+                                        x-on:submit.prevent="submit"
+                                >
+                                    <div class="header">
+                                        <div class="logo w-48" style="margin: 0 auto 40px;"><img :src="assets.logo.main"/></div>
+                                    </div><!-- header -->
+                                    <div class="close-btn absolute right-[20px] top-[30px] bg-[#eeeeee]" x-on:click="open = false" x-html="$store.wikonek.html.modalClose"></div>
+                                    <div class="content" x-trap="open">
+                                        <div class="wrap">
+                                            <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="title"></div>
+                                            <div class="form">
+                                                <form class="signup">
                                                     <div class="pinnum form-element">
                                                         <label class="text-[13px]">Old Security PIN</label>
                                                         <div class="relative" x-data="{ show: true }">
@@ -906,7 +913,7 @@
                                     </div><!-- content -->
                                 </div><!-- site-container -->
                                 <div class="clear-both"></div>
-                            </div><!-- Profile Modal [end] -->
+                            </div><!-- Password Modal [end] -->
                             <!-- [start] Count Modal -->
                             <div
                                     class="modal-wrapper"
@@ -1079,7 +1086,7 @@
                                     class="modal-wrapper"
                                     x-data="{ open: false, prod: {code: '', name: '', rate: 0} }"
                                     x-on:keyup.escape.window="open = false"
-                                    x-on:open-confirm-purchase-modal.window="open = true; prod = $event.detail.product, window.scroll(0,0)"
+                                    x-on:open-confirm-purchase-modal.window="open = true; prod = $event.detail.product; window.scroll(0,0)"
                                     x-show="open"
                             >
                                 <div
@@ -1122,15 +1129,14 @@
                             <!-- [start] Station Modal -->
                             <div
                                     class="modal-wrapper"
-                                    x-data="{ open: false }"
+                                    x-data="admin"
                                     x-on:keyup.escape.window="open = false"
-                                    x-on:open-station-modal.window="open = true"
+                                    x-on:open-station-modal.window="open = true; station = Alpine.store('wikonek').data.station"
                                     x-show="open"
                             >
                                 <div
                                         class="modal"
                                         style="margin: 30px auto;"
-                                        x-data="admin"
                                         x-on:click.outside="open = false"
                                         x-on:submit.prevent="submit"
                                 >
@@ -1285,7 +1291,10 @@
                                                             Setup Station...
                                                         </a>
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-profile-modal')">
-                                                            View Profile...
+                                                            Update Profile...
+                                                        </a>
+                                                        <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-password-modal')">
+                                                            Change PIN...
                                                         </a>
                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); toggleRoles()" x-show="canManage" x-text="isUser ? 'Tindera Mode' : 'User Mode'">
                                                         </a>
@@ -2009,41 +2018,6 @@
                     isValid: null,
                     errorMsg: null
                 },
-                name: {
-                    value: null,
-                    maxLength: 50,
-                    rules: ['required', 'regexFullName'],
-                    validate(callback) {
-                        let {isValid, errorMsg} = callback(this);
-                        this.isValid = isValid;
-                        this.errorMsg = errorMsg;
-                    },
-                    isValid: null,
-                    errorMsg: null
-                },
-                birthdate: {
-                    value: null,
-                    rules: ["required", "stringDate", "plausibleDate"],
-                    validate(callback) {
-                        let {isValid, errorMsg} = callback(this);
-                        this.isValid = isValid;
-                        this.errorMsg = errorMsg;
-                    },
-                    isValid: null,
-                    errorMsg: null
-                },
-                address: {
-                    value: null,
-                    maxLength: 200,
-                    rules: ["required"],
-                    validate(callback) {
-                        let {isValid, errorMsg} = callback(this);
-                        this.isValid = isValid;
-                        this.errorMsg = errorMsg;
-                    },
-                    isValid: null,
-                    errorMsg: null
-                },
                 pin: {
                     value: null,
                     maxLength: Alpine.store('wikonek').config.pinSize,
@@ -2087,9 +2061,6 @@
             get canRegister() {
                 return (
                     this.fields.mobile.isValid &&
-                    this.fields.name.isValid &&
-                    this.fields.birthdate.isValid &&
-                    this.fields.address.isValid &&
                     this.fields.pin.isValid &&
                     this.fields.pin_confirmation.isValid
                 );
@@ -2114,7 +2085,7 @@
                 return `63${number}@libreng.email`;
             },
             get route() {
-                return `/profile/${this.fields.mobile.value}/${this.fields.name.value}/${this.fields.birthdate.value}/${this.fields.address.value}/${this.fields.pin.value}`;
+                return `/registration`;
             },
             clear() {
                 Object.values(this.fields).forEach(field => {
@@ -2196,7 +2167,18 @@
             },
             async api_register(token) {
                 console.log('# data->registration->api_register()');
-                return await fetch(apiEndPoint + this.route, {method: 'POST', headers: {"Authorization": "Bearer " + token}})
+                const credentials = JSON.stringify({
+                    mobile: this.fields.mobile.value,
+                    email: this.email, //TODO: improve this!!!
+                    password: this.fields.pin.value
+                });
+                const mobile = '63' + this.fields.mobile.value.substr(1);
+                const pin = this.fields.pin.value;
+                console.log(mobile, 'mobile');
+                return await fetch(apiEndPoint + `/mobile/${mobile}/${pin}`, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
+                })
                     .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
                     .then(args => this.notify(args))
                     ;
@@ -2242,7 +2224,106 @@
             },
         }))
         Alpine.data('profile', () => ({
-            title: 'Profile',
+            open: false,
+            title: 'Update Profile',
+            caption: 'Go!!!',
+            fields: {
+                name: {
+                    value: null,
+                    maxLength: 50,
+                    rules: ['required', 'regexFullName'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                mobile: {
+                    value: null,
+                    maxLength: 11,
+                    rules: ['required', 'regexMobile'],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                birthdate: {
+                    value: null,
+                    rules: ["required", "stringDate", "plausibleDate"],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+                address: {
+                    value: null,
+                    maxLength: 200,
+                    rules: ["required"],
+                    validate(callback) {
+                        let {isValid, errorMsg} = callback(this);
+                        this.isValid = isValid;
+                        this.errorMsg = errorMsg;
+                    },
+                    isValid: null,
+                    errorMsg: null
+                },
+            },
+            updateProfileSucceeded: false,
+            updateProfileFailed: false,
+            canUpdate() {
+                return this.fields.mobile.isValid && this.fields.name.isValid && this.fields.birthdate.isValid && this.fields.address.isValid;
+            },
+            set profile(profile) {
+                const mobile = '0' + Alpine.store('wikonek').data.ui.profile.mobile.substr(2)
+                this.fields.mobile.value = mobile
+                this.fields.name.value = profile.name
+                this.fields.birthdate.value = moment(Alpine.store('wikonek').data.ui.profile.birthdate, 'DD/MM/YY').format('YYYY-MM-DD')
+                this.fields.address.value = profile.address
+            },
+            get profile() {
+                return {
+                    name: this.fields.name.value,
+                    mobile: this.fields.mobile.value,
+                    birthdate: this.fields.birthdate.value,
+                    address: this.fields.address.value
+                }
+            },
+            async api_profile() {
+                console.log(`# data->profile->api_profile()`);
+                const mobile = Alpine.store('wikonek').data.ui.profile.mobile;
+                const name = Alpine.store('wikonek').data.ui.profile.name;
+                const url = apiEndPoint+`/profile/${this.profile.mobile}/${this.profile.name}/${this.profile.birthdate}/${this.profile.address}`;
+                console.log(`# - fetching ${url}`);
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+                })
+                    .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                    .then(obj => {
+                        if (obj.isOk === true) {
+                            this.updateProfileSucceeded = true;
+                        }
+                    })
+                ;
+            },
+            submit() {
+                if (this.canUpdate) {
+                    this.api_profile()
+                        .then(() => Alpine.store('wikonek').api_ui())
+                }
+            },
+        }))
+        Alpine.data('password', () => ({
+            open: false,
+            title: 'Change PIN',
             caption: 'Go!!!',
             fields: {
                 old_pin: {
@@ -2282,27 +2363,16 @@
                     errorMsg: null
                 },
             },
-            updateProfileSucceeded: false,
-            updateProfileFailed: false,
+            name: null,
+            mobile: null,
+            updatePasswordSucceeded: false,
+            updatePasswordFailed: false,
             init() {
-                console.log(`# data->profile->init()`);
                 Iodine.addRule(
                     "matchPIN",
                     (value) => value === this.fields.pin.value
                 );
                 Iodine.messages.matchPIN = "PIN confirmation needs to match PIN";
-            },
-            get name() {
-                return Alpine.store('wikonek').data.ui.profile.name;
-                // return Alpine.store('wikonek').user.name;
-            },
-            get number() {
-                const mobile = Alpine.store('wikonek').data.ui.profile.mobile;
-                // const mobile = Alpine.store('wikonek').user.mobile;
-                if (mobile && mobile.length>3) {
-                    return mobile.substr(3);
-                }
-                return '';
             },
             canUpdate() {
                 return this.fields.old_pin.isValid && this.fields.pin.isValid && this.fields.pin_confirmation.isValid;
@@ -2315,11 +2385,21 @@
                 this.fields.pin.errorMsg = '';
                 this.fields.pin_confirmation.value = '';
                 this.fields.pin_confirmation.errorMsg = '';
-                this.updateProfileSucceeded = null;
-                this.updateProfileFailed = null;
+                this.updatePasswordSucceeded = null;
+                this.updatePasswordFailed = null;
+            },
+            set profile(profile) {
+                this.mobile.value = profile.mobile
+                this.name.value = profile.name
+            },
+            get profile() {
+                return {
+                    name: this.name,
+                    mobile: this.mobile
+                }
             },
             async api_password() {
-                console.log(`# data->profile->api_password()`);
+                console.log(`# data->password->api_password()`);
                 const url = apiEndPoint+`/password/${this.fields.old_pin.value}/${this.fields.pin.value}`;
                 console.log(`# - fetching ${url}`);
                 await fetch(url, {
@@ -2329,22 +2409,15 @@
                     .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
                     .then(obj => {
                         if (obj.isOk === true) {
-                            console.log(`# - successful`);
-                            console.log(`# - hydrating user`);
-                            this.updateProfileSucceeded = true;
+                            this.updatePasswordSucceeded = true;
                         }
                         else if (obj.status === 401) {
-                            console.log(`# - displaying error message`);
                             this.fields.old_pin.isValid = false;
                             this.fields.old_pin.errorMsg = 'Wrong PIN';
-                            this.updateProfileFailed = true;
+                            this.updatePasswordFailed = true;
                         }
                     })
-                    .catch((error) => {
-                        console.log('# - error');
-                    })
                     .finally(() => {
-                        console.log('# - finally');
                         setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
                     })
                 ;
@@ -2402,7 +2475,8 @@
                 return Alpine.store('wikonek').data.station.user;
             },
             get canManage() {
-                return this.manager !== null;
+                return Alpine.store('wikonek').canManage;
+                // return this.manager !== null;
             },
             get canInsertCoin() {
                 let retval = true;
@@ -3124,6 +3198,7 @@
             },
         }))
         Alpine.data('admin', () => ({
+            open: false,
             title: 'Setup Station',
             caption: 'Go!!!',
             fields: {
@@ -3171,25 +3246,33 @@
                 this.updateStationSucceeded = null;
                 this.updateStationFailed = null;
             },
-            station: Alpine.store('wikonek').station,
+            set station(value) {
+                this.fields.name.value = value.name
+                if (value.user) {
+                    const mobile = value.user.mobile;
+                    const number = mobile ? '0' + mobile.substr(3) : null;
+                    this.fields.mobile.value = number;
+                }
+            },
+            // station: Alpine.store('wikonek').station,
             init() {
                 console.log(`# data->admin->init()`);
 
-                setTimeout(() => {
-                    this.fields.name.value = Alpine.store('wikonek').data.station.name;
-                    if (Alpine.store('wikonek').data.station.user) {
-                        const mobile = Alpine.store('wikonek').data.station.user.mobile;
-                        const number = mobile ? '0' + mobile.substr(3) : null;
-                        this.fields.mobile.value = number;
-                    }
-                }, 2000); //TODO: improve this, this is cheating
+                // setTimeout(() => {
+                //     this.fields.name.value = Alpine.store('wikonek').data.station.name;
+                //     if (Alpine.store('wikonek').data.station.user) {
+                //         const mobile = Alpine.store('wikonek').data.station.user.mobile;
+                //         const number = mobile ? '0' + mobile.substr(3) : null;
+                //         this.fields.mobile.value = number;
+                //     }
+                // }, 2000); //TODO: improve this, this is cheating
             },
             async api_pair_station() {
                 console.log(`# data->profile->api_station()`);
                 const station = Alpine.store('wikonek').session.stationMACAddress;
-                const url = apiEndPoint+`/pair/${station}/${this.fields.mobile.value}`;
-                console.log(`# - fetching ${url}`);
-                await fetch(url, {
+                const user = this.fields.mobile.value;
+                const name = this.fields.name.value;
+                await fetch(apiEndPoint+`/administer/${station}/${user}/${name}`, {
                     method: 'POST',
                     headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
                 })
@@ -3231,7 +3314,7 @@
                 console.log(`# data->admin->submit()`);
                 if (this.canUpdate) {
                     this.api_pair_station()
-                        .then(() => this.api_update_station())
+                        // .then(() => this.api_update_station())
                         .then(() => Alpine.store('wikonek').api_station())
                         .then(() => Alpine.store('wikonek').api_ui());
                 }
@@ -3244,7 +3327,7 @@
     // const backendIPAddress = `206.189.90.222`;
     // const backendIPAddress = `wikonek.test`;
     // const backendIPAddress = `139.59.107.184`;
-    const backendIPAddress = `staging.wikonek.site`;
+    const backendIPAddress = `development.wikonek.site`;
     const rootURL = `${protocol}://${backendIPAddress}`;
     const splashURL = `${protocol}://${backendIPAddress}/splash`;
     const sponsorURL = 'https://wikonek.ph';
