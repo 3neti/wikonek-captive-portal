@@ -546,57 +546,18 @@
                                                 <p class="text-red-500 text-xs italic py-2" x-cloak><span
                                                         x-text="fields.mobile.errorMsg"></span></p>
                                             </div>
-                                            <div class="pinnum form-element">
-                                                <label class="text-[13px]">Security PIN</label>
-                                                <div class="relative" x-data="{ show: true }">
-                                                    <input
-                                                            :maxlength="fields.pin.maxLength"
-                                                            :type="show ? 'password' : 'number'"
-                                                            @blur="fields.pin.validate(validationCallback)"
-                                                            oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                                            placeholder="e.g. 1234"
-                                                            required
-                                                            x-model="fields.pin.value"
-                                                    >
-                                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
-                                                        <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
-                                                             class="h-6 text-gray-700"
-                                                             fill="none"
-                                                             viewbox="0 0 576 512"
-                                                             xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z"
-                                                                  fill="currentColor">
-                                                            </path>
-                                                        </svg>
-
-                                                        <svg :class="{'block': !show, 'hidden':show }" @click="show = !show"
-                                                             class="h-6 text-gray-700"
-                                                             fill="none"
-                                                             viewbox="0 0 640 512"
-                                                             xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M320 400c-75.85 0-137.25-58.71-142.9-133.11L72.2 185.82c-13.79 17.3-26.48 35.59-36.72 55.59a32.35 32.35 0 0 0 0 29.19C89.71 376.41 197.07 448 320 448c26.91 0 52.87-4 77.89-10.46L346 397.39a144.13 144.13 0 0 1-26 2.61zm313.82 58.1l-110.55-85.44a331.25 331.25 0 0 0 81.25-102.07 32.35 32.35 0 0 0 0-29.19C550.29 135.59 442.93 64 320 64a308.15 308.15 0 0 0-147.32 37.7L45.46 3.37A16 16 0 0 0 23 6.18L3.37 31.45A16 16 0 0 0 6.18 53.9l588.36 454.73a16 16 0 0 0 22.46-2.81l19.64-25.27a16 16 0 0 0-2.82-22.45zm-183.72-142l-39.3-30.38A94.75 94.75 0 0 0 416 256a94.76 94.76 0 0 0-121.31-92.21A47.65 47.65 0 0 1 304 192a46.64 46.64 0 0 1-1.54 10l-73.61-56.89A142.31 142.31 0 0 1 320 112a143.92 143.92 0 0 1 144 144c0 21.63-5.29 41.79-13.9 60.11z"
-                                                                  fill="currentColor">
-                                                            </path>
-                                                        </svg>
-
-                                                    </div>
-                                                </div>
-                                                <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                                        x-text="fields.pin.errorMsg"></span>
-                                                </p>
-                                            </div>
-                                            <template x-if="wantToRegister">
-                                                <div class="confpinnum form-element" style="margin-bottom: 30px;">
-                                                    <label class="text-[13px]">Confirm Security PIN</label>
+                                            <template x-if="wantToLogin">
+                                                <div class="pinnum form-element">
+                                                    <label class="text-[13px]">Security PIN</label>
                                                     <div class="relative" x-data="{ show: true }">
                                                         <input
-                                                                :maxlength="fields.pin_confirmation.maxLength"
+                                                                :maxlength="fields.pin.maxLength"
                                                                 :type="show ? 'password' : 'number'"
-                                                                @blur="fields.pin_confirmation.validate(validationCallback)"
+                                                                @blur="fields.pin.validate(validationCallback)"
                                                                 oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                                                 placeholder="e.g. 1234"
                                                                 required
-                                                                x-model="fields.pin_confirmation.value"
+                                                                x-model="fields.pin.value"
                                                         >
                                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
                                                             <svg :class="{'hidden': !show, 'block':show }" @click="show = !show"
@@ -622,29 +583,8 @@
                                                         </div>
                                                     </div>
                                                     <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                                            x-text="fields.pin_confirmation.errorMsg"></span></p>
-                                                </div>
-                                            </template>
-                                            <template x-if="wantToRegister">
-                                                <div class="flex items-start mb-6">
-                                                    <div class="flex items-center h-5">
-                                                        <input
-                                                                aria-describedby="agree"
-                                                                class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
-                                                                id="agree"
-                                                                required
-                                                                type="checkbox"
-                                                                x-model="agreed"
-                                                        >
-                                                    </div>
-                                                    <div class="ml-3 text-sm">
-                                                        <label
-                                                                class="font-medium text-gray-900 dark:text-gray-300"
-                                                                for="agree"
-                                                                x-text="captions.agreed"
-                                                        >
-                                                        </label>
-                                                    </div>
+                                                            x-text="fields.pin.errorMsg"></span>
+                                                    </p>
                                                 </div>
                                             </template>
                                             <template x-if="wantToRegister">
@@ -690,6 +630,18 @@
                                             <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="title"></div>
                                             <div class="form">
                                                 <form class="signup">
+                                                    <div class="mnumber form-element">
+                                                        <label class="text-[13px]">Mobile Number</label>
+                                                        <input
+                                                                placeholder="09xx xxx xxxx e.g. 0912 345 6789"
+                                                                @blur="fields.mobile.validate(validationCallback)"
+                                                                required
+                                                                x-mask="{ phone: true , phoneRegionCode: 'PH'}"
+                                                                x-model="fields.mobile.value"
+                                                        >
+                                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                                x-text="fields.mobile.errorMsg"></span></p>
+                                                    </div>
                                                     <div class="fname form-element">
                                                         <label class="text-[13px]">Full Name</label>
                                                         <input
@@ -702,18 +654,6 @@
                                                         >
                                                         <p class="text-red-500 text-xs italic py-2" x-cloak><span
                                                                 x-text="fields.name.errorMsg"></span></p>
-                                                    </div>
-                                                    <div class="mnumber form-element">
-                                                        <label class="text-[13px]">Mobile Number</label>
-                                                        <input
-                                                                placeholder="09xx xxx xxxx e.g. 0912 345 6789"
-                                                                @blur="fields.mobile.validate(validationCallback)"
-                                                                required
-                                                                x-mask="{ phone: true , phoneRegionCode: 'PH'}"
-                                                                x-model="fields.mobile.value"
-                                                        >
-                                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
-                                                                x-text="fields.mobile.errorMsg"></span></p>
                                                     </div>
                                                     <div class="bday form-element">
                                                         <label class="text-[13px]">Birthday</label>
@@ -902,11 +842,11 @@
                                                 </form>
                                             </div>
                                             <!-- if successful -->
-                                            <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updateProfileSucceeded">
+                                            <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updatePasswordSucceeded">
                                                 <p>Profile updated.</p>
                                             </div>
                                             <!-- if failed -->
-                                            <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="updateProfileFailed">
+                                            <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="updatePasswordFailed">
                                                 <p>Update profile failed! Please try again.</p>
                                             </div>
                                         </div>
@@ -1131,7 +1071,7 @@
                                     class="modal-wrapper"
                                     x-data="admin"
                                     x-on:keyup.escape.window="open = false"
-                                    x-on:open-station-modal.window="open = true; station = Alpine.store('wikonek').data.station"
+                                    x-on:open-station-modal.window="open = true; station = Alpine.store('wikonek').data.ui.station"
                                     x-show="open"
                             >
                                 <div
@@ -1492,7 +1432,7 @@
             <span x-show="loading">Loading...</span>
             <div x-show="loaded">
                 <img class="object-scale-down h-48 w-96" src="images/maintenance-mode.png" alt="maintenance mode" />
-                <div>System is under maintenance.</div>
+                <div>System is under maintenance. Call (0939) 861-9384 for support.</div>
             </div >
         </div>
     </template>
@@ -1502,7 +1442,7 @@
                 <span x-show="loading">Loading...</span>
                 <div x-show="loaded">
                     <img class="object-scale-down h-48 w-96" src="images/no_internet.jpg" alt="no internet" />
-                    <div>Contact the station manager to check the internet connection.</div>
+                    <div>Contact the station manager to check the internet connection or call (0939) 861-9384 for support.</div>
                 </div >
             </div>
         </template>
@@ -1616,6 +1556,14 @@
                     recipients: [],
                     transactions: [],
                     environment: 'production',
+                    device: {
+                        identifier: ''
+                    },
+                    station: {
+                        identifier: '',
+                        name: '',
+                        manager: null
+                    },
                 },
                 purchase: {
                     product: {
@@ -1788,7 +1736,9 @@
             },
             async api_ui() {
                 console.log('** store->wikonek->api_ui()');
-                await fetch(apiEndPoint+`/ui`, {method: 'GET', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
+                const device = this.session.deviceMACAddress;
+                const station = this.session.stationMACAddress;
+                await fetch(apiEndPoint+`/ui/${device}/${station}`, {method: 'GET', headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}})
                     .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
                     .then(obj => {
                         if (obj.isOk === true) {
@@ -1844,7 +1794,7 @@
             boot() {
                 this.loadValidations();
                 this.api_touch()
-                    .then(() => this.api_station())
+                    // .then(() => this.api_station())
                     .then(() => {
                         this.api_ui()
                             .then(() => {
@@ -2004,7 +1954,7 @@
         }))
         Alpine.data('registration', () => ({
             agreed: false,
-            wantToLogin: true,
+            wantToLogin: false,
             fields: {
                 mobile: {
                     value: null,
@@ -2052,6 +2002,7 @@
                     return this.wantToLogin ? 'Uncheck to login.' : 'Check to register.'
                 }
             },
+            defaultPIN: '1234',
             get registered() {
                 return Alpine.store('wikonek').session.registered;
             },
@@ -2111,7 +2062,10 @@
                 if (args.isOk === true) {
                     const user = args.body.data.user;
                     this.$dispatch('notify', {
-                        content: `This device is successfully registered to ${user.name} [${user.mobile}]`,
+                        content: `This device is successfully registered to [${user.mobile}].`,
+                        type: 'success'});
+                    this.$dispatch('notify', {
+                        content: `Your default PIN is 1234. Please change it soon.`,
                         type: 'success'});
                 }
                 else if (args.status === 422) {
@@ -2167,13 +2121,8 @@
             },
             async api_register(token) {
                 console.log('# data->registration->api_register()');
-                const credentials = JSON.stringify({
-                    mobile: this.fields.mobile.value,
-                    email: this.email, //TODO: improve this!!!
-                    password: this.fields.pin.value
-                });
                 const mobile = '63' + this.fields.mobile.value.substr(1);
-                const pin = this.fields.pin.value;
+                const pin = this.defaultPIN;
                 console.log(mobile, 'mobile');
                 return await fetch(apiEndPoint + `/mobile/${mobile}/${pin}`, {
                     method: 'POST',
@@ -2282,9 +2231,9 @@
                 return this.fields.mobile.isValid && this.fields.name.isValid && this.fields.birthdate.isValid && this.fields.address.isValid;
             },
             set profile(profile) {
-                const mobile = '0' + Alpine.store('wikonek').data.ui.profile.mobile.substr(2)
+                const mobile = profile.mobile.replace(/^\+?63/, '0')
                 this.fields.mobile.value = mobile
-                this.fields.name.value = profile.name
+                this.fields.name.value = profile.name === profile.mobile ? '' : profile.name
                 this.fields.birthdate.value = moment(Alpine.store('wikonek').data.ui.profile.birthdate, 'DD/MM/YY').format('YYYY-MM-DD')
                 this.fields.address.value = profile.address
             },
@@ -2298,10 +2247,7 @@
             },
             async api_profile() {
                 console.log(`# data->profile->api_profile()`);
-                const mobile = Alpine.store('wikonek').data.ui.profile.mobile;
-                const name = Alpine.store('wikonek').data.ui.profile.name;
                 const url = apiEndPoint+`/profile/${this.profile.mobile}/${this.profile.name}/${this.profile.birthdate}/${this.profile.address}`;
-                console.log(`# - fetching ${url}`);
                 await fetch(url, {
                     method: 'POST',
                     headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
@@ -2389,8 +2335,8 @@
                 this.updatePasswordFailed = null;
             },
             set profile(profile) {
-                this.mobile.value = profile.mobile
-                this.name.value = profile.name
+                this.mobile = profile.mobile
+                this.name = profile.name
             },
             get profile() {
                 return {
@@ -2469,10 +2415,10 @@
                 return retval;
             },
             get stationID() {
-                return Alpine.store('wikonek').data.station.name;
+                return Alpine.store('wikonek').data.ui.station.name;
             },
             get manager() {
-                return Alpine.store('wikonek').data.station.user;
+                return Alpine.store('wikonek').data.ui.station.user;
             },
             get canManage() {
                 return Alpine.store('wikonek').canManage;
@@ -2544,7 +2490,8 @@
             },
             dissociate() {
                 this.api_dissociate()
-                    .then(() => Alpine.store('wikonek').ingress());
+                    .then(() => Alpine.store('wikonek').ingress())
+                    .then(() => Alpine.store('wikonek').api_ui())
             },
             unstash() {
                 const airtime = Alpine.store('wikonek').unstash();
@@ -3249,23 +3196,9 @@
             set station(value) {
                 this.fields.name.value = value.name
                 if (value.user) {
-                    const mobile = value.user.mobile;
-                    const number = mobile ? '0' + mobile.substr(3) : null;
-                    this.fields.mobile.value = number;
+                    const mobile = value.manager.mobile
+                    this.fields.mobile.value = mobile ? mobile.replace('+63', '0') : null
                 }
-            },
-            // station: Alpine.store('wikonek').station,
-            init() {
-                console.log(`# data->admin->init()`);
-
-                // setTimeout(() => {
-                //     this.fields.name.value = Alpine.store('wikonek').data.station.name;
-                //     if (Alpine.store('wikonek').data.station.user) {
-                //         const mobile = Alpine.store('wikonek').data.station.user.mobile;
-                //         const number = mobile ? '0' + mobile.substr(3) : null;
-                //         this.fields.mobile.value = number;
-                //     }
-                // }, 2000); //TODO: improve this, this is cheating
             },
             async api_pair_station() {
                 console.log(`# data->profile->api_station()`);
@@ -3315,7 +3248,7 @@
                 if (this.canUpdate) {
                     this.api_pair_station()
                         // .then(() => this.api_update_station())
-                        .then(() => Alpine.store('wikonek').api_station())
+                        // .then(() => Alpine.store('wikonek').api_station())
                         .then(() => Alpine.store('wikonek').api_ui());
                 }
             },
