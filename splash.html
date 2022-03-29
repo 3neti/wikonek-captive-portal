@@ -712,6 +712,10 @@
                                             <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="updateProfileFailed">
                                                 <p>Update profile failed! Please try again.</p>
                                             </div>
+                                            <!-- if successful -->
+                                            <div class="success-message text-center text-[#26580F] m-[15px]" x-show="extended">
+                                                <p x-text="extensionMessage"></p>
+                                            </div>
                                         </div>
                                     </div><!-- content -->
                                 </div><!-- site-container -->
@@ -1341,7 +1345,7 @@
                                         >
                                             <!-- [start] Count -->
                                             <div>
-                                                <template x-if="canInsertCoin">
+                                                <template x-if="canInsertCoin && !noInsertCoin">
                                                     <button x-on:click="$dispatch('open-count-modal')">
                                                         <center>
                                                             <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -1352,7 +1356,7 @@
                                                         <span>Insert Coin</span>
                                                     </button>
                                                 </template>
-                                                <template x-if="!canInsertCoin">
+                                                <template x-if="!canInsertCoin && !noInsertCoin">
                                                     <button>
                                                         <center>
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="red-200">
@@ -1360,6 +1364,18 @@
                                                             </svg>
                                                         </center>
                                                         <span>Check Tindera</span>
+                                                    </button>
+                                                </template>
+                                                <template x-if="noInsertCoin">
+                                                    <button x-on:click="profile">
+                                                        <center>
+                                                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                <path clip-rule="evenodd"
+                                                                      d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z"
+                                                                      fill-rule="evenodd"/>
+                                                            </svg>
+                                                        </center>
+                                                        <span x-text="captions.button1"></span>
                                                     </button>
                                                 </template>
                                             </div><!-- Count [end] -->
@@ -1582,6 +1598,9 @@
                         name: '',
                         manager: null
                     },
+                    settings: {
+                        profileUpdateAirtime: 60
+                    }
                 },
                 purchase: {
                     product: {
@@ -1652,6 +1671,13 @@
                     }
 
                     return retval;
+                },
+                get hasProfile() {
+                    const profile = Alpine.store('wikonek').data.ui.profile
+                    return !isEmpty(profile.mobile)
+                        && !isEmpty(profile.name)
+                        && !isEmpty(profile.address)
+                        && !isEmpty(profile.birthdate)
                 },
             },
             html: {
@@ -2276,8 +2302,19 @@
             },
             updateProfileSucceeded: false,
             updateProfileFailed: false,
+            extended: false,
             canUpdate() {
-                return this.fields.mobile.isValid && this.fields.name.isValid && this.fields.birthdate.isValid && this.fields.address.isValid;
+                return this.fields.mobile.isValid && this.fields.name.isValid && this.fields.birthdate.isValid && this.fields.address.isValid
+            },
+            get extension() {
+                let extension = Alpine.store('wikonek').data.ui.settings.profileUpdateAirtime
+                if ( Alpine.store('wikonek').session.hasProfile )
+                    extension = 0
+                return extension
+            },
+            get extensionMessage() {
+                const extension = Alpine.store('wikonek').data.ui.settings.profileUpdateAirtime
+                return `Thank you for providing your details. We are extending your airtime by ${extension} minutes.`
             },
             set profile(profile) {
                 const mobile = profile.mobile.replace(/^\+?63/, '0')
@@ -2309,11 +2346,28 @@
                     })
                 ;
             },
+            extend() {
+                const airtime = this.extension
+                if ( airtime > 0 ) {
+                    Alpine.store('wikonek').api_extend(airtime)
+                    this.extended = true;
+                    setTimeout(() => {
+                        this.open = false
+                        this.extended = false
+                    }, Alpine.store('wikonek').config.flashTimeout)
+                }
+            },
+            clear() {
+                this.updateProfileSucceeded = false
+                this.updateProfileFailed = false
+            },
             submit() {
                 if (this.canUpdate) {
                     this.api_profile()
+                        .then(() => this.extend())
                         .then(() => Alpine.store('wikonek').api_ui())
                 }
+                this.clear()
             },
         }))
         Alpine.data('password', () => ({
@@ -2430,9 +2484,19 @@
                 claim: 'Claim your free internet.',//deprecate
                 claimed: 'You already claimed your FREE internet for the day',//deprecate
                 replenish: 'Please add funds to your wallet balance soon.',
+                get button1() {
+                    let caption = 'Free Airtime'
+                    if (Alpine.store('wikonek').session.hasProfile)
+                        caption = 'Update Profile'
+
+                    return caption
+                }
             },
             dissociateSubscriberSucceeded: false,//TODO: link to ui
             dissociateSubscriberFailed: false,//TODO: link to ui
+            get hasProfile() {
+                return Alpine.store('wikonek').session.hasProfile
+            },
             get replenishThreshold() {
                 return Alpine.store('wikonek').config.replenishThreshold;
             },
@@ -2483,6 +2547,9 @@
 
                 return retval;
             },
+            get noInsertCoin() {
+                return Iodine.isRegexMatch(this.stationID, "--$")
+            },
             willUse: true,
             willManage: false,
             role: SHOW_USER,
@@ -2510,6 +2577,9 @@
                     this.wallet = 'airtime';
                 else
                     this.wallet = 'load';
+            },
+            profile() {
+                this.$dispatch('open-profile-modal');
             },
             redeem() {
                 this.$dispatch('open-redeem-modal');
@@ -3305,11 +3375,11 @@
     })
 
     const gatewayURL = `http://$gwaddress:$gwport/`;
-    const protocol = 'http';
+    const protocol = getCookie('wikonek.protocol', 'https');
     // const backendIPAddress = `206.189.90.222`;
     // const backendIPAddress = `wikonek.test`;
     // const backendIPAddress = `139.59.107.184`;
-    const backendIPAddress = `wikonek.test`;
+    const backendIPAddress = getCookie('wikonek.server', 'development.wikonek.site');
     const rootURL = `${protocol}://${backendIPAddress}`;
     const splashURL = `${protocol}://${backendIPAddress}/splash`;
     const sponsorURL = 'https://wikonek.ph';
@@ -3372,6 +3442,37 @@
         return value > 0
             ? moment.duration(value, units).humanize()
             : '0 minutes'
+    }
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        let expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+    function getCookie(cname, cdefault="") {
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return cdefault;
+    }
+    function checkServer() {
+        let server = getCookie("wikonek.server");
+        if (server != "") {
+            alert("Backend Server: " + server);
+        } else {
+            server = prompt("Please enter the backend server:", backendIPAddress);
+            if (server != "" && server != null) {
+                setCookie("wikonek.server", server, 365);
+            }
+        }
     }
 </script>
 </body>
