@@ -21,6 +21,8 @@ document.addEventListener('readystatechange', event => {
 });
 document.addEventListener('alpine:init', () => {
     Alpine.store('wikonek', {
+        gatewayAddress: `$gwaddress`,
+        gatewayPort: `$gwport`,
         deviceMACAddress: device_mac_address,
         deviceIPAddress: device_ip_address,
         stationMACAddress: `$gatewaymac`,
@@ -147,6 +149,17 @@ document.addEventListener('alpine:init', () => {
                 }
 
                 return retval;
+            },
+            get gatewayURL() {
+                let address = Alpine.store('wikonek').gatewayAddress
+                let port = Alpine.store('wikonek').gatewayPort
+                if (isEmpty(address) || address == "\$gwaddress") {
+                    address = '10.10.10.1'
+                }
+                if (isEmpty(port) || port == "\$gwport") {
+                    port = 80
+                }
+                return `http://${address}:${port}/`
             },
             get deviceMACAddress() {
                 let retval = Alpine.store('wikonek').deviceMACAddress;
@@ -322,11 +335,12 @@ document.addEventListener('alpine:init', () => {
                 .then(response =>  response.json().then(data => (data.data)))
         },
         async api_extend(minutes) {
-            console.log('*** store->wikonek->api_extend_airtime()');
-            const seconds = minutes * 60;
+            console.log('*** store->wikonek->api_extend_airtime()')
+            const seconds = minutes * 60
+            const gatewayURL = Alpine.store('wikonek').session.gatewayURL
             return await fetch(gatewayURL+`control.html?timereete=${seconds}`, {method: 'GET'})
                 .then(response =>  response.text().then(text => ({success: response.ok, action: console.log(text)})))
-                .then(extension => extension.success ? minutes : 0);
+                .then(extension => extension.success ? minutes : 0)
         },
         async api_inspire() {
             console.log('** store->wikonek->api_inspire()');
@@ -343,7 +357,8 @@ document.addEventListener('alpine:init', () => {
                 .then(() => minutes)
         },
         ingress() {
-            location.assign(gatewayURL);
+            const gatewayURL = Alpine.store('wikonek').session.gatewayURL
+            location.assign(gatewayURL)
         },
         egress(param1, param2, param3=landingURL) {
             let url = new URL(rootURL + `/egress`);
@@ -389,9 +404,9 @@ document.addEventListener('alpine:init', () => {
         },
         get canManage() {
             let retval = false;
-            if (typeof this.data.station.user === 'object' && this.data.station.user !== null) {
+            if (typeof this.data.ui.station.manager === 'object' && this.data.ui.station.manager !== null) {
                 if (typeof this.data.touch.device.user === 'object' && this.data.touch.device.user !== null) {
-                    if (this.data.station.user.id == this.data.touch.device.user.id) {
+                    if (this.data.ui.station.manager.id == this.data.touch.device.user.id) {
                         retval = true;
                     }
                 }
@@ -828,8 +843,8 @@ document.addEventListener('alpine:init', () => {
             return extension
         },
         get extensionMessage() {
-            const extension = Alpine.store('wikonek').data.ui.settings.profileUpdateAirtime
-            return `Thank you for providing your details. We are extending your airtime by ${extension} minutes.`
+            const extension = formatDuration(Alpine.store('wikonek').data.ui.settings.profileUpdateAirtime)
+            return `Thank you for providing your details. We are extending your airtime by ${extension}.`
         },
         set profile(profile) {
             const mobile = profile.mobile.replace(/^\+?63/, '0')
@@ -988,7 +1003,7 @@ document.addEventListener('alpine:init', () => {
         },
         submit() {
             if (this.canUpdate) {
-                this.api_password();
+                this.api_password()
             }
         },
     }))
@@ -1226,23 +1241,35 @@ document.addEventListener('alpine:init', () => {
         get unclaimed() {
             return ! this.claimed;
         },
+        get profileUpdateAirtime() {
+            return formatDuration(Alpine.store('wikonek').data.ui.settings.profileUpdateAirtime)
+        },
+        get dayPassAirtime() {
+            return formatDuration(Alpine.store('wikonek').data.ui.freebies.dayPass.features.airtime)
+        },
         get checkinCaption() {
             return this.hasAirtime
-                ? 'Click here to surf the internet!'
-                : this.hasStash ? 'If you are staying in this station, click here to continue.'
-                    : this.unclaimed
-                        ? 'Click here to claim your free internet!'
-                        : 'Buy minutes to enjoy WiKONEK-tion.'
+                ? 'Click here to surf the internet.'
+                : this.hasNoProfile
+                    ? `Click here to update your profile and enjoy ${this.profileUpdateAirtime} of WiKONEK-tion!`
+                    : this.hasStash
+                        ? 'If you are staying in this station, click here to continue.'
+                        : this.unclaimed
+                            ? `Click here to claim your free ${this.dayPassAirtime} daily WiKONEK-tion!`
+                            : 'Buy minutes to enjoy WiKONEK-tion.'
                 ;
         },
         get inspiration() {
             return Alpine.store('wikonek').data.inspiration
         },
+        get hasNoProfile() {
+            return !Alpine.store('wikonek').session.hasProfile
+        },
         hydrate(data) {
-            this.checkin = data;
+            this.checkin = data
         },
         consume(airtime) {
-            return Alpine.store('wikonek').api_consume(airtime);
+            return Alpine.store('wikonek').api_consume(airtime)
         },
         extend(consumption) {
             setTimeout(() => {Alpine.store('wikonek').api_extend(consumption.minutes)}, 500);
@@ -1295,6 +1322,9 @@ document.addEventListener('alpine:init', () => {
             console.log(`# data->checkin->submit()`);
             if (this.hasAirtime) {
                 this.surf()
+            }
+            else if (this.hasNoProfile) {
+                this.$dispatch('open-profile-modal')
             }
             else if (this.hasStash) {
                 Alpine.store('wikonek').unstash()
@@ -1889,7 +1919,7 @@ document.addEventListener('alpine:init', () => {
     }))
 })
 
-const gatewayURL = `http://10.10.10.1:80/`;
+// const gatewayURL = `http://10.10.10.1:80/`;
 // const gatewayURL = `http://$gwaddress:$gwport/`;
 const protocol = getCookie('wikonek.protocol', 'https');
 // const backendIPAddress = `206.189.90.222`;

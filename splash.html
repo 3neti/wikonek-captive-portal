@@ -865,11 +865,11 @@
                                             </div>
                                             <!-- if successful -->
                                             <div class="success-message text-center text-[#26580F] m-[15px]" x-show="updatePasswordSucceeded">
-                                                <p>Profile updated.</p>
+                                                <p>PIN changed.</p>
                                             </div>
                                             <!-- if failed -->
                                             <div class="error-message text-center text-[#FF0000] m-[15px]" x-show="updatePasswordFailed">
-                                                <p>Update profile failed! Please try again.</p>
+                                                <p>Change PIN failed! Please try again.</p>
                                             </div>
                                         </div>
                                     </div><!-- content -->
@@ -1481,6 +1481,14 @@
             </div>
         </template>
     </template>
+    <div x-data="{
+        init() {
+            Alpine.store('wikonek').stationMACAddress = `$gatewaymac`
+            Alpine.store('wikonek').deviceMACAddress = `$clientmac`
+            Alpine.store('wikonek').deviceIPAddress = `$clientip`
+            Alpine.store('wikonek').coinExpiry = `$queueTime`
+        }}"
+    ></div>
 </div><!-- UI [end] -->
 <script src="images/wikonek.js"></script>
 </body>
