@@ -1,3 +1,4 @@
+const fabian = '20331r1';
 const dummyClientMACAddress = '37:60:06:07:73:40';
 const dummyClientIPAddress = '123.123.123.123';
 let device_mac_address = dummyClientMACAddress;
@@ -103,6 +104,7 @@ document.addEventListener('alpine:init', () => {
                     birthdate: '',
                     address: '',
                     role: '',
+                    verified: null
                 },
                 recipients: [],
                 transactions: [],
@@ -210,6 +212,27 @@ document.addEventListener('alpine:init', () => {
         },
         html: {
             modalClose: `<svg class="h-7 w-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" fill-rule="evenodd"/></svg>`,
+        },
+        ui: {
+            manager: {
+                get name() {
+                    const station = Alpine.store('wikonek').data.ui.station
+                    return !station ||  !station.manager || !station.manager.mobile || station.manager.name === station.manager.mobile
+                        ? ''
+                        : station.manager.name
+                },
+                get mobile() {
+                    const station = Alpine.store('wikonek').data.ui.station
+                    return !station ||  !station.manager || !station.manager.mobile
+                        ? ''
+                        : formatPhone(station.manager.mobile.replace(/^\+?63/, '0'))
+                },
+                get handle() {
+                    return !this.name
+                        ? !this.mobile ? '' : this.mobile
+                        : `${this.name} ${this.mobile}`
+                }
+            },
         },
         get station() {
             return this.data.station;
@@ -461,23 +484,32 @@ document.addEventListener('alpine:init', () => {
         get hasDeviceMACAddress() {
             return Alpine.store('wikonek').session.hasDeviceMACAddress;
         },
+        get userVerified() {
+            return Alpine.store('wikonek').data.ui.profile.verified
+        },
+        get userUnverified() {
+            return !this.userVerified
+        },
         get connected() {
-            return Alpine.store('wikonek').connection.status.network;
+            return Alpine.store('wikonek').connection.status.network
         },
         get disconnected() {
-            return !this.connected;
+            return !this.connected
         },
         get accessible() {
-            return Alpine.store('wikonek').connection.status.internet;
+            return Alpine.store('wikonek').connection.status.internet
         },
         get inaccessible() {
-            return !this.accessible;
+            return !this.accessible
         },
         get online() {
             return Alpine.store('wikonek').connection.status.backend;
         },
         get registered() {
-            return Alpine.store('wikonek').session.registered;
+            return Alpine.store('wikonek').session.registered
+        },
+        get unregistered() {
+            return !this.registered
         },
         get underMaintenance() {
             return Alpine.store('wikonek').connection.status.maintenance
@@ -733,10 +765,10 @@ document.addEventListener('alpine:init', () => {
                 .then(args => this.login(args))
         },
         async api_signup() {
-            console.log('# data->registration->api_signup()');
+            console.log('# data->registration->api_signup()')
             const credentials = JSON.stringify({
                 mobile: this.fields.mobile.value
-            });
+            })
             return await fetch(apiEndPoint + `/signup`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'Accept': 'text/plain'},
@@ -748,6 +780,12 @@ document.addEventListener('alpine:init', () => {
                     isOk: response.ok
                 })))
                 .then(args => this.register(args))
+        },
+        async api_challenge(token) {
+            console.log('# data->registration->api_challenge()')
+            await fetch(apiEndPoint + `/challenge`, {method: 'POST', headers: {"Authorization": "Bearer "+ token}})
+                .then(response =>  response.json().then(data => data.data))
+            return token
         },
         async api_associate(token) {
             console.log('# data->registration->api_associate()');
@@ -764,6 +802,7 @@ document.addEventListener('alpine:init', () => {
             this.validateFields()
             if (this.wantToRegister) {
                 this.api_signup()
+                    .then(token => this.api_challenge(token))
                     .then(token => this.api_associate(token))
                     .then(success => success && this.refresh())
                 // const token = Alpine.store('wikonek').session.token;
@@ -775,6 +814,141 @@ document.addEventListener('alpine:init', () => {
                     .then(token => this.api_associate(token))
                     .then(success => success && this.refresh())
             }
+        },
+    }))
+    Alpine.data('verification', () => ({
+        fields: {
+            otp: {
+                value: null,
+                get label() {
+                    const mobile = formatPhone(Alpine.store('wikonek').data.ui.profile.mobile.replace(/^\+?63/, '0'))
+                    return `Enter OTP sent via sms to ${mobile}.`
+                },
+                maxLength: Alpine.store('wikonek').config.pinSize,
+                rules: ["required", "regexPIN"],
+                validate(callback) {
+                    let {isValid, errorMsg} = callback(this)
+                    this.isValid = isValid
+                    this.errorMsg = errorMsg
+                },
+                isValid: null,
+                errorMsg: null
+            }
+        },
+        captions: {
+            title: 'Mobile Verification',
+            button: 'Go!!!'
+        },
+        verifyMobileSucceeded: null,
+        verifyMobileFailed: null,
+        get verified() {
+            return Alpine.store('wikonek').data.ui.profile.verified
+        },
+        clear() {
+            Object.values(this.fields).forEach(field => {
+                field.value = '';
+                field.errorMsg = null;
+            });
+        },
+        flagUnverified() {
+            this.fields.otp.isValid = false;
+            this.fields.otp.errorMsg = 'Invalid OTP!';
+            setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+            this.$dispatch('notify', { content: `Verification failed! Please try again.`, type: 'error'});
+        },
+        flagUnkown() {
+            this.fields.otp.isValid = false;
+            this.fields.otp.errorMsg = 'Unknown error!';
+            setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+            this.$dispatch('notify', { content: `Verification failed! Please try again.`, type: 'error'});
+        },
+        verify(args) {
+            if (args.isOk === true) {
+                this.$dispatch('notify', {
+                    content: `Your mobile number is verified. Thank you.`,
+                    type: 'success'});
+            }
+            else if (args.status === 406) {
+                this.flagUnverified()
+            }
+            else {
+                console.log(args, 'args')
+                this.flagUnkown()
+            }
+
+            return args.isOk;
+        },
+        resend(args) {
+            if (args.isOk === true) {
+                this.$dispatch('notify', {
+                    content: `Resending OTP..`,
+                    type: 'success'});
+            }
+            else {
+                this.flagUnkown()
+            }
+
+            return args.isOk;
+        },
+        refresh() {
+            Alpine.store('wikonek').api_touch()
+                .then(() => Alpine.store('wikonek').api_ui());
+        },
+        async api_verify() {
+            console.log('# data->verification->api_verify()')
+            const otp = this.fields.otp.value
+            const url = apiEndPoint+`/verify/${otp}`
+            return await fetch(url, {
+                method: 'POST',
+                headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+            })
+                .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                .then(args => this.verify(args))
+            ;
+        },
+        async api_resend() {
+            console.log('# data->verification->api_resend()')
+            const url = apiEndPoint+`/challenge`
+            return await fetch(url, {
+                method: 'POST',
+                headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+            })
+                .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+                .then(args => this.resend(args))
+                ;
+        },
+        validateField() {
+            this.fields.otp.validate(validationCallback)
+        },
+        submit() {
+            console.log('# data->verification->submit()');
+            this.validateField()
+            this.api_verify()
+                .then(success => success && this.refresh())
+        },
+    }))
+    Alpine.data('about', () => ({
+        open: false,
+        title: 'About',
+        caption: 'Go!!!',
+        info: [
+            { id: 1, label: 'Station ID', value: Alpine.store('wikonek').data.ui.station.name},
+            { id: 2, label: 'Device MAC Address', value: Alpine.store('wikonek').session.deviceMACAddress},
+            { id: 3, label: 'Device IP Address', value: Alpine.store('wikonek').session.deviceIPAddress},
+            { id: 4, label: 'Station MAC Address', value: formatMACAddress(Alpine.store('wikonek').session.stationMACAddress)},
+            { id: 5, label: 'Attached Mobile Phone', value: formatPhone(Alpine.store('wikonek').data.ui.profile.mobile.replace(/^\+?63/, '0'))},
+            { id: 6, label: 'Tindera', value: Alpine.store('wikonek').ui.manager.handle},
+            { id: 7, label: 'Environment', value: Alpine.store('wikonek').data.ui.environment},
+            { id: 8, label: 'Release ID', value: fabian},
+            { id: 9, label: 'Server', value: getCookie("wikonek.server")},
+        ],
+        submit() {
+            if (this.canUpdate) {
+                this.api_profile()
+                    .then(() => this.extend())
+                    .then(() => Alpine.store('wikonek').api_ui())
+            }
+            this.clear()
         },
     }))
     Alpine.data('profile', () => ({
@@ -1925,7 +2099,7 @@ const protocol = getCookie('wikonek.protocol', 'https');
 // const backendIPAddress = `206.189.90.222`;
 // const backendIPAddress = `wikonek.test`;
 // const backendIPAddress = `139.59.107.184`;
-const backendIPAddress = getCookie('wikonek.server', 'development.wikonek.site');
+const backendIPAddress = getCookie('wikonek.server', 'wikonek.site');
 const rootURL = `${protocol}://${backendIPAddress}`;
 const splashURL = `${protocol}://${backendIPAddress}/splash`;
 const sponsorURL = 'https://wikonek.ph';
@@ -1989,6 +2163,11 @@ function formatDuration(value, units = 'minutes') {
         ? moment.duration(value, units).humanize()
         : '0 minutes'
 }
+function formatMACAddress(value) {
+    return value
+        .toLowerCase()
+        .replace(/^(\w{2})(\w{2})(\w{2})(\w{2})(\w{2})(\w{2})$/g, '$1:$2:$3:$4:$5:$6')
+}
 function setCookie(cname, cvalue, exdays) {
     const d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -2008,6 +2187,29 @@ function getCookie(cname, cdefault="") {
         }
     }
     return cdefault;
+}
+function setProtocol() {
+    prot = prompt("Please enter the protocol:", getCookie("wikonek.protocol"));
+    if (prot != "" && prot != null) {
+        setCookie("wikonek.protocol", prot, 365);
+    }
+}
+function checkProtocol() {
+    let prot = getCookie("wikonek.protocol");
+    if (prot != "") {
+        alert("Protocol: " + prot);
+    } else {
+        prot = prompt("Please enter the protocol:", protocol);
+        if (prot != "" && prot != null) {
+            setCookie("wikonek.protocol", prot, 365);
+        }
+    }
+}
+function setServer() {
+    server = prompt("Please enter the backend server:", getCookie("wikonek.server"));
+    if (server != "" && server != null) {
+        setCookie("wikonek.server", server, 365);
+    }
 }
 function checkServer() {
     let server = getCookie("wikonek.server");
