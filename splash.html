@@ -631,22 +631,21 @@
                                     <!-- [start] Verification -->
                                     <div
                                             class="site-container wrap p-4"
-                                            x-data="verification">
+                                            x-data="otp">
                                         <div class="header">
                                             <div class="logo w-48" style="margin: 0 auto 40px;"><img src="images/logo.png"/></div>
                                         </div><!-- header -->
                                         <div class="content" x-trap="true">
                                             <div class="wrap">
-                                                <div class="title text-center font-bold text-[21px] mb-[30px]">Verify Mobile</div>
+                                                <div class="title text-center font-bold text-[21px] mb-[30px]" x-text="captions.title"></div>
                                                 <div class="form" x-trap="true">
                                                     <form class="signup" x-on:submit.prevent="submit">
                                                         <div class="pinnum form-element">
                                                             <label class="text-[13px]" x-text="fields.otp.label"></label>
-                                                            <div class="relative" x-data="{ show: true }">
+                                                            <div class="relative" x-data="{ show: false }">
                                                                 <input
                                                                         :maxlength="fields.otp.maxLength"
                                                                         :type="show ? 'password' : 'number'"
-                                                                        @blur="fields.otp.validate(validationCallback)"
                                                                         oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                                                         placeholder="e.g. 1234"
                                                                         x-model="fields.otp.value"
@@ -681,7 +680,12 @@
                                                                    value="Go!!!">
                                                         </div>
                                                     </form>
-                                                    <a @click="api_resend">Resend One-Time PIN via sms.</a>
+                                                    <div class="text-center text-[#26580F] m-[15px]">
+                                                        <a @click="api_resend" x-text="captions.resend"></a>
+                                                    </div>
+                                                    <div class="text-center text-[#26580F] m-[15px]">
+                                                        <a @click="untouch" x-text="captions.logoff"></a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div><!-- content -->
@@ -720,9 +724,6 @@
                                                                             <input :value="item.value" type="text" disabled>
                                                                         </div>
                                                                     </template>
-<!--                                                                    <div class="submit form-element mt-[30px]">-->
-<!--                                                                        <input class="enabled" type="submit" :value="caption">-->
-<!--                                                                    </div>-->
                                                                 </form>
                                                             </div>
                                                         </div>

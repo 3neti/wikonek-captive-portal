@@ -379,6 +379,18 @@ document.addEventListener('alpine:init', () => {
                 .then(() => {this.session.stashed = true;})
                 .then(() => minutes)
         },
+        async api_dissociate() {
+            console.log(`# data->profile->api_dissociate()`);
+            const device = Alpine.store('wikonek').session.deviceMACAddress;
+            const url = apiEndPoint+`/dissociate/${device}`;
+            console.log(`# - fetching ${url}`);
+            return await fetch(url, {
+                method: 'POST',
+                headers: {"Authorization": "Bearer "+ Alpine.store('wikonek').session.token}
+            })
+                .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
+            ;
+        },//TODO: refactor
         ingress() {
             const gatewayURL = Alpine.store('wikonek').session.gatewayURL
             location.assign(gatewayURL)
@@ -816,16 +828,16 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }))
-    Alpine.data('verification', () => ({
+    Alpine.data('otp', () => ({
         fields: {
             otp: {
                 value: null,
                 get label() {
-                    const mobile = formatPhone(Alpine.store('wikonek').data.ui.profile.mobile.replace(/^\+?63/, '0'))
+                    mobile = formatPhone(Alpine.store('wikonek').data.ui.profile.mobile.replace(/^\+?63/, '0'))
                     return `Enter OTP sent via sms to ${mobile}.`
                 },
                 maxLength: Alpine.store('wikonek').config.pinSize,
-                rules: ["required", "regexPIN"],
+                rules: ["regexPIN"],
                 validate(callback) {
                     let {isValid, errorMsg} = callback(this)
                     this.isValid = isValid
@@ -836,11 +848,18 @@ document.addEventListener('alpine:init', () => {
             }
         },
         captions: {
-            title: 'Mobile Verification',
-            button: 'Go!!!'
+            title: 'Verify Mobile',
+            button: 'Go!!!',
+            resend: 'Resend One-Time PIN (OTP)',
+            get logoff() {
+                mobile = formatPhone(Alpine.store('wikonek').data.ui.profile.mobile.replace(/^\+?63/, '0'))
+                return `Log-off ${mobile}`
+            },
         },
         verifyMobileSucceeded: null,
         verifyMobileFailed: null,
+        dissociateSubscriberSucceeded: null,
+        dissociateSubscriberFailed: null,
         get verified() {
             return Alpine.store('wikonek').data.ui.profile.verified
         },
@@ -916,6 +935,11 @@ document.addEventListener('alpine:init', () => {
                 .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
                 .then(args => this.resend(args))
                 ;
+        },
+        untouch() {
+            Alpine.store('wikonek').api_dissociate()
+                .then(() => Alpine.store('wikonek').ingress())//TODO: get obj.Ok response
+                .then(() => Alpine.store('wikonek').api_ui())
         },
         validateField() {
             this.fields.otp.validate(validationCallback)
