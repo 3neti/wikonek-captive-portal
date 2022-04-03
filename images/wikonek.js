@@ -1,4 +1,4 @@
-const fabian = '20331r1';
+const fabian = '20403r1';
 const dummyClientMACAddress = '37:60:06:07:73:40';
 const dummyClientIPAddress = '123.123.123.123';
 let device_mac_address = dummyClientMACAddress;
@@ -282,6 +282,19 @@ document.addEventListener('alpine:init', () => {
             );
             Iodine.messages.maskedNumber = "Value must be a positive number";
             console.log('** - positiveNumber loaded');
+
+            Iodine.addRule(
+                "regexLatitude",
+                (value) => Iodine.isRegexMatch(value, "^(\\+|-)?(?:90(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\\.[0-9]{1,6})?))$")
+            );
+            Iodine.messages.regexLatitude = "Value must be in latitude format";
+            console.log('** - regexLatitude loaded');
+            Iodine.addRule(
+                "regexLongitude",
+                (value) => Iodine.isRegexMatch(value, "^(\\+|-)?(?:180(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\\.[0-9]{1,6})?))$")
+            );
+            Iodine.messages.regexLongitude = "Value must be in longitude format";
+            console.log('** - regexLongitude loaded');
         },
         async api_touch() {
             console.log('** store->wikonek->api_touch()');
@@ -380,7 +393,7 @@ document.addEventListener('alpine:init', () => {
                 .then(() => minutes)
         },
         async api_dissociate() {
-            console.log(`# data->profile->api_dissociate()`);
+            console.log(`# store->profile->api_dissociate()`);
             const device = Alpine.store('wikonek').session.deviceMACAddress;
             const url = apiEndPoint+`/dissociate/${device}`;
             console.log(`# - fetching ${url}`);
@@ -391,6 +404,22 @@ document.addEventListener('alpine:init', () => {
                 .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
             ;
         },//TODO: refactor
+        async api_update(table, identifier, attributes) {
+            console.log('# store->api_update()')
+            return await fetch(apiEndPoint + `/${table}/${identifier}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    "Authorization": "Bearer " + Alpine.store('wikonek').session.token},
+                body: JSON.stringify(attributes)
+            })
+                .then(response => response.json().then(data => ({
+                    status: response.status,
+                    body: data,
+                    isOk: response.ok
+                })))
+        },
         ingress() {
             const gatewayURL = Alpine.store('wikonek').session.gatewayURL
             location.assign(gatewayURL)
@@ -1727,10 +1756,11 @@ document.addEventListener('alpine:init', () => {
             if (this.redemption) {
                 param1 = 'You just redeemed ';
                 if (this.redemption.airtime > 0 && this.redemption.load > 0) {
-                    param1 = param1 + `${this.redemption.airtime} minutes & ₱${this.redemption.load/100}.00.`;
+                    param1 = param1 + `${formatDuration(this.redemption.airtime)} & ₱${this.redemption.load/100}.00.`;
                 }
                 else if (this.redemption.airtime > 0) {
-                    param1 = param1 + `${this.redemption.airtime} minutes.`;
+                    param1 = param1 + formatDuration(this.redemption.airtime)
+                    // param1 = param1 + `${this.redemption.airtime} minutes.`;
                 }
                 else {
                     param1 = param1 + `₱${this.redemption.load/100}.00.`;
@@ -2008,7 +2038,7 @@ document.addEventListener('alpine:init', () => {
     }))
     Alpine.data('admin', () => ({
         open: false,
-        title: 'Setup Station',
+        title: 'Update Station',
         caption: 'Go!!!',
         fields: {
             name: {
@@ -2024,6 +2054,70 @@ document.addEventListener('alpine:init', () => {
                 errorMsg: null,
                 label: "Station ID",
                 placeholder: "e.g. Aling Petra's Sari-Sari Store"
+            },
+            community: {
+                value: null,
+                maxLength: 100,
+                rules: [],
+                validate(callback) {
+                    let {isValid, errorMsg} = callback(this);
+                    this.isValid = isValid;
+                    this.errorMsg = errorMsg;
+                },
+                isValid: null,
+                errorMsg: null,
+                label: "Community",
+                placeholder: "e.g. Sitio Militar",
+                options: [
+                    'Sitio Militar, Brgy. Bahay-Toro',
+                    'Proj. 8, Brgy. Bahay Toro',
+                    'Payatas A, Brgy. Payatas'
+                ],
+            },
+            lgu: {
+                value: null,
+                maxLength: 100,
+                rules: [],
+                validate(callback) {
+                    let {isValid, errorMsg} = callback(this);
+                    this.isValid = isValid;
+                    this.errorMsg = errorMsg;
+                },
+                isValid: null,
+                errorMsg: null,
+                label: "City",
+                placeholder: "e.g. Quezon City",
+                options: [
+                    'Quezon City'
+                ],
+            },
+            latitude: {
+                value: null,
+                maxLength: 10,
+                rules: ['regexLatitude'],
+                validate(callback) {
+                    let {isValid, errorMsg} = callback(this);
+                    this.isValid = isValid;
+                    this.errorMsg = errorMsg;
+                },
+                isValid: null,
+                errorMsg: null,
+                label: "Latitude",
+                placeholder: "e.g. 14.655838"
+            },
+            longitude: {
+                value: null,
+                maxLength: 10,
+                rules: ['regexLongitude'],
+                validate(callback) {
+                    let {isValid, errorMsg} = callback(this);
+                    this.isValid = isValid;
+                    this.errorMsg = errorMsg;
+                },
+                isValid: null,
+                errorMsg: null,
+                label: "Longitude",
+                placeholder: "e.g. 121.048258"
             },
             mobile: {
                 value: null,
@@ -2047,70 +2141,87 @@ document.addEventListener('alpine:init', () => {
             return this.fields.mobile.isValid && this.fields.name.isValid;
         },
         clear() {
-            console.log(`# data->profile->clear()`);
-            this.fields.mobile.value = '';
+            console.log(`# data->admin->clear()`);
+            this.mobile = Alpine.store('wikonek').data.ui.station.manager.mobile
             this.fields.mobile.errorMsg = '';
-            this.fields.name.value = '';
-            this.fields.name.errorMsg = '';
             this.updateStationSucceeded = null;
             this.updateStationFailed = null;
         },
+        set mobile(value) {
+            const mobile = value
+            this.fields.mobile.value = mobile ? mobile.replace('+63', '0') : null
+        },
         set station(value) {
             this.fields.name.value = value.name
-            if (value.user) {
-                const mobile = value.manager.mobile
-                this.fields.mobile.value = mobile ? mobile.replace('+63', '0') : null
+            this.fields.lgu.value = value.lgu
+            this.fields.community.value = value.community
+            this.fields.latitude.value = value.latitude
+            this.fields.longitude.value = value.longitude
+            if (value.manager) {
+                this.mobile = value.manager.mobile
             }
         },
+        pair_station(args) {
+            if (args.isOk === true) {
+                this.updateStationSucceeded = true;
+            }
+            else {
+                this.updateStationFailed = true;
+                if (args.status === 404) {
+                    this.fields.mobile.errorMsg = 'Cannot find mobile number'
+                    this.fields.mobile.isValid = false
+                    setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+                }
+            }
+
+            return args.isOk
+        },
         async api_pair_station() {
-            console.log(`# data->profile->api_station()`);
+            console.log(`# data->data->api_pair_station()`);
             const station = Alpine.store('wikonek').session.stationMACAddress;
             const user = this.fields.mobile.value;
             const name = this.fields.name.value;
-            await fetch(apiEndPoint+`/administer/${station}/${user}/${name}`, {
+            return await fetch(apiEndPoint+`/administer/${station}/${user}`, {
                 method: 'POST',
                 headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
             })
                 .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
-                .then(obj => {
-                    if (obj.isOk === true) {
-                        this.updateStationSucceeded = true;
-                    }
-                    else {
-                        this.updateStationFailed = true;
-                        setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
-                    }
-                })
+                // .then(obj => {
+                //     if (obj.isOk === true) {
+                //         this.updateStationSucceeded = true;
+                //     }
+                //     else {
+                //         this.updateStationFailed = true;
+                //         setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
+                //     }
+                //     return obj.isOk
+                // })
             ;
         },
         async api_update_station() {
-            console.log(`# data->profile->api_update_station()`);
-            const station = Alpine.store('wikonek').session.stationMACAddress;
-            const name = this.fields.name.value;
-            const url = apiEndPoint+`/stations/${station}?name=${name}`;
-            console.log(`# - fetching ${url}`);
-            await fetch(url, {
-                method: 'PUT',
-                headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
-            })
-                .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
-                .then(obj => {
-                    if (obj.isOk === true) {
-                        this.updateStationSucceeded = true;
-                    }
-                    else {
-                        this.updateStationFailed = true;
-                        setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout);
-                    }
+            console.log(`# data->admin->api_update_station()`)
+            const table = 'stations'
+            const identifier = Alpine.store('wikonek').session.stationMACAddress
+            const attributes = {
+                name: this.fields.name.value,
+                lgu: this.fields.lgu.value,
+                community: this.fields.community.value,
+                latitude: this.fields.latitude.value,
+                longitude: this.fields.longitude.value,
+            }
+            return Alpine.store('wikonek').api_update(table, identifier, attributes)
+                .then( args => {
+                    this.updateStationSucceeded = args.isOk
+                    this.updateStationFailed = !this.updateStationSucceeded
+                    setTimeout(() => this.clear(), Alpine.store('wikonek').config.flashTimeout)
                 })
-            ;
         },
         submit() {
             console.log(`# data->admin->submit()`);
             if (this.canUpdate) {
                 this.api_pair_station()
-                    // .then(() => this.api_update_station())
-                    // .then(() => Alpine.store('wikonek').api_station())
+                    .then(args => this.pair_station(args))
+                    .then(success => success && this.api_update_station())
                     .then(() => Alpine.store('wikonek').api_ui());
             }
         },

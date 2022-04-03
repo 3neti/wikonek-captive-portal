@@ -11,7 +11,7 @@
     <script defer src="images/cleave-phone.ph.js"></script>
     <script defer src="images/alpine.js"></script>
     <script src="images/tailwind.js"></script>
-    <title>WiKONEK Captive Portal v0.9</title>
+    <title>WiKONEK Dashboard v1.0</title>
     <style>
         @font-face {
             font-family: 'Montserrat';
@@ -198,7 +198,7 @@
             transform: translateY(-50%);
         }
 
-        input, textarea {
+        input, textarea, select {
             border: 1px solid #d8d8d8;
             padding: 6px 10px 7px !important;
             border-radius: 3px;
@@ -760,6 +760,7 @@
                                                                                 placeholder="09xx xxx xxxx e.g. 0912 345 6789"
                                                                                 @blur="fields.mobile.validate(validationCallback)"
                                                                                 required
+                                                                                disabled
                                                                                 x-mask="{ phone: true , phoneRegionCode: 'PH'}"
                                                                                 x-model="fields.mobile.value"
                                                                         >
@@ -1223,7 +1224,7 @@
                                                                                 :maxlength="fields.name.maxLength"
                                                                                 :placeholder="fields.name.placeholder"
                                                                                 @blur="fields.name.validate(validationCallback)"
-                                                                                aria-label="Station Name"
+                                                                                :aria-label="fields.name.label"
                                                                                 required
                                                                                 type="text"
                                                                                 x-model="fields.name.value"
@@ -1231,10 +1232,44 @@
                                                                         <p class="text-red-500 text-xs italic py-2" x-cloak><span
                                                                                 x-text="fields.name.errorMsg"></span></p>
                                                                     </div>
+                                                                    <div class="fname form-element">
+                                                                        <label class="text-[13px]" x-text="fields.lgu.label"></label>
+                                                                        <select x-model="fields.lgu.value">
+                                                                            <template x-for="option in fields.lgu.options">
+                                                                                <option x-text="option"></option>
+                                                                            </template>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="fname form-element">
+                                                                        <label class="text-[13px]" x-text="fields.community.label"></label>
+                                                                        <select x-model="fields.community.value">
+                                                                            <template x-for="option in fields.community.options">
+                                                                                <option x-text="option"></option>
+                                                                            </template>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="mnumber form-element">
+                                                                        <label class="text-[13px]" x-text="fields.latitude.label"></label>
+                                                                        <input
+                                                                                :placeholder="fields.latitude.placeholder"
+                                                                                @blur="fields.latitude.validate(validationCallback)"
+                                                                                x-model="fields.latitude.value"
+                                                                        >
+                                                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                                                x-text="fields.latitude.errorMsg"></span></p>
+                                                                    </div>
+                                                                    <div class="mnumber form-element">
+                                                                        <label class="text-[13px]" x-text="fields.longitude.label"></label>
+                                                                        <input
+                                                                                :placeholder="fields.longitude.placeholder"
+                                                                                @blur="fields.longitude.validate(validationCallback)"
+                                                                                x-model="fields.longitude.value"
+                                                                        >
+                                                                        <p class="text-red-500 text-xs italic py-2" x-cloak><span
+                                                                                x-text="fields.longitude.errorMsg"></span></p>
+                                                                    </div>
                                                                     <div class="mnumber form-element">
                                                                         <label class="text-[13px]" x-text="fields.mobile.label"></label>
-                                                                        <!--                                                <div class="relative">-->
-                                                                        <!--                                                    <span class="absolute top-[7px] left-[8px]">0 <span class="text-[#d8d8d8]">|</span></span>-->
                                                                         <input
                                                                                 :placeholder="fields.mobile.placeholder"
                                                                                 @blur="fields.mobile.validate(validationCallback)"
@@ -1361,7 +1396,7 @@
                                                                     </div>
                                                                     <div class="border-t border-black">
                                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-station-modal')" x-show="canAdminister">
-                                                                            Setup Station...
+                                                                            Update Station...
                                                                         </a>
                                                                         <a class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 disabled:text-gray-500" href="#" x-on:click="toggle(); $dispatch('open-profile-modal')">
                                                                             Update Profile...
