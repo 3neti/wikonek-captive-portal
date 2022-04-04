@@ -233,6 +233,9 @@ document.addEventListener('alpine:init', () => {
                         : `${this.name} ${this.mobile}`
                 }
             },
+            get server() {
+                return  getCookie('wikonek.server', 'production.wikonek.server').split('.')[0]
+            }
         },
         get station() {
             return this.data.station;
@@ -324,26 +327,6 @@ document.addEventListener('alpine:init', () => {
                     this.session.loading = false;
                 })
         },
-        async api_station() {
-            console.log('** store->wikonek->api_station()');
-            const station = this.session.stationMACAddress;
-            const url = apiEndPoint+`/stations/${station}`;
-            console.log(url, 'fetch url');
-            await fetch(url, {
-                method: 'GET',
-                headers: {"Authorization": "Bearer " + Alpine.store('wikonek').session.token}
-            })
-                .then(response =>  response.json().then(data => ({status: response.status, body: data, isOk: response.ok})))
-                .then(obj => {
-                    if (obj.isOk === true) {
-                        console.log('** - fetch station');
-                        this.data.station = obj.body.data;
-                        console.log(this.data.station, 'this.data.station');
-                    }
-                    this.connection.status.maintenance = (obj.status == 503);
-                    this.connection.status.backend = obj.isOk;
-                })
-        },
         async api_ui() {
             console.log('** store->wikonek->api_ui()');
             const device = this.session.deviceMACAddress;
@@ -354,7 +337,6 @@ document.addEventListener('alpine:init', () => {
                     if (obj.isOk === true) {
                         console.log('** - fetch ui');
                         this.data.ui = obj.body.data;
-                        // this.registered = !isEmpty(this.data.ui.profile.mobile) || !isEmpty(this.user.mobile);
                         console.log(this.data.ui, 'this.data.ui');
                     }
                     else {
@@ -434,7 +416,6 @@ document.addEventListener('alpine:init', () => {
         boot() {
             this.loadValidations();
             this.api_touch()
-                // .then(() => this.api_station())
                 .then(() => {
                     this.api_ui()
                         .then(() => {
@@ -443,7 +424,6 @@ document.addEventListener('alpine:init', () => {
                             }
                         })
                 })
-
                 .finally(() => this.api_inspire());
         },
         init() {
@@ -452,9 +432,6 @@ document.addEventListener('alpine:init', () => {
                 this.boot();
             }, 500);
         },
-        // get mode() {
-        //     return this.canManage ? SHOW_MANAGER : SHOW_USER;
-        // },
         get modes() {
             let values = SHOW_USER;
             if (this.canManage) {
@@ -574,22 +551,8 @@ document.addEventListener('alpine:init', () => {
                             type: 'info'
                         }
                     );
-                    // this.loaded = true;
                 }
             });
-            // if (this.hasDeviceMACAddress) {
-            //     this.$nextTick(() => {
-            //         this.$dispatch('notify', {
-            //                 content: `Your MAC Address is ${this.device.macAddress}.`,
-            //                 type: 'info'
-            //             }
-            //         );
-            //     });
-            //     this.loaded = true;
-            // }
-            // if (this.inaccessible) {
-            //
-            // }
         },
     }))
     Alpine.data('ingress', () => ({
@@ -993,7 +956,7 @@ document.addEventListener('alpine:init', () => {
             { id: 6, label: 'Tindera', value: Alpine.store('wikonek').ui.manager.handle},
             { id: 7, label: 'Environment', value: Alpine.store('wikonek').data.ui.environment},
             { id: 8, label: 'Release ID', value: fabian},
-            { id: 9, label: 'Server', value: getCookie("wikonek.server")},
+            { id: 9, label: 'Server', value: Alpine.store('wikonek').ui.server},
         ],
         submit() {
             if (this.canUpdate) {
@@ -1123,6 +1086,7 @@ document.addEventListener('alpine:init', () => {
                 this.api_profile()
                     .then(() => this.extend())
                     .then(() => Alpine.store('wikonek').api_ui())
+                    .then(() => Alpine.store('wikonek').ingress())
             }
             this.clear()
         },
@@ -1261,10 +1225,6 @@ document.addEventListener('alpine:init', () => {
             return true;
             return (Alpine.store('wikonek').data.ui.balance.load.amount * 1) < this.replenishThreshold;
         },
-        // get loadRemaining() {
-        //     return (Alpine.store('wikonek').data.ui.balance.load.amount * 1).toLocaleString();
-        //     // return this.remaining('load');
-        // },
         remaining(wallet) {
             let retval = '';
             switch (wallet) {
@@ -1292,7 +1252,6 @@ document.addEventListener('alpine:init', () => {
         },
         get canManage() {
             return Alpine.store('wikonek').canManage;
-            // return this.manager !== null;
         },
         get canInsertCoin() {
             let retval = true;
@@ -1312,7 +1271,6 @@ document.addEventListener('alpine:init', () => {
         role: SHOW_USER,
         get isUser() {
             return !this.isManager;
-            // return this.willUse;
         },
         get isManager() {
             return Alpine.store('wikonek').canManage && this.willManage;
@@ -1321,12 +1279,6 @@ document.addEventListener('alpine:init', () => {
             return Alpine.store('wikonek').canAdminister;
         },
         toggleRoles() {
-            // let i=0;
-            // let roles = Alpine.store('wikonek').roles;
-            // return function() {
-            //     i = ++i % roles.length;
-            //     this.role = roles[i];
-            // }
             this.willManage = !this.willManage;
         },
         toggleWallets() {
@@ -1382,14 +1334,12 @@ document.addEventListener('alpine:init', () => {
             Alpine.store('wikonek').api_stash(airtime)
                 .then(minutes => Alpine.store('wikonek').api_extend(minutes * -1))
                 .then(() => setTimeout(() => Alpine.store('wikonek').api_ui(), 100));
-            // .then(() => Alpine.store('wikonek').api_ui());
         },
         init() {
             setTimeout(() => this.unstash(), 500)
         },
     }))
     Alpine.data('airtime', () => ({
-        // code: '',
         get code() {
             let retval = Alpine.store('wikonek').session.airtime;
             if (Alpine.store('wikonek').session.stashed === true) {
@@ -1539,10 +1489,6 @@ document.addEventListener('alpine:init', () => {
             Alpine.store('wikonek').egress(param1, param2, param3);
         },
         promos() {
-            // const param1 = 'Eat';
-            // const param2 = 'Bulaga!';
-            // const param3 = gatewayURL;
-            // Alpine.store('wikonek').egress(param1, param2, param3);
             Alpine.store('wikonek').api_ui();
         },
         submit() {
@@ -1652,7 +1598,6 @@ document.addEventListener('alpine:init', () => {
             console.log('# data->count->reset()');
             this.coinsInserted = 0;
             this.ticks = Alpine.store('wikonek').session.coinExpiry;
-            // this.ticks = Alpine.store('wikonek').config.coins.expiry;
         },
         toggle() {
             console.log('# data->count->toggle()');
@@ -1760,7 +1705,6 @@ document.addEventListener('alpine:init', () => {
                 }
                 else if (this.redemption.airtime > 0) {
                     param1 = param1 + formatDuration(this.redemption.airtime)
-                    // param1 = param1 + `${this.redemption.airtime} minutes.`;
                 }
                 else {
                     param1 = param1 + `₱${this.redemption.load/100}.00.`;
@@ -2227,13 +2171,7 @@ document.addEventListener('alpine:init', () => {
         },
     }))
 })
-
-// const gatewayURL = `http://10.10.10.1:80/`;
-// const gatewayURL = `http://$gwaddress:$gwport/`;
 const protocol = getCookie('wikonek.protocol', 'https');
-// const backendIPAddress = `206.189.90.222`;
-// const backendIPAddress = `wikonek.test`;
-// const backendIPAddress = `139.59.107.184`;
 const backendIPAddress = getCookie('wikonek.server', 'wikonek.site');
 const rootURL = `${protocol}://${backendIPAddress}`;
 const splashURL = `${protocol}://${backendIPAddress}/splash`;
@@ -2322,6 +2260,9 @@ function getCookie(cname, cdefault="") {
         }
     }
     return cdefault;
+}
+function eraseCookie(cname) {
+    document.cookie = cname+'=; Max-Age=-99999999;';
 }
 function setProtocol() {
     prot = prompt("Please enter the protocol:", getCookie("wikonek.protocol"));
